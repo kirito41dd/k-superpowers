@@ -2,9 +2,9 @@
 
 <!-- SUMMARY
 覆盖范围：架构决策、技术选型、废弃方案（ADR 风格）
-条目数：3
+条目数：4
 最近更新：2026-05-21
-高频标签：#memory #fork #personalization #opencode #install
+高频标签：#memory #fork #personalization #opencode #install #verification #type-driven
 -->
 
 ## 写入格式（ADR 风格）
@@ -21,6 +21,15 @@
 ```
 
 ---
+
+## 2026-05-21 从强制 TDD 改为类型优先验证
+
+- **背景**：用户长期使用 Rust，认为不是所有代码都需要测试；测试应保护核心逻辑和回归风险，更多不变量应交给类型系统、接口和编译器。
+- **选项**：保留上游严格 TDD；删除测试纪律；保留 `test-driven-development` 名称但改为类型优先验证语义。
+- **决策**：保留 skill 名以兼容现有引用，但正文改为 Type-Driven Verification：优先让非法状态不可表示，只对核心行为、bug 回归、公共 API、算法、parser、协议、状态机、高风险重构等写聚焦测试。
+- **理由**：直接删除 TDD 会让 agent 退回“凭感觉完成”；保留验证纪律但放弃 blanket test-first 更符合 Rust 哲学和用户效率偏好。
+- **影响**：`skills/test-driven-development/SKILL.md`, `skills/writing-plans/SKILL.md`, `skills/systematic-debugging/SKILL.md`, `skills/subagent-driven-development/SKILL.md`, `skills/verification-before-completion/SKILL.md`, `docs/skills-overview.zh.md`
+- **状态**：已实施。
 
 ## 2026-05-21 OpenCode 使用 k-superpowers git 安装
 

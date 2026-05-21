@@ -2,9 +2,9 @@
 
 <!-- SUMMARY
 覆盖范围：项目特定的代码风格、命名规则、目录结构、流程约定
-条目数：4
+条目数：5
 最近更新：2026-05-21
-高频标签：#skills #memory #eval #personalization #brainstorming #opencode #install
+高频标签：#skills #memory #eval #personalization #brainstorming #opencode #install #verification #type-driven
 -->
 
 ## 说明
@@ -26,6 +26,14 @@
 ```
 
 ---
+
+## 2026-05-21 测试只保护核心行为和回归风险
+
+- **约定**：不要默认要求所有 feature/bugfix 严格 TDD。优先用类型、接口、模块边界、可见性、所有权等表达不变量；测试用于保护核心逻辑、公共行为、bug 回归和类型无法证明的风险。
+- **理由**：这是受 Rust 哲学影响的个人 fork；blanket test-first 成本高，类型系统和编译器应承担更多正确性约束。
+- **反例**：要求每个私有 helper、机械改名、简单 glue code 都先写 failing test。
+- **正例**：对 parser、算法、状态机、协议、核心业务逻辑、回归 bug 写聚焦单测或属性测试；对类型可证明的约束通过编译器验证。
+- **范围**：`skills/test-driven-development/SKILL.md`, `skills/writing-plans/SKILL.md`, `skills/systematic-debugging/SKILL.md`
 
 ## 2026-05-21 优先维护 OpenCode 安装链路
 

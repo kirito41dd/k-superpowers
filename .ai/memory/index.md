@@ -22,6 +22,7 @@
 - OpenCode 安装方式 → `decisions.md#2026-05-21-opencode-使用-k-superpowers-git-安装`
 - 生态集成范围 → `conventions.md#2026-05-21-优先维护-opencode-安装链路`
 - 预热型请求处理 → `conventions.md#2026-05-21-预热型请求不触发-brainstorming`
+- 验证哲学 → `decisions.md#2026-05-21-从强制-tdd-改为类型优先验证`
 - PR/上游贡献规则 → `gotchas.md#2026-05-21-上游-pr-门槛很高`
 - Skill 修改纪律 → `conventions.md#2026-05-21-skill-正文变更必须先评估`
 - 项目定位 → `requirements.md#2026-05-21-个人-fork-用于后续微调-superpowers-skills`
@@ -34,12 +35,15 @@
 - `#opencode` → `decisions.md`, `conventions.md`
 - `#install` → `decisions.md`, `conventions.md`
 - `#brainstorming` → `conventions.md`
+- `#verification` → `decisions.md`, `conventions.md`
+- `#type-driven` → `decisions.md`, `conventions.md`
 - `#upstream-pr` → `gotchas.md`
 - `#memory` → `decisions.md`, `conventions.md`
 - `#eval` → `conventions.md`, `gotchas.md`
 
 ## 最近热点
 
+- 2026-05-21 从强制 TDD 改为类型优先验证 → `decisions.md`
 - 2026-05-21 优先维护 OpenCode 安装链路 → `conventions.md`
 - 2026-05-21 OpenCode 使用 k-superpowers git 安装 → `decisions.md`
 - 2026-05-21 预热型请求不触发 brainstorming → `conventions.md`

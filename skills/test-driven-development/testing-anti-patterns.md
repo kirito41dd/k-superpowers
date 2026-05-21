@@ -8,7 +8,7 @@ Tests must verify real behavior, not mock behavior. Mocks are a means to isolate
 
 **Core principle:** Test what the code does, not what the mocks do.
 
-**Following strict TDD prevents these anti-patterns.**
+**Focused behavior tests and type-first verification prevent these anti-patterns.**
 
 ## The Iron Laws
 
@@ -235,17 +235,18 @@ BEFORE creating mock responses:
 ```
 
 **Why this is wrong:**
-- Testing is part of implementation, not optional follow-up
-- TDD would have caught this
-- Can't claim complete without tests
+- Verification is part of implementation, not optional follow-up
+- Core behavior needs explicit protection when types cannot prove it
+- Can't claim complete without relevant verification
 
 **The fix:**
 ```
-TDD cycle:
-1. Write failing test
-2. Implement to pass
-3. Refactor
-4. THEN claim complete
+Verification cycle:
+1. Identify behavior and invariants
+2. Encode what types can prove
+3. Add focused tests for runtime behavior
+4. Run relevant checks
+5. THEN claim complete
 ```
 
 ## When Mocks Become Too Complex
@@ -260,15 +261,15 @@ TDD cycle:
 
 **Consider:** Integration tests with real components often simpler than complex mocks
 
-## TDD Prevents These Anti-Patterns
+## Verification Prevents These Anti-Patterns
 
-**Why TDD helps:**
-1. **Write test first** → Forces you to think about what you're actually testing
-2. **Watch it fail** → Confirms test tests real behavior, not mocks
+**Why verification helps:**
+1. **Identify behavior first** → Forces you to decide what actually matters
+2. **Prefer real behavior** → Confirms tests exercise code, not mocks
 3. **Minimal implementation** → No test-only methods creep in
-4. **Real dependencies** → You see what the test actually needs before mocking
+4. **Understand dependencies** → You see what the test actually needs before mocking
 
-**If you're testing mock behavior, you violated TDD** - you added mocks without watching test fail against real code first.
+**If you're testing mock behavior, verification is pointing at the wrong thing.** Test real behavior or simplify the boundary.
 
 ## Quick Reference
 
@@ -278,7 +279,7 @@ TDD cycle:
 | Test-only methods in production | Move to test utilities |
 | Mock without understanding | Understand dependencies first, mock minimally |
 | Incomplete mocks | Mirror real API completely |
-| Tests as afterthought | TDD - tests first |
+| Tests as afterthought | Plan verification with implementation |
 | Over-complex mocks | Consider integration tests |
 
 ## Red Flags
@@ -294,6 +295,6 @@ TDD cycle:
 
 **Mocks are tools to isolate, not things to test.**
 
-If TDD reveals you're testing mock behavior, you've gone wrong.
+If verification reveals you're testing mock behavior, you've gone wrong.
 
 Fix: Test real behavior or question why you're mocking at all.
