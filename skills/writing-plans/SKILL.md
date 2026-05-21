@@ -11,6 +11,8 @@ Write comprehensive implementation plans assuming the engineer has zero context 
 
 Assume they are a skilled developer, but know almost nothing about our toolset or problem domain. Assume they may over-test incidental details or under-test core behavior unless guided.
 
+**Language Adaptation:** Determine the user's conversation language from the current session. Output all documents (plan header, descriptions, comments, task descriptions) in that language. Code blocks, commands, and technical identifiers remain in their natural form (English).
+
 **Announce at start:** "I'm using the writing-plans skill to create the implementation plan."
 
 **Context:** If working in an isolated worktree, it should have been created via the `superpowers:using-git-worktrees` skill at execution time.
