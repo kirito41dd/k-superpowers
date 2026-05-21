@@ -2,9 +2,9 @@
 
 <!-- SUMMARY
 覆盖范围：项目特定的代码风格、命名规则、目录结构、流程约定
-条目数：3
+条目数：4
 最近更新：2026-05-21
-高频标签：#skills #memory #eval #personalization #brainstorming
+高频标签：#skills #memory #eval #personalization #brainstorming #opencode #install
 -->
 
 ## 说明
@@ -26,6 +26,14 @@
 ```
 
 ---
+
+## 2026-05-21 优先维护 OpenCode 安装链路
+
+- **约定**：本 fork 的安装引导优先维护 OpenCode 的 git-backed plugin 和本地路径安装；Claude Code、Codex、Cursor、Gemini 等 marketplace manifest 暂不作为主要安装方式，不做批量重命名。
+- **理由**：这是自用 fork，当前主要在 OpenCode 使用；全生态改名会引入发布、manifest、测试和 marketplace 维护成本。
+- **反例**：一次性把 `.claude-plugin`、`.codex-plugin`、`.cursor-plugin`、`gemini-extension.json` 全部改名但没有对应发布链路。
+- **正例**：README 明确推荐 `k-superpowers@git+https://github.com/kirito41dd/k-superpowers.git` 和 `file:///Users/kirito/my/k-superpowers`。
+- **范围**：`README.md`, `docs/README.opencode.md`, `.opencode/INSTALL.md`, `package.json`
 
 ## 2026-05-21 预热型请求不触发 brainstorming
 

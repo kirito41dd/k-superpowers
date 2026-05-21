@@ -2,9 +2,9 @@
 
 <!-- SUMMARY
 覆盖范围：架构决策、技术选型、废弃方案（ADR 风格）
-条目数：2
+条目数：3
 最近更新：2026-05-21
-高频标签：#memory #fork #personalization
+高频标签：#memory #fork #personalization #opencode #install
 -->
 
 ## 写入格式（ADR 风格）
@@ -21,6 +21,15 @@
 ```
 
 ---
+
+## 2026-05-21 OpenCode 使用 k-superpowers git 安装
+
+- **背景**：用户将 fork 命名为 `k-superpowers`，并明确这是自用版本，需要安装引导指向自己的 fork，而不是上游 marketplace。
+- **选项**：继续使用上游 `superpowers` 安装说明；全生态重命名并发布 marketplace；只维护 OpenCode 的 git/local 安装链路。
+- **决策**：根 `package.json` 改名为 `k-superpowers`，README 和 OpenCode 安装文档使用 `k-superpowers@git+https://github.com/kirito41dd/k-superpowers.git`；本地开发安装使用 `file:///Users/kirito/my/k-superpowers`。
+- **理由**：当前主要使用 OpenCode，git-backed plugin 足够满足自用；其它生态 marketplace 需要额外发布流程，暂不扩大范围。
+- **影响**：`package.json`, `README.md`, `docs/README.opencode.md`, `.opencode/INSTALL.md`
+- **状态**：已实施。
 
 ## 2026-05-21 个人 fork 不面向上游贡献
 

@@ -19,6 +19,8 @@
 
 - Skills 总览 → `docs/skills-overview.zh.md`
 - Fork 定制方向 → `decisions.md#2026-05-21-个人-fork-不面向上游贡献`
+- OpenCode 安装方式 → `decisions.md#2026-05-21-opencode-使用-k-superpowers-git-安装`
+- 生态集成范围 → `conventions.md#2026-05-21-优先维护-opencode-安装链路`
 - 预热型请求处理 → `conventions.md#2026-05-21-预热型请求不触发-brainstorming`
 - PR/上游贡献规则 → `gotchas.md#2026-05-21-上游-pr-门槛很高`
 - Skill 修改纪律 → `conventions.md#2026-05-21-skill-正文变更必须先评估`
@@ -29,6 +31,8 @@
 - `#skills` → `requirements.md`, `conventions.md`, `glossary.md`
 - `#fork` → `requirements.md`, `decisions.md`
 - `#personalization` → `decisions.md`, `conventions.md`
+- `#opencode` → `decisions.md`, `conventions.md`
+- `#install` → `decisions.md`, `conventions.md`
 - `#brainstorming` → `conventions.md`
 - `#upstream-pr` → `gotchas.md`
 - `#memory` → `decisions.md`, `conventions.md`
@@ -36,6 +40,8 @@
 
 ## 最近热点
 
+- 2026-05-21 优先维护 OpenCode 安装链路 → `conventions.md`
+- 2026-05-21 OpenCode 使用 k-superpowers git 安装 → `decisions.md`
 - 2026-05-21 预热型请求不触发 brainstorming → `conventions.md`
 - 2026-05-21 个人 fork 不面向上游贡献 → `decisions.md`
 - 2026-05-21 安装项目级 AI 记忆系统 → `decisions.md`
