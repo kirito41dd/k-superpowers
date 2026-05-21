@@ -45,9 +45,23 @@ Skills use Claude Code tool names. Non-CC platforms: see `references/copilot-too
 
 **Invoke relevant or requested skills BEFORE any response or action.** Even a 1% chance a skill might apply means that you should invoke the skill to check. If an invoked skill turns out to be wrong for the situation, you don't need to use it.
 
+## Intent Gate
+
+Before invoking downstream skills, classify the user's intent.
+
+If the user is only asking you to familiarize yourself with context, read docs, inspect code, learn conventions, or wait for a later requirement, do NOT invoke brainstorming or implementation skills yet.
+
+Examples: "熟悉开发规范，等下我给需求", "先熟悉这个模块", "先看看项目结构，不要改代码".
+
+For preparation-only requests: load only the requested context, summarize if useful, then stop and wait. Do not ask design questions, propose approaches, or create specs/plans.
+
+Only invoke `brainstorming` after an actual creative/build/change request: "实现 X", "设计 Y", "修复 Z", "添加功能", or "改成...".
+
 ```dot
 digraph skill_flow {
     "User message received" [shape=doublecircle];
+    "Preparation-only request?" [shape=diamond];
+    "Load requested context\nand wait for requirement" [shape=box];
     "About to EnterPlanMode?" [shape=doublecircle];
     "Already brainstormed?" [shape=diamond];
     "Invoke brainstorming skill" [shape=box];
@@ -59,12 +73,16 @@ digraph skill_flow {
     "Follow skill exactly" [shape=box];
     "Respond (including clarifications)" [shape=doublecircle];
 
+    "User message received" -> "Preparation-only request?";
+    "Preparation-only request?" -> "Load requested context\nand wait for requirement" [label="yes"];
+    "Load requested context\nand wait for requirement" -> "Respond (including clarifications)";
     "About to EnterPlanMode?" -> "Already brainstormed?";
     "Already brainstormed?" -> "Invoke brainstorming skill" [label="no"];
     "Already brainstormed?" -> "Might any skill apply?" [label="yes"];
     "Invoke brainstorming skill" -> "Might any skill apply?";
 
-    "User message received" -> "Might any skill apply?";
+    "Preparation-only request?" -> "Might any skill apply?" [label="no"];
+
     "Might any skill apply?" -> "Invoke Skill tool" [label="yes, even 1%"];
     "Might any skill apply?" -> "Respond (including clarifications)" [label="definitely not"];
     "Invoke Skill tool" -> "Announce: 'Using [skill] to [purpose]'";

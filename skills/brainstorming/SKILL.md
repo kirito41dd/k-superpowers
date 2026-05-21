@@ -17,6 +17,14 @@ Do NOT invoke any implementation skill, write any code, scaffold any project, or
 
 Every project goes through this process. A todo list, a single-function utility, a config change — all of them. "Simple" projects are where unexamined assumptions cause the most wasted work. The design can be short (a few sentences for truly simple projects), but you MUST present it and get approval.
 
+## Not a Trigger: Preparation-Only Requests
+
+Do NOT use this skill when the user only asks you to familiarize yourself with context before providing requirements.
+
+Examples: "熟悉开发规范，等下我给需求", "先熟悉这个模块", "先看看项目结构，不要改代码".
+
+These mean: read context, optionally summarize, then wait. Do not ask design questions, propose approaches, create specs/plans, or transition to implementation skills until the user provides an actual build/change/fix request.
+
 ## Checklist
 
 You MUST create a task for each of these items and complete them in order:
