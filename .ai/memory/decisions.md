@@ -2,9 +2,9 @@
 
 <!-- SUMMARY
 覆盖范围：架构决策、技术选型、废弃方案（ADR 风格）
-条目数：4
-最近更新：2026-05-21
-高频标签：#memory #fork #personalization #opencode #install #verification #type-driven
+条目数：5
+最近更新：2026-05-22
+高频标签：#memory #fork #personalization #codex #opencode #install #verification #type-driven
 -->
 
 ## 写入格式（ADR 风格）
@@ -21,6 +21,15 @@
 ```
 
 ---
+
+## 2026-05-22 Codex app 使用仓库级本地 marketplace 安装 k-superpowers
+
+- **背景**：用户希望在 Codex app 中以添加本地市场的方式使用当前 fork 的 skills，并保持插件名为 `k-superpowers`。
+- **选项**：使用全局 `~/.agents/plugins/marketplace.json`；使用仓库根目录作为本地 marketplace；继续仅通过 OpenCode 使用。
+- **决策**：在仓库内维护 `.agents/plugins/marketplace.json`，本地市场目录填写仓库根 `/Users/kirito/my/k-superpowers`；marketplace 条目为 `k-superpowers@k-superpowers-dev`，通过 `plugins/k-superpowers -> ..` 指向当前 checkout。
+- **理由**：Codex app 添加本地 marketplace 时需要目录根包含 `.agents/plugins/marketplace.json`，而不是直接选择 `marketplace.json` 文件；仓库级结构跟随 fork，便于版本化和复用。
+- **影响**：`.agents/plugins/marketplace.json`, `plugins/k-superpowers`, `.codex-plugin/plugin.json`, `README.md`
+- **状态**：已实施。
 
 ## 2026-05-21 从强制 TDD 改为类型优先验证
 

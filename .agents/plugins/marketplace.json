@@ -1,0 +1,20 @@
+{
+  "name": "k-superpowers-dev",
+  "interface": {
+    "displayName": "K Superpowers Dev"
+  },
+  "plugins": [
+    {
+      "name": "k-superpowers",
+      "source": {
+        "source": "local",
+        "path": "./plugins/k-superpowers"
+      },
+      "policy": {
+        "installation": "AVAILABLE",
+        "authentication": "ON_USE"
+      },
+      "category": "Coding"
+    }
+  ]
+}

@@ -19,8 +19,10 @@
 
 - Skills 总览 → `docs/skills-overview.zh.md`
 - Fork 定制方向 → `decisions.md#2026-05-21-个人-fork-不面向上游贡献`
+- Codex app 本地市场安装 → `decisions.md#2026-05-22-codex-app-使用仓库级本地-marketplace-安装-k-superpowers`
 - OpenCode 安装方式 → `decisions.md#2026-05-21-opencode-使用-k-superpowers-git-安装`
 - 生态集成范围 → `conventions.md#2026-05-21-优先维护-opencode-安装链路`
+- Codex app marketplace 目录规则 → `conventions.md#2026-05-22-codex-app-本地-marketplace-使用仓库根目录`
 - 预热型请求处理 → `conventions.md#2026-05-21-预热型请求不触发-brainstorming`
 - 验证哲学 → `decisions.md#2026-05-21-从强制-tdd-改为类型优先验证`
 - PR/上游贡献规则 → `gotchas.md#2026-05-21-上游-pr-门槛很高`
@@ -32,6 +34,7 @@
 - `#skills` → `requirements.md`, `conventions.md`, `glossary.md`
 - `#fork` → `requirements.md`, `decisions.md`
 - `#personalization` → `decisions.md`, `conventions.md`
+- `#codex` → `decisions.md`, `conventions.md`
 - `#opencode` → `decisions.md`, `conventions.md`
 - `#install` → `decisions.md`, `conventions.md`
 - `#brainstorming` → `conventions.md`
@@ -43,6 +46,8 @@
 
 ## 最近热点
 
+- 2026-05-22 Codex app 使用仓库级本地 marketplace 安装 k-superpowers → `decisions.md`
+- 2026-05-22 Codex app 本地 marketplace 使用仓库根目录 → `conventions.md`
 - 2026-05-21 从强制 TDD 改为类型优先验证 → `decisions.md`
 - 2026-05-21 优先维护 OpenCode 安装链路 → `conventions.md`
 - 2026-05-21 OpenCode 使用 k-superpowers git 安装 → `decisions.md`

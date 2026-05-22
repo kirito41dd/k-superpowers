@@ -2,9 +2,9 @@
 
 <!-- SUMMARY
 覆盖范围：项目特定的代码风格、命名规则、目录结构、流程约定
-条目数：5
-最近更新：2026-05-21
-高频标签：#skills #memory #eval #personalization #brainstorming #opencode #install #verification #type-driven
+条目数：6
+最近更新：2026-05-22
+高频标签：#skills #memory #eval #personalization #codex #brainstorming #opencode #install #verification #type-driven
 -->
 
 ## 说明
@@ -27,6 +27,14 @@
 
 ---
 
+## 2026-05-22 Codex app 本地 marketplace 使用仓库根目录
+
+- **约定**：Codex app 添加本地市场时填写仓库根目录 `/Users/kirito/my/k-superpowers`，不要填写 `.agents/plugins/marketplace.json` 文件路径；仓库内维护 `.agents/plugins/marketplace.json` 和 `plugins/k-superpowers -> ..`。
+- **理由**：Codex app 要求 local marketplace source 是目录，且目录根需要包含 `.agents/plugins/marketplace.json`；直接选择 JSON 文件或 `~/.agents/plugins` 会报 marketplace manifest 不支持或列表为空。
+- **反例**：把 `/Users/kirito/.agents/plugins/marketplace.json` 或 `/Users/kirito/.agents/plugins` 作为 Codex app 本地市场。
+- **正例**：添加 `/Users/kirito/my/k-superpowers`，安装 `k-superpowers@k-superpowers-dev`，用 `codex plugin list | grep k-superpowers` 验证 `installed, enabled`。
+- **范围**：`.agents/plugins/marketplace.json`, `plugins/k-superpowers`, `.codex-plugin/plugin.json`, `README.md`
+
 ## 2026-05-21 测试只保护核心行为和回归风险
 
 - **约定**：不要默认要求所有 feature/bugfix 严格 TDD。优先用类型、接口、模块边界、可见性、所有权等表达不变量；测试用于保护核心逻辑、公共行为、bug 回归和类型无法证明的风险。
@@ -37,11 +45,11 @@
 
 ## 2026-05-21 优先维护 OpenCode 安装链路
 
-- **约定**：本 fork 的安装引导优先维护 OpenCode 的 git-backed plugin 和本地路径安装；Claude Code、Codex、Cursor、Gemini 等 marketplace manifest 暂不作为主要安装方式，不做批量重命名。
+- **约定**：本 fork 的安装引导优先维护 OpenCode 的 git-backed plugin、本地路径安装，以及 Codex app 的仓库级本地 marketplace；Claude Code、Cursor、Gemini 等 marketplace manifest 暂不作为主要安装方式，不做批量重命名。
 - **理由**：这是自用 fork，当前主要在 OpenCode 使用；全生态改名会引入发布、manifest、测试和 marketplace 维护成本。
 - **反例**：一次性把 `.claude-plugin`、`.codex-plugin`、`.cursor-plugin`、`gemini-extension.json` 全部改名但没有对应发布链路。
-- **正例**：README 明确推荐 `k-superpowers@git+https://github.com/kirito41dd/k-superpowers.git` 和 `file:///Users/kirito/my/k-superpowers`。
-- **范围**：`README.md`, `docs/README.opencode.md`, `.opencode/INSTALL.md`, `package.json`
+- **正例**：README 明确推荐 OpenCode 使用 `k-superpowers@git+https://github.com/kirito41dd/k-superpowers.git` 或 `file:///Users/kirito/my/k-superpowers`，Codex app 本地市场添加 `/Users/kirito/my/k-superpowers`。
+- **范围**：`README.md`, `docs/README.opencode.md`, `.opencode/INSTALL.md`, `package.json`, `.agents/plugins/marketplace.json`, `.codex-plugin/plugin.json`
 
 ## 2026-05-21 预热型请求不触发 brainstorming
 

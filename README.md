@@ -68,9 +68,56 @@ Git-backed plugin 可能被 OpenCode、Bun 或 lockfile/cache 固定到旧 commi
 }
 ```
 
+## Codex app 本地市场安装
+
+Codex app 使用本仓库作为本地 marketplace。添加本地市场时填写仓库根目录：
+
+```text
+/Users/kirito/my/k-superpowers
+```
+
+不要填写 `marketplace.json` 文件路径。Codex app 会读取：
+
+```text
+/Users/kirito/my/k-superpowers/.agents/plugins/marketplace.json
+```
+
+当前 marketplace 暴露的插件是：
+
+```text
+k-superpowers@k-superpowers-dev
+```
+
+安装后可用 CLI 验证：
+
+```bash
+codex plugin list | grep k-superpowers
+```
+
+预期能看到：
+
+```text
+k-superpowers@k-superpowers-dev  installed, enabled  5.1.0
+```
+
+本地 marketplace 的结构是：
+
+```text
+.agents/plugins/marketplace.json
+plugins/k-superpowers -> ..
+.codex-plugin/plugin.json
+skills/
+```
+
+如果 Codex app 显示市场已添加但列表为空，先重启 Codex app，再搜索 `k-superpowers` 或 `K Superpowers`。也可以直接运行：
+
+```bash
+codex plugin add k-superpowers@k-superpowers-dev
+```
+
 ## 其它生态
 
-Claude Code、Codex、Cursor、Gemini 等 marketplace manifest 目前保留上游形态，暂不作为本 fork 的主要安装方式。
+Claude Code、Cursor、Gemini 等 marketplace manifest 目前保留上游形态，暂不作为本 fork 的主要安装方式。Codex app 已支持本地 marketplace 安装，但不走上游发布链路。
 
 如果后续需要支持某个生态，再单独梳理对应发布方式和 manifest 命名，不做批量重命名。
 
