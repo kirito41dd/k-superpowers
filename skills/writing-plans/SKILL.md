@@ -142,15 +142,25 @@ If you find issues, fix them inline. No need to re-review — just fix and move 
 
 ## Execution Handoff
 
-After saving the plan, offer execution choice:
+After saving and self-reviewing the plan, STOP. Ask the human partner to review and approve the plan before any implementation begins:
 
-**"Plan complete and saved to `docs/superpowers/plans/<filename>.md`. Two execution options:**
+**"Plan complete and saved to `docs/superpowers/plans/<filename>.md`. Please review it and let me know if you want any changes. If you approve it, I'll commit the plan document and then ask how you'd like to execute it."**
+
+Wait for the user's response. If they request changes, make them and re-run the self-review loop. Only proceed once the user approves.
+
+After the user approves the plan, commit the plan document to git. Approval includes permission to commit that plan document only; it does not grant permission to commit implementation code or start implementation.
+
+After committing the approved plan, offer execution choice:
+
+**"Plan approved and committed. Two execution options:**
 
 **1. Subagent-Driven (recommended)** - I dispatch a fresh subagent per task, review between tasks, fast iteration
 
 **2. Inline Execution** - Execute tasks in this session using executing-plans, batch execution with checkpoints
 
 **Which approach?"**
+
+Do NOT invoke subagent-driven-development, executing-plans, or any implementation skill until the human explicitly chooses an execution option or otherwise tells you to proceed with implementation.
 
 **If Subagent-Driven chosen:**
 - **REQUIRED SUB-SKILL:** Use superpowers:subagent-driven-development

@@ -46,6 +46,7 @@
 
 ## 最近热点
 
+- 2026-05-25 Skill 正文变更改为类型优先、风险驱动验证 → `conventions.md`
 - 2026-05-22 Codex app 使用仓库级本地 marketplace 安装 k-superpowers → `decisions.md`
 - 2026-05-22 Codex app 本地 marketplace 使用仓库根目录 → `conventions.md`
 - 2026-05-21 从强制 TDD 改为类型优先验证 → `decisions.md`

@@ -3,7 +3,7 @@
 <!-- SUMMARY
 覆盖范围：项目特定的代码风格、命名规则、目录结构、流程约定
 条目数：6
-最近更新：2026-05-22
+最近更新：2026-05-25
 高频标签：#skills #memory #eval #personalization #codex #brainstorming #opencode #install #verification #type-driven
 -->
 
@@ -61,10 +61,10 @@
 
 ## 2026-05-21 Skill 正文变更必须先评估
 
-- **约定**：修改 `skills/*/SKILL.md` 前必须使用 `writing-skills` 的 RED-GREEN-REFACTOR 思路，先构造压力场景和基线失败，再改正文并复测。
-- **理由**：skill 是行为塑造内容，不是普通 prose；未经评估的措辞调整可能改变 agent 行为并被 upstream 拒绝。
-- **反例**：为了“更清晰”直接重写 Red Flags、rationalization table 或 `human partner` 语气。
-- **正例**：先记录某个实际失败场景，再做最小文案调整，并保存 before/after eval 结果。
+- **约定**：修改 `skills/*/SKILL.md` 前采用类型优先、风险驱动验证，而不是默认 RED-GREEN-REFACTOR。先明确行为不变量、触发条件、禁止状态和影响范围；小范围措辞/流程 gate 变更可通过静态审查、反例检查和相关文本搜索验证。只有高风险行为塑造、触发条件、subagent 流程或容易误触发/漏触发的改动，才需要构造压力场景或 before/after eval。
+- **理由**：这是个人 fork，更接近 Rust 哲学：优先让规则边界和非法状态清晰可证明，测试/压力场景用于覆盖类型和静态审查无法证明的行为风险；不把所有改动都套进 TDD 红绿灯仪式。
+- **反例**：为了任何一行 skill 文案改动都强制跑 RED/GREEN；或者为了“更清晰”直接重写 Red Flags、rationalization table、`human partner` 语气而不评估行为风险。
+- **正例**：先写出本次变更要保证的不变量，例如“spec/plan 文档必须先 review，批准后才 commit；批准文档不等于允许实现”；再做最小文案调整，搜索旧冲突措辞，必要时补压力场景。
 - **范围**：`skills/*/SKILL.md`, `skills/*/*.md` 中会影响 agent 行为的内容。
 
 ## 2026-05-21 项目记忆采用渐进式披露
