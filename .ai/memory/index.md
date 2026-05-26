@@ -24,7 +24,7 @@
 - 生态集成范围 → `conventions.md#2026-05-21-优先维护-opencode-安装链路`
 - Codex app marketplace 目录规则 → `conventions.md#2026-05-22-codex-app-本地-marketplace-使用仓库根目录`
 - 预热型请求处理 → `conventions.md#2026-05-21-预热型请求不触发-brainstorming`
-- 验证哲学 → `decisions.md#2026-05-21-从强制-tdd-改为类型优先验证`
+- 验证哲学 → `decisions.md#2026-05-26-将-test-driven-development-改名为-type-driven-verification`
 - PR/上游贡献规则 → `gotchas.md#2026-05-21-上游-pr-门槛很高`
 - Skill 修改纪律 → `conventions.md#2026-05-21-skill-正文变更必须先评估`
 - 项目定位 → `requirements.md#2026-05-21-个人-fork-用于后续微调-superpowers-skills`
@@ -46,6 +46,7 @@
 
 ## 最近热点
 
+- 2026-05-26 将 test-driven-development 改名为 type-driven-verification → `decisions.md`
 - 2026-05-25 Skill 正文变更改为类型优先、风险驱动验证 → `conventions.md`
 - 2026-05-22 Codex app 使用仓库级本地 marketplace 安装 k-superpowers → `decisions.md`
 - 2026-05-22 Codex app 本地 marketplace 使用仓库根目录 → `conventions.md`

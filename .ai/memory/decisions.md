@@ -2,8 +2,8 @@
 
 <!-- SUMMARY
 覆盖范围：架构决策、技术选型、废弃方案（ADR 风格）
-条目数：5
-最近更新：2026-05-22
+条目数：6
+最近更新：2026-05-26
 高频标签：#memory #fork #personalization #codex #opencode #install #verification #type-driven
 -->
 
@@ -22,6 +22,15 @@
 
 ---
 
+## 2026-05-26 将 test-driven-development 改名为 type-driven-verification
+
+- **背景**：`test-driven-development` 的正文已经改为 Type-Driven Verification，但 skill 名仍保留 TDD，容易让模型继续套用 test-first / 红绿灯思维。
+- **选项**：继续保留旧名；新增 alias；直接重命名为 `type-driven-verification` 并迁移引用。
+- **决策**：直接重命名为 `type-driven-verification`，不保留旧 alias；同步更新活跃 skill 引用、触发测试、中文总览和记忆。
+- **理由**：这是个人 fork，不需要维持上游兼容；旧名与实际语义冲突。alias 会制造两个触发入口，增加模型噪音。
+- **影响**：`skills/type-driven-verification/SKILL.md`, `skills/writing-skills/*`, `skills/systematic-debugging/SKILL.md`, `skills/subagent-driven-development/SKILL.md`, `tests/skill-triggering/*`, `docs/skills-overview.zh.md`, `.ai/memory/*`
+- **状态**：已实施。
+
 ## 2026-05-22 Codex app 使用仓库级本地 marketplace 安装 k-superpowers
 
 - **背景**：用户希望在 Codex app 中以添加本地市场的方式使用当前 fork 的 skills，并保持插件名为 `k-superpowers`。
@@ -38,7 +47,7 @@
 - **决策**：保留 skill 名以兼容现有引用，但正文改为 Type-Driven Verification：优先让非法状态不可表示，只对核心行为、bug 回归、公共 API、算法、parser、协议、状态机、高风险重构等写聚焦测试。
 - **理由**：直接删除 TDD 会让 agent 退回“凭感觉完成”；保留验证纪律但放弃 blanket test-first 更符合 Rust 哲学和用户效率偏好。
 - **影响**：`skills/test-driven-development/SKILL.md`, `skills/writing-plans/SKILL.md`, `skills/systematic-debugging/SKILL.md`, `skills/subagent-driven-development/SKILL.md`, `skills/verification-before-completion/SKILL.md`, `docs/skills-overview.zh.md`
-- **状态**：已实施。
+- **状态**：[DEPRECATED 2026-05-26 已改名为 `type-driven-verification`]。
 
 ## 2026-05-21 OpenCode 使用 k-superpowers git 安装
 

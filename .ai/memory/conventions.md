@@ -41,7 +41,7 @@
 - **理由**：这是受 Rust 哲学影响的个人 fork；blanket test-first 成本高，类型系统和编译器应承担更多正确性约束。
 - **反例**：要求每个私有 helper、机械改名、简单 glue code 都先写 failing test。
 - **正例**：对 parser、算法、状态机、协议、核心业务逻辑、回归 bug 写聚焦单测或属性测试；对类型可证明的约束通过编译器验证。
-- **范围**：`skills/test-driven-development/SKILL.md`, `skills/writing-plans/SKILL.md`, `skills/systematic-debugging/SKILL.md`
+- **范围**：`skills/type-driven-verification/SKILL.md`, `skills/writing-plans/SKILL.md`, `skills/systematic-debugging/SKILL.md`
 
 ## 2026-05-21 优先维护 OpenCode 安装链路
 

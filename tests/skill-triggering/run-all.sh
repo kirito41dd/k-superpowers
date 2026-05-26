@@ -9,7 +9,7 @@ PROMPTS_DIR="$SCRIPT_DIR/prompts"
 
 SKILLS=(
     "systematic-debugging"
-    "test-driven-development"
+    "type-driven-verification"
     "writing-plans"
     "dispatching-parallel-agents"
     "executing-plans"

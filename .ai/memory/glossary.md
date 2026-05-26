@@ -23,7 +23,7 @@
 
 - **定义**：会直接改变 agent 决策、纪律或工作流的 skill 内容。
 - **上下文**：修改 `SKILL.md`、Red Flags、rationalization table、流程图和强制语句时使用。
-- **相关**：`writing-skills`, `verification-before-completion`, `test-driven-development`
+- **相关**：`writing-skills`, `verification-before-completion`, `type-driven-verification`
 - **首次出现**：2026-05-21
 
 ## Harness

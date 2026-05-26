@@ -10,7 +10,7 @@ You run scenarios without the skill (RED - watch agent fail), write skill addres
 
 **Core principle:** If you didn't watch an agent fail without the skill, you don't know if the skill prevents the right failures.
 
-**REQUIRED BACKGROUND:** Understand `superpowers:test-driven-development` as type-first verification. This reference provides skill-specific test formats: pressure scenarios and rationalization tables.
+**REQUIRED BACKGROUND:** Understand `superpowers:type-driven-verification`. This reference provides skill-specific test formats: pressure scenarios and rationalization tables.
 
 **Complete worked example:** See examples/CLAUDE_MD_TESTING.md for a full test campaign testing CLAUDE.md documentation variants.
 

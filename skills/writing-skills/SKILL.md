@@ -15,7 +15,7 @@ You create pressure scenarios with subagents, watch baseline behavior fail witho
 
 **Core principle:** If you didn't watch an agent fail without the skill, you don't know if the skill teaches the right thing.
 
-**REQUIRED BACKGROUND:** Understand `superpowers:test-driven-development` as type-first verification. This skill applies the same verification discipline to process documentation.
+**REQUIRED BACKGROUND:** Understand `superpowers:type-driven-verification`. This skill applies the same verification discipline to process documentation.
 
 **Official guidance:** For Anthropic's official skill authoring best practices, see anthropic-best-practices.md. This document provides additional patterns and guidelines that complement the verification-focused approach in this skill.
 
@@ -280,10 +280,10 @@ wc -w skills/path/SKILL.md
 **When writing documentation that references other skills:**
 
 Use skill name only, with explicit requirement markers:
-- ✅ Good: `**REQUIRED SUB-SKILL:** Use superpowers:test-driven-development`
+- ✅ Good: `**REQUIRED SUB-SKILL:** Use superpowers:type-driven-verification`
 - ✅ Good: `**REQUIRED BACKGROUND:** You MUST understand superpowers:systematic-debugging`
-- ❌ Bad: `See skills/testing/test-driven-development` (unclear if required)
-- ❌ Bad: `@skills/testing/test-driven-development/SKILL.md` (force-loads, burns context)
+- ❌ Bad: `See skills/type-driven-verification` (unclear if required)
+- ❌ Bad: `@skills/type-driven-verification/SKILL.md` (force-loads, burns context)
 
 **Why no @ links:** `@` syntax force-loads files immediately, consuming 200k+ context before you need them.
 
@@ -390,7 +390,7 @@ Edit skill without testing? Same violation.
 - Don't "adapt" while running tests
 - Delete means delete
 
-**REQUIRED BACKGROUND:** The `superpowers:test-driven-development` skill explains type-first verification. Same verification discipline applies to documentation.
+**REQUIRED BACKGROUND:** The `superpowers:type-driven-verification` skill explains type-first verification. Same verification discipline applies to documentation.
 
 ## Testing All Skill Types
 
