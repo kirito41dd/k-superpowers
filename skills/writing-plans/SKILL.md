@@ -7,7 +7,7 @@ description: Use when you have a spec or requirements for a multi-step task, bef
 
 ## Overview
 
-Write comprehensive implementation plans assuming the engineer has zero context for our codebase and questionable taste. Document everything they need to know: which files to touch for each task, code, verification, docs they might need to check, and how to validate it. Give them the whole plan as bite-sized tasks. DRY. YAGNI. Type-first design. Focused verification. Frequent commits.
+Write comprehensive implementation plans assuming the engineer has zero context for our codebase and questionable taste. Document everything they need to know: which files to touch for each task, code, verification, docs they might need to check, and how to validate it. Give them the whole plan as bite-sized tasks. DRY. YAGNI. Type-first design. Focused verification. Commit checkpoints that respect project and user commit policy.
 
 Assume they are a skilled developer, but know almost nothing about our toolset or problem domain. Assume they may over-test incidental details or under-test core behavior unless guided.
 
@@ -42,7 +42,7 @@ This structure informs the task decomposition. Each task should produce self-con
 - "Write focused tests for core behavior if needed" - step
 - "Implement the minimal code" - step
 - "Run the relevant verification" - step
-- "Commit" - step
+- "Commit checkpoint if authorized" - step
 
 ## Plan Document Header
 
@@ -104,12 +104,14 @@ def function(input):
 Run: `pytest tests/path/test.py::test_name -v`
 Expected: PASS
 
-- [ ] **Step 6: Commit**
+- [ ] **Step 6: Commit checkpoint if authorized**
 
 ```bash
 git add tests/path/test.py src/path/file.py
 git commit -m "feat: add specific feature"
 ```
+
+Only run this commit step if project instructions allow commits, the user explicitly requested commits, or the user approved a workflow option that includes implementation commits. Otherwise stop after verification and ask before committing.
 ````
 
 ## No Placeholders
@@ -126,7 +128,7 @@ Every step must contain the actual content an engineer needs. These are **plan f
 - Exact file paths always
 - Complete code in every step — if a step changes code, show the code
 - Exact commands with expected output
-- DRY, YAGNI, type-first design, focused verification, frequent commits
+- DRY, YAGNI, type-first design, focused verification, commit checkpoints that respect project and user commit policy
 
 ## Self-Review
 
@@ -144,15 +146,23 @@ If you find issues, fix them inline. No need to re-review — just fix and move 
 
 After saving and self-reviewing the plan, STOP. Ask the human partner to review and approve the plan before any implementation begins:
 
-**"Plan complete and saved to `docs/superpowers/plans/<filename>.md`. Please review it and let me know if you want any changes. If you approve it, I'll commit the plan document and then ask how you'd like to execute it."**
+**"Plan complete and saved to `docs/superpowers/plans/<filename>.md`. Please review it and choose one:**
+
+**1. Approve and commit the plan document**
+
+**2. Request changes**
+
+**3. Approve without commit**
+
+**Only option 1 authorizes a documentation-only commit. If project instructions prohibit commits unless explicitly requested, I won't commit unless you choose option 1 or otherwise explicitly say to commit. Approval of the plan does not authorize implementation."**
 
 Wait for the user's response. If they request changes, make them and re-run the self-review loop. Only proceed once the user approves.
 
-After the user approves the plan, commit the plan document to git. Approval includes permission to commit that plan document only; it does not grant permission to commit implementation code or start implementation.
+Commit the plan document to git only when the user explicitly chooses "Approve and commit the plan document" or otherwise explicitly asks for a commit. That authorization applies to the plan document only; it does not grant permission to commit implementation code or start implementation. If the user approves without commit, skip the commit and still ask how they'd like to execute the plan.
 
-After committing the approved plan, offer execution choice:
+After the approved plan is either committed or explicitly approved without commit, offer execution choice:
 
-**"Plan approved and committed. Two execution options:**
+**"Plan approved. Two execution options:**
 
 **1. Subagent-Driven (recommended)** - I dispatch a fresh subagent per task, review between tasks, fast iteration
 
