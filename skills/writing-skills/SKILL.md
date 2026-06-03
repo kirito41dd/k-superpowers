@@ -42,7 +42,7 @@ A **skill** is a reference guide for proven techniques, patterns, or tools. Skil
 | **Watch it pass** | Verify agent now complies |
 | **Refactor cycle** | Find new rationalizations → plug → re-verify |
 
-The entire skill creation process follows RED-GREEN-REFACTOR.
+The entire skill creation process follows a baseline-fail-fix-refactor loop.
 
 ## When to Create a Skill
 

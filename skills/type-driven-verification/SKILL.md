@@ -11,8 +11,6 @@ Prefer type-driven design and compiler-enforced invariants. Write tests where be
 
 **Core principle:** Make invalid states unrepresentable first. Test core behavior and risks the type system cannot prove.
 
-This skill replaces the historical `test-driven-development` skill name in this fork. It does NOT require strict test-first TDD for every change.
-
 ## When to Use
 
 Use explicit verification for:

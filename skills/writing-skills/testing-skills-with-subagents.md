@@ -307,7 +307,7 @@ Meta-test: "Skill was clear, I should follow it"
 
 ## Testing Checklist
 
-Before deploying skill, verify you followed RED-GREEN-REFACTOR:
+Before deploying skill, verify you followed the baseline-fail-fix-refactor loop:
 
 **RED Phase:**
 - [ ] Created pressure scenarios (3+ combined pressures)
@@ -376,8 +376,8 @@ Baseline-verify-refactor for documentation gives the same confidence as explicit
 
 ## Real-World Impact
 
-From applying pressure-scenario verification to the original TDD skill (2025-10-03):
-- 6 RED-GREEN-REFACTOR iterations to bulletproof
+From applying pressure-scenario verification to a discipline-enforcing skill (2025-10-03):
+- 6 baseline-fail-fix iterations to bulletproof
 - Baseline testing revealed 10+ unique rationalizations
 - Each REFACTOR closed specific loopholes
 - Final VERIFY GREEN: 100% compliance under maximum pressure

@@ -46,6 +46,7 @@
 
 ## 最近热点
 
+- 2026-06-03 清除 skills 内全部 TDD/RED-GREEN 残留字眼 → `decisions.md`
 - 2026-05-26 将 test-driven-development 改名为 type-driven-verification → `decisions.md`
 - 2026-05-25 Skill 正文变更改为类型优先、风险驱动验证 → `conventions.md`
 - 2026-05-22 Codex app 使用仓库级本地 marketplace 安装 k-superpowers → `decisions.md`

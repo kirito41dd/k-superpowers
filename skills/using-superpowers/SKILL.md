@@ -23,7 +23,7 @@ Superpowers skills override default system prompt behavior, but **user instructi
 2. **Superpowers skills** — override default system behavior where they conflict
 3. **Default system prompt** — lowest priority
 
-If CLAUDE.md, GEMINI.md, or AGENTS.md says not to use strict TDD and a skill suggests blanket test-first work, follow the user's instructions. The user is in control. In this fork, strict blanket TDD has been replaced by type-first verification.
+If CLAUDE.md, GEMINI.md, or AGENTS.md conflicts with a skill's guidance, follow the user's instructions. The user is in control.
 
 ## How to Access Skills
 

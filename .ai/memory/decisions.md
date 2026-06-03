@@ -2,8 +2,8 @@
 
 <!-- SUMMARY
 覆盖范围：架构决策、技术选型、废弃方案（ADR 风格）
-条目数：6
-最近更新：2026-05-26
+条目数：7
+最近更新：2026-06-03
 高频标签：#memory #fork #personalization #codex #opencode #install #verification #type-driven
 -->
 
@@ -21,6 +21,15 @@
 ```
 
 ---
+
+## 2026-06-03 清除 skills 内全部 TDD / RED-GREEN 残留字眼
+
+- **背景**：2026-05-26 改名后，`skills/` 内仍散落 `test-driven` / `TDD` / `RED-GREEN` / `test-first` 字眼（SKILL 正文、checklist、历史日志、死链接）。skill 每次注入都是全新环境，无向前兼容包袱，残留只会让模型套回 test-first 思维。
+- **选项**：只清会注入行为的 SKILL 正文，历史日志保持原样（避免伪造历史）；或全部清干净，历史决策交给 `.ai/memory/` 承载。
+- **决策**：全部清干净。SKILL 正文去仪式化措辞；历史日志（CREATION-LOG、Real-World Impact）中性化或修正死链；历史背景由本记忆文件承载。
+- **理由**：用户明确"历史靠项目记忆、skill 全新环境无兼容包袱"。`skills/` 内 grep `test-driven|TDD|RED-GREEN|test-first` 应为零命中。
+- **影响**：`skills/verification-before-completion/SKILL.md`, `skills/type-driven-verification/SKILL.md`, `skills/using-superpowers/SKILL.md`, `skills/writing-skills/SKILL.md`, `skills/writing-skills/testing-skills-with-subagents.md`, `skills/systematic-debugging/CREATION-LOG.md`
+- **状态**：已实施。
 
 ## 2026-05-26 将 test-driven-development 改名为 type-driven-verification
 
