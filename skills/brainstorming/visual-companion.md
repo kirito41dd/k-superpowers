@@ -71,10 +71,10 @@ When calling this via the Bash tool, set `run_in_background: true`. Then read `$
 scripts/start-server.sh --project-dir /path/to/project
 ```
 
-**Gemini CLI:**
+**Other foreground-only environments:**
 ```bash
-# Use --foreground and set is_background: true on your shell tool call
-# so the process survives across turns
+# Use --foreground and your platform's background execution mechanism
+# so the process survives across turns.
 scripts/start-server.sh --project-dir /path/to/project --foreground
 ```
 

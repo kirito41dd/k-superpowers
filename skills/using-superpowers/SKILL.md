@@ -61,6 +61,7 @@ digraph skill_flow {
     "Respond to user (including clarifications)" [shape=doublecircle];
 
     "Preparation-only request?" [shape=diamond];
+    "Might any read-only or process skill apply?" [shape=diamond];
     "Might any skill apply?" [shape=diamond];
     "Has checklist?" [shape=diamond];
 
@@ -71,7 +72,9 @@ digraph skill_flow {
     "Follow skill exactly" [shape=box];
 
     "User message received" -> "Preparation-only request?";
-    "Preparation-only request?" -> "Load requested context, then wait\n(skill check still applies;\nbrainstorming/implementation excluded)" [label="yes"];
+    "Preparation-only request?" -> "Might any read-only or process skill apply?" [label="yes"];
+    "Might any read-only or process skill apply?" -> "Invoke Skill tool" [label="yes"];
+    "Might any read-only or process skill apply?" -> "Load requested context, then wait\n(skill check still applies;\nbrainstorming/implementation excluded)" [label="no"];
     "Load requested context, then wait\n(skill check still applies;\nbrainstorming/implementation excluded)" -> "Respond to user (including clarifications)";
     "Preparation-only request?" -> "Might any skill apply?" [label="no"];
     "Might any skill apply?" -> "Invoke Skill tool" [label="yes, even 1%"];

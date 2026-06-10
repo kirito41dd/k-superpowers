@@ -22,7 +22,7 @@ let ws;
 try {
   ws = require(SERVER_PATH);
 } catch (e) {
-  // Module doesn't exist yet (TDD — tests written before implementation)
+  // Module may not exist yet when running protocol tests before implementation.
   console.error(`Cannot load ${SERVER_PATH}: ${e.message}`);
   console.error('This is expected if running tests before implementation.');
   process.exit(1);
