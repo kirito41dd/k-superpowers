@@ -46,6 +46,7 @@ You MUST create a task for each of these items and complete them in order:
 
 ```dot
 digraph brainstorming {
+    "Build/change request received" [shape=doublecircle];
     "Explore project context" [shape=box];
     "Visual questions ahead?" [shape=diamond];
     "Offer Visual Companion\n(own message, no other content)" [shape=box];
@@ -60,6 +61,7 @@ digraph brainstorming {
     "Commit approved spec" [shape=box];
     "Invoke writing-plans skill" [shape=doublecircle];
 
+    "Build/change request received" -> "Explore project context";
     "Explore project context" -> "Visual questions ahead?";
     "Visual questions ahead?" -> "Offer Visual Companion\n(own message, no other content)" [label="yes"];
     "Visual questions ahead?" -> "Ask clarifying questions" [label="no"];

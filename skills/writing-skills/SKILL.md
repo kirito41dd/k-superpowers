@@ -267,14 +267,12 @@ Use skill name only, with explicit requirement markers:
 
 ```dot
 digraph when_flowchart {
-    "Need to show information?" [shape=diamond];
-    "Decision where I might go wrong?" [shape=diamond];
-    "Use markdown" [shape=box];
+    "Decision where an agent might go wrong?" [shape=diamond];
     "Small inline flowchart" [shape=box];
+    "Use markdown (lists, tables)" [shape=box];
 
-    "Need to show information?" -> "Decision where I might go wrong?" [label="yes"];
-    "Decision where I might go wrong?" -> "Small inline flowchart" [label="yes"];
-    "Decision where I might go wrong?" -> "Use markdown" [label="no"];
+    "Decision where an agent might go wrong?" -> "Small inline flowchart" [label="yes"];
+    "Decision where an agent might go wrong?" -> "Use markdown (lists, tables)" [label="no"];
 }
 ```
 

@@ -51,45 +51,43 @@ If the user is only asking you to familiarize yourself with context, read docs, 
 
 Examples: "熟悉开发规范，等下我给需求", "先熟悉这个模块", "先看看项目结构，不要改代码".
 
-For preparation-only requests: load only the requested context, summarize if useful, then stop and wait. Do not ask design questions, propose approaches, or create specs/plans.
+For preparation-only requests: load only the requested context, summarize if useful, then stop and wait. Do not ask design questions, propose approaches, or create specs/plans. The skill check itself still applies — process or read-only skills may assist preparation; only brainstorming and implementation skills are excluded until an actual build/change request arrives.
 
 Only invoke `brainstorming` after an actual creative/build/change request: "实现 X", "设计 Y", "修复 Z", "添加功能", or "改成...".
 
 ```dot
 digraph skill_flow {
     "User message received" [shape=doublecircle];
+    "Respond to user (including clarifications)" [shape=doublecircle];
+
     "Preparation-only request?" [shape=diamond];
-    "Load requested context\nand wait for requirement" [shape=box];
-    "About to EnterPlanMode?" [shape=doublecircle];
-    "Already brainstormed?" [shape=diamond];
-    "Invoke brainstorming skill" [shape=box];
     "Might any skill apply?" [shape=diamond];
+    "Has checklist?" [shape=diamond];
+
+    "Load requested context, then wait\n(skill check still applies;\nbrainstorming/implementation excluded)" [shape=box];
     "Invoke Skill tool" [shape=box];
     "Announce: 'Using [skill] to [purpose]'" [shape=box];
-    "Has checklist?" [shape=diamond];
     "Create TodoWrite todo per item" [shape=box];
     "Follow skill exactly" [shape=box];
-    "Respond (including clarifications)" [shape=doublecircle];
 
     "User message received" -> "Preparation-only request?";
-    "Preparation-only request?" -> "Load requested context\nand wait for requirement" [label="yes"];
-    "Load requested context\nand wait for requirement" -> "Respond (including clarifications)";
-    "About to EnterPlanMode?" -> "Already brainstormed?";
-    "Already brainstormed?" -> "Invoke brainstorming skill" [label="no"];
-    "Already brainstormed?" -> "Might any skill apply?" [label="yes"];
-    "Invoke brainstorming skill" -> "Might any skill apply?";
-
+    "Preparation-only request?" -> "Load requested context, then wait\n(skill check still applies;\nbrainstorming/implementation excluded)" [label="yes"];
+    "Load requested context, then wait\n(skill check still applies;\nbrainstorming/implementation excluded)" -> "Respond to user (including clarifications)";
     "Preparation-only request?" -> "Might any skill apply?" [label="no"];
-
     "Might any skill apply?" -> "Invoke Skill tool" [label="yes, even 1%"];
-    "Might any skill apply?" -> "Respond (including clarifications)" [label="definitely not"];
+    "Might any skill apply?" -> "Respond to user (including clarifications)" [label="definitely not"];
     "Invoke Skill tool" -> "Announce: 'Using [skill] to [purpose]'";
     "Announce: 'Using [skill] to [purpose]'" -> "Has checklist?";
     "Has checklist?" -> "Create TodoWrite todo per item" [label="yes"];
     "Has checklist?" -> "Follow skill exactly" [label="no"];
     "Create TodoWrite todo per item" -> "Follow skill exactly";
+    "Follow skill exactly" -> "Respond to user (including clarifications)";
 }
 ```
+
+## EnterPlanMode Gate
+
+Before calling EnterPlanMode (or any platform plan mode) for creative/build/change work: if the design has not been brainstormed and approved yet, invoke `k-superpowers:brainstorming` first. Plan mode does not replace the design gate.
 
 ## Red Flags
 

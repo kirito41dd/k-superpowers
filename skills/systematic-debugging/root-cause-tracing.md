@@ -13,10 +13,12 @@ digraph when_to_use {
     "Bug appears deep in stack?" [shape=diamond];
     "Can trace backwards?" [shape=diamond];
     "Fix at symptom point" [shape=box];
+    "Fix at the obvious cause" [shape=box];
     "Trace to original trigger" [shape=box];
     "BETTER: Also add defense-in-depth" [shape=box];
 
     "Bug appears deep in stack?" -> "Can trace backwards?" [label="yes"];
+    "Bug appears deep in stack?" -> "Fix at the obvious cause" [label="no - shallow"];
     "Can trace backwards?" -> "Trace to original trigger" [label="yes"];
     "Can trace backwards?" -> "Fix at symptom point" [label="no - dead end"];
     "Trace to original trigger" -> "BETTER: Also add defense-in-depth";

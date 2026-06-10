@@ -34,16 +34,18 @@ Tests are optional for:
 
 ```dot
 digraph verification_flow {
-    "Need to implement behavior?" [shape=diamond];
+    "Behavior to implement" [shape=doublecircle];
+    "Run relevant verification" [shape=doublecircle];
+
     "Can types encode the invariant?" [shape=diamond];
+    "Behavior still needs runtime proof?" [shape=diamond];
+
     "Design types/interfaces first" [shape=box];
     "Compiler verifies constraint" [shape=box];
-    "Behavior still needs runtime proof?" [shape=diamond];
     "Add focused tests" [shape=box];
     "Use lighter verification" [shape=box];
-    "Run relevant verification" [shape=box];
 
-    "Need to implement behavior?" -> "Can types encode the invariant?" [label="yes"];
+    "Behavior to implement" -> "Can types encode the invariant?";
     "Can types encode the invariant?" -> "Design types/interfaces first" [label="yes"];
     "Design types/interfaces first" -> "Compiler verifies constraint";
     "Compiler verifies constraint" -> "Behavior still needs runtime proof?";
