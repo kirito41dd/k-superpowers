@@ -79,7 +79,7 @@ digraph brainstorming {
 }
 ```
 
-**The terminal state is invoking writing-plans.** Do NOT invoke frontend-design, mcp-builder, or any other implementation skill. The ONLY skill you invoke after brainstorming is writing-plans.
+**The terminal state is invoking writing-plans.** Do NOT invoke any implementation or domain-specific skill. The ONLY skill you invoke after brainstorming is writing-plans.
 
 ## The Process
 
@@ -147,12 +147,12 @@ After the spec review loop passes, ask the user to review the written spec befor
 > 2. Request changes
 > 3. Approve without commit
 >
-> Only option 1 authorizes a documentation-only commit. If project instructions prohibit commits unless explicitly requested, do not commit unless the human chooses option 1 or otherwise explicitly says to commit."
+> Only option 1 authorizes a documentation-only commit. Approval of the spec does not authorize implementation."
 
 Wait for the user's response. If they request changes, make them and re-run the spec review loop. Only proceed once the user approves.
 
-**Commit Gate:**
-Commit the spec document to git only when the user explicitly chooses "Approve and commit the spec document" or otherwise explicitly asks for a commit. That authorization applies to the spec document only; it does not grant permission to commit implementation code or skip later plan review gates. If the user approves without commit, proceed to writing the implementation plan without committing.
+**Commit Gate (single source of truth for spec commits):**
+Commit the spec document to git only when the user explicitly chooses option 1 or otherwise explicitly asks for a commit. If project instructions prohibit commits unless explicitly requested, that rule prevails. The authorization applies to the spec document only; it does not grant permission to commit implementation code or skip later plan review gates. If the user approves without commit, proceed to writing the implementation plan without committing.
 
 **Implementation:**
 

@@ -15,7 +15,7 @@ Assume they are a skilled developer, but know almost nothing about our toolset o
 
 **Announce at start:** "I'm using the writing-plans skill to create the implementation plan."
 
-**Context:** If working in an isolated worktree, it should have been created via the `superpowers:using-git-worktrees` skill at execution time.
+**Context:** If working in an isolated worktree, it should have been created via the `k-superpowers:using-git-worktrees` skill at execution time.
 
 **Save plans to:** `docs/superpowers/plans/YYYY-MM-DD-<feature-name>.md`
 - (User preferences for plan location override this default)
@@ -39,8 +39,8 @@ This structure informs the task decomposition. Each task should produce self-con
 
 **Each step is one action (2-5 minutes):**
 - "Define the type/API boundary" - step
-- "Write focused tests for core behavior if needed" - step
 - "Implement the minimal code" - step
+- "Write focused tests for behavior types cannot prove, if needed" - step
 - "Run the relevant verification" - step
 - "Commit checkpoint if authorized" - step
 
@@ -51,7 +51,7 @@ This structure informs the task decomposition. Each task should produce self-con
 ```markdown
 # [Feature Name] Implementation Plan
 
-> **For agentic workers:** REQUIRED SUB-SKILL: Use superpowers:subagent-driven-development (recommended) or superpowers:executing-plans to implement this plan task-by-task. Steps use checkbox (`- [ ]`) syntax for tracking.
+> **For agentic workers:** REQUIRED SUB-SKILL: Use k-superpowers:subagent-driven-development (recommended) or k-superpowers:executing-plans to implement this plan task-by-task. Steps use checkbox (`- [ ]`) syntax for tracking.
 
 **Goal:** [One sentence describing what this builds]
 
@@ -72,14 +72,25 @@ This structure informs the task decomposition. Each task should produce self-con
 - Modify: `exact/path/to/existing.py:123-145`
 - Test: `tests/exact/path/to/test.py`
 
-- [ ] **Step 1: Define behavior and verification**
+- [ ] **Step 1: Define types and API boundary**
 
-State what types/interfaces should guarantee and what needs runtime verification.
+State what types/interfaces should guarantee, and what still needs runtime verification.
 
-- Type/API invariant: `function(input)` returns `expected` for valid input.
-- Runtime verification: focused unit test for this public behavior.
+- Type/API invariant: invalid input is unrepresentable or rejected at the boundary; `function(input)` returns `expected` for valid input.
+- Runtime risk: [the behavior types cannot prove — this is what the test must cover, or "none"]
 
-- [ ] **Step 2: Add focused test if runtime behavior needs coverage**
+```python
+def function(input: ValidInput) -> Expected: ...
+```
+
+- [ ] **Step 2: Write minimal implementation**
+
+```python
+def function(input):
+    return expected
+```
+
+- [ ] **Step 3: Add focused test for behavior types cannot prove (if any)**
 
 ```python
 def test_specific_behavior():
@@ -87,32 +98,22 @@ def test_specific_behavior():
     assert result == expected
 ```
 
-- [ ] **Step 3: Run test to verify current behavior**
+- [ ] **Step 4: Run relevant verification**
 
-Run: `pytest tests/path/test.py::test_name -v`
-Expected: FAIL if behavior is missing, or PASS if existing behavior is already correct
+Run: `pytest tests/path/test.py::test_name -v` (plus type check/build for the touched module)
+Expected: PASS, exit 0
 
-- [ ] **Step 4: Write minimal implementation**
-
-```python
-def function(input):
-    return expected
-```
-
-- [ ] **Step 5: Run verification**
-
-Run: `pytest tests/path/test.py::test_name -v`
-Expected: PASS
-
-- [ ] **Step 6: Commit checkpoint if authorized**
+- [ ] **Step 5: Commit checkpoint if authorized**
 
 ```bash
 git add tests/path/test.py src/path/file.py
 git commit -m "feat: add specific feature"
 ```
 
-Only run this commit step if project instructions allow commits, the user explicitly requested commits, or the user approved a workflow option that includes implementation commits. Otherwise stop after verification and ask before committing.
+Include/execute this step only when commits are authorized — see Commit Authorization under Execution Handoff.
 ````
+
+**Bug-fix tasks:** the focused test is a regression test. Order the steps so the test demonstrably reproduces the bug (fails) before the fix, then passes after — per `k-superpowers:type-driven-verification`.
 
 ## No Placeholders
 
@@ -128,7 +129,7 @@ Every step must contain the actual content an engineer needs. These are **plan f
 - Exact file paths always
 - Complete code in every step — if a step changes code, show the code
 - Exact commands with expected output
-- DRY, YAGNI, type-first design, focused verification, commit checkpoints that respect project and user commit policy
+- DRY, YAGNI, type-first design, focused verification, commit checkpoints per Commit Authorization
 
 ## Self-Review
 
@@ -154,11 +155,17 @@ After saving and self-reviewing the plan, STOP. Ask the human partner to review 
 
 **3. Approve without commit**
 
-**Only option 1 authorizes a documentation-only commit. If project instructions prohibit commits unless explicitly requested, I won't commit unless you choose option 1 or otherwise explicitly say to commit. Approval of the plan does not authorize implementation."**
+**Only option 1 authorizes a documentation-only commit. Approval of the plan does not authorize implementation."**
 
 Wait for the user's response. If they request changes, make them and re-run the self-review loop. Only proceed once the user approves.
 
-Commit the plan document to git only when the user explicitly chooses "Approve and commit the plan document" or otherwise explicitly asks for a commit. That authorization applies to the plan document only; it does not grant permission to commit implementation code or start implementation. If the user approves without commit, skip the commit and still ask how they'd like to execute the plan.
+### Commit Authorization
+
+Single source of truth for all commits in this plan's lifecycle:
+
+- **Plan document:** commit only when the user explicitly chooses option 1 or otherwise explicitly asks for a commit. The authorization covers the plan document only. If project instructions prohibit commits unless explicitly requested, that rule prevails.
+- **Plan approval ≠ implementation authorization:** approving the plan (with or without commit) does not grant permission to start implementation or commit implementation code.
+- **Implementation commit checkpoints** (template Step 5): execute only if project instructions allow commits, the user explicitly requested commits, or the user approved a workflow option that includes implementation commits. Otherwise stop after verification and ask before committing.
 
 After the approved plan is either committed or explicitly approved without commit, offer execution choice:
 
@@ -173,9 +180,9 @@ After the approved plan is either committed or explicitly approved without commi
 Do NOT invoke subagent-driven-development, executing-plans, or any implementation skill until the human explicitly chooses an execution option or otherwise tells you to proceed with implementation.
 
 **If Subagent-Driven chosen:**
-- **REQUIRED SUB-SKILL:** Use superpowers:subagent-driven-development
+- **REQUIRED SUB-SKILL:** Use k-superpowers:subagent-driven-development
 - Fresh subagent per task + two-stage review
 
 **If Inline Execution chosen:**
-- **REQUIRED SUB-SKILL:** Use superpowers:executing-plans
+- **REQUIRED SUB-SKILL:** Use k-superpowers:executing-plans
 - Batch execution with checkpoints for review

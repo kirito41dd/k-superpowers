@@ -1,19 +1,17 @@
 {
-  "name": "superpowers-dev",
-  "description": "Development marketplace for Superpowers core skills library",
+  "name": "k-superpowers-dev",
+  "description": "Local development marketplace for the k-superpowers skills library",
   "owner": {
-    "name": "Jesse Vincent",
-    "email": "jesse@fsck.com"
+    "name": "kirito"
   },
   "plugins": [
     {
-      "name": "superpowers",
-      "description": "Core skills library for Claude Code: type-first verification, debugging, collaboration patterns, and proven techniques",
+      "name": "k-superpowers",
+      "description": "Personal fork of the Superpowers core skills library for Claude Code: type-first verification, debugging, collaboration patterns, and proven techniques",
       "version": "5.1.0",
       "source": "./",
       "author": {
-        "name": "Jesse Vincent",
-        "email": "jesse@fsck.com"
+        "name": "kirito"
       }
     }
   ]

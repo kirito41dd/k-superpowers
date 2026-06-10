@@ -1,16 +1,16 @@
 # Testing Skills With Subagents
 
-**Load this reference when:** creating or editing skills, before deployment, to verify they work under pressure and resist rationalization.
+**Load this reference when:** making high-risk skill changes (new behavior-shaping skills, trigger conditions, discipline rules, subagent flows), before deployment, to verify they work under pressure and resist rationalization. Risk tiers are defined in SKILL.md (The Iron Law).
 
 ## Overview
 
 **Testing skills is pressure-scenario verification applied to process documentation.**
 
-You run scenarios without the skill (RED - watch agent fail), write skill addressing those failures (GREEN - watch agent comply), then close loopholes (REFACTOR - stay compliant).
+You run scenarios without the skill (baseline — watch agent fail), write skill addressing those failures (verify — watch agent comply), then close loopholes (stay compliant).
 
 **Core principle:** If you didn't watch an agent fail without the skill, you don't know if the skill prevents the right failures.
 
-**REQUIRED BACKGROUND:** Understand `superpowers:type-driven-verification`. This reference provides skill-specific test formats: pressure scenarios and rationalization tables.
+**REQUIRED BACKGROUND:** Understand `k-superpowers:type-driven-verification`. This reference provides skill-specific test formats: pressure scenarios and rationalization tables.
 
 **Complete worked example:** See examples/CLAUDE_MD_TESTING.md for a full test campaign testing CLAUDE.md documentation variants.
 
@@ -31,16 +31,16 @@ Don't test:
 
 | Verification Phase | Skill Testing | What You Do |
 |-----------|---------------|-------------|
-| **RED** | Baseline test | Run scenario WITHOUT skill, watch agent fail |
-| **Verify RED** | Capture rationalizations | Document exact failures verbatim |
-| **GREEN** | Write skill | Address specific baseline failures |
-| **Verify GREEN** | Pressure test | Run scenario WITH skill, verify compliance |
-| **REFACTOR** | Plug holes | Find new rationalizations, add counters |
-| **Stay GREEN** | Re-verify | Test again, ensure still compliant |
+| **Baseline** | Observe failure | Run scenario WITHOUT skill, watch agent fail |
+| **Capture** | Record rationalizations | Document exact failures verbatim |
+| **Write** | Write skill | Address specific baseline failures |
+| **Verify** | Pressure test | Run scenario WITH skill, verify compliance |
+| **Close loopholes** | Plug holes | Find new rationalizations, add counters |
+| **Re-verify** | Stay compliant | Test again, ensure still compliant |
 
 Same discipline as code verification, different test format.
 
-## RED Phase: Baseline Testing (Watch It Fail)
+## Baseline Phase: Watch It Fail
 
 **Goal:** Run test WITHOUT the skill - watch agent fail, document exact failures.
 
@@ -79,7 +79,7 @@ Run this WITHOUT a verification skill. Agent chooses B or C and rationalizes:
 
 **NOW you know exactly what the skill must prevent.**
 
-## GREEN Phase: Write Minimal Skill (Make It Pass)
+## Write Phase: Minimal Skill (Make It Pass)
 
 Write skill addressing the specific baseline failures you documented. Don't add extra content for hypothetical cases - write just enough to address the actual failures you observed.
 
@@ -87,7 +87,7 @@ Run same scenarios WITH skill. Agent should now comply.
 
 If agent still fails: skill is unclear or incomplete. Revise and re-test.
 
-## VERIFY GREEN: Pressure Testing
+## Verify Phase: Pressure Testing
 
 **Goal:** Confirm agents follow rules when they want to break them.
 
@@ -160,9 +160,9 @@ You have access to: [skill-being-tested]
 
 Make agent believe it's real work, not a quiz.
 
-## REFACTOR Phase: Close Loopholes (Stay Green)
+## Close-Loopholes Phase: Stay Compliant
 
-Agent violated rule despite having the skill? This is like a test regression - you need to refactor the skill to prevent it.
+Agent violated rule despite having the skill? This is like a test regression - you need to revise the skill to prevent it.
 
 **Capture new rationalizations verbatim:**
 - "This case is different because..."
@@ -224,7 +224,7 @@ description: Use when you wrote code before tests, when tempted to test after, o
 
 Add symptoms of ABOUT to violate.
 
-### Re-verify After Refactoring
+### Re-verify After Closing Loopholes
 
 **Re-test same scenarios with updated skill.**
 
@@ -233,11 +233,11 @@ Agent should now:
 - Cite new sections
 - Acknowledge their previous rationalization was addressed
 
-**If agent finds NEW rationalization:** Continue REFACTOR cycle.
+**If agent finds NEW rationalization:** Continue the close-loopholes cycle.
 
 **If agent follows rule:** Success - skill is bulletproof for this scenario.
 
-## Meta-Testing (When GREEN Isn't Working)
+## Meta-Testing (When Compliance Isn't Working)
 
 **After agent chooses wrong option, ask:**
 
@@ -307,19 +307,19 @@ Meta-test: "Skill was clear, I should follow it"
 
 ## Testing Checklist
 
-Before deploying skill, verify you followed the baseline-fail-fix-refactor loop:
+Before deploying skill, verify you followed the baseline → write → verify → close-loopholes loop:
 
-**RED Phase:**
+**Baseline Phase:**
 - [ ] Created pressure scenarios (3+ combined pressures)
 - [ ] Ran scenarios WITHOUT skill (baseline)
 - [ ] Documented agent failures and rationalizations verbatim
 
-**GREEN Phase:**
+**Write & Verify Phase:**
 - [ ] Wrote skill addressing specific baseline failures
 - [ ] Ran scenarios WITH skill
 - [ ] Agent now complies
 
-**REFACTOR Phase:**
+**Close-Loopholes Phase:**
 - [ ] Identified NEW rationalizations from testing
 - [ ] Added explicit counters for each loophole
 - [ ] Updated rationalization table
@@ -331,7 +331,7 @@ Before deploying skill, verify you followed the baseline-fail-fix-refactor loop:
 
 ## Common Mistakes
 
-**❌ Writing skill before testing (skipping RED)**
+**❌ Writing skill before testing (skipping baseline)**
 Reveals what YOU think needs preventing, not what ACTUALLY needs preventing.
 ✅ Fix: Always run baseline scenarios first.
 
@@ -353,18 +353,18 @@ Agents resist single pressure, break under multiple.
 
 **❌ Stopping after first pass**
 Tests pass once ≠ bulletproof.
-✅ Fix: Continue REFACTOR cycle until no new rationalizations.
+✅ Fix: Continue the close-loopholes cycle until no new rationalizations.
 
 ## Quick Reference
 
 | Verification Phase | Skill Testing | Success Criteria |
 |-----------|---------------|------------------|
-| **RED** | Run scenario without skill | Agent fails, document rationalizations |
-| **Verify RED** | Capture exact wording | Verbatim documentation of failures |
-| **GREEN** | Write skill addressing failures | Agent now complies with skill |
-| **Verify GREEN** | Re-test scenarios | Agent follows rule under pressure |
-| **REFACTOR** | Close loopholes | Add counters for new rationalizations |
-| **Stay GREEN** | Re-verify | Agent still complies after refactoring |
+| **Baseline** | Run scenario without skill | Agent fails, document rationalizations |
+| **Capture** | Record exact wording | Verbatim documentation of failures |
+| **Write** | Write skill addressing failures | Agent now complies with skill |
+| **Verify** | Re-test scenarios | Agent follows rule under pressure |
+| **Close loopholes** | Plug holes | Add counters for new rationalizations |
+| **Re-verify** | Stay compliant | Agent still complies after revision |
 
 ## The Bottom Line
 
@@ -372,13 +372,13 @@ Tests pass once ≠ bulletproof.
 
 If you wouldn't ship core code behavior without verification, don't ship skills without testing them on agents.
 
-Baseline-verify-refactor for documentation gives the same confidence as explicit code verification.
+Baseline → write → verify → close loopholes for documentation gives the same confidence as explicit code verification.
 
 ## Real-World Impact
 
 From applying pressure-scenario verification to a discipline-enforcing skill (2025-10-03):
 - 6 baseline-fail-fix iterations to bulletproof
 - Baseline testing revealed 10+ unique rationalizations
-- Each REFACTOR closed specific loopholes
-- Final VERIFY GREEN: 100% compliance under maximum pressure
+- Each iteration closed specific loopholes
+- Final verification: 100% compliance under maximum pressure
 - Same process works for any discipline-enforcing skill

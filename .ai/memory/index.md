@@ -19,9 +19,10 @@
 
 - Skills 总览 → `docs/skills-overview.zh.md`
 - Fork 定制方向 → `decisions.md#2026-05-21-个人-fork-不面向上游贡献`
+- 安装链路收敛 / CC 插件改名 → `decisions.md#2026-06-10-收敛安装链路并将-claude-code-插件改名为-k-superpowers`
 - Codex app 本地市场安装 → `decisions.md#2026-05-22-codex-app-使用仓库级本地-marketplace-安装-k-superpowers`
 - OpenCode 安装方式 → `decisions.md#2026-05-21-opencode-使用-k-superpowers-git-安装`
-- 生态集成范围 → `conventions.md#2026-05-21-优先维护-opencode-安装链路`
+- 生态集成范围 → `conventions.md#2026-06-10-三条安装链路并列维护cc-插件命名-k-superpowers`
 - Codex app marketplace 目录规则 → `conventions.md#2026-05-22-codex-app-本地-marketplace-使用仓库根目录`
 - 预热型请求处理 → `conventions.md#2026-05-21-预热型请求不触发-brainstorming`
 - 验证哲学 → `decisions.md#2026-05-26-将-test-driven-development-改名为-type-driven-verification`
@@ -35,6 +36,7 @@
 - `#fork` → `requirements.md`, `decisions.md`
 - `#personalization` → `decisions.md`, `conventions.md`
 - `#codex` → `decisions.md`, `conventions.md`
+- `#claude-code` → `decisions.md`, `conventions.md`
 - `#opencode` → `decisions.md`, `conventions.md`
 - `#install` → `decisions.md`, `conventions.md`
 - `#brainstorming` → `conventions.md`
@@ -46,6 +48,8 @@
 
 ## 最近热点
 
+- 2026-06-10 收敛安装链路并将 Claude Code 插件改名为 k-superpowers → `decisions.md`
+- 2026-06-10 三条安装链路并列维护,CC 插件命名 k-superpowers → `conventions.md`
 - 2026-06-03 清除 skills 内全部 TDD/RED-GREEN 残留字眼 → `decisions.md`
 - 2026-05-26 将 test-driven-development 改名为 type-driven-verification → `decisions.md`
 - 2026-05-25 Skill 正文变更改为类型优先、风险驱动验证 → `conventions.md`

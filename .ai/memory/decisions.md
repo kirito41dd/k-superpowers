@@ -2,9 +2,9 @@
 
 <!-- SUMMARY
 覆盖范围：架构决策、技术选型、废弃方案（ADR 风格）
-条目数：7
-最近更新：2026-06-03
-高频标签：#memory #fork #personalization #codex #opencode #install #verification #type-driven
+条目数：8
+最近更新：2026-06-10
+高频标签：#memory #fork #personalization #codex #opencode #claude-code #install #verification #type-driven
 -->
 
 ## 写入格式（ADR 风格）
@@ -21,6 +21,15 @@
 ```
 
 ---
+
+## 2026-06-10 收敛安装链路并将 Claude Code 插件改名为 k-superpowers
+
+- **背景**：用户明确主用 Claude Code 与 Codex 的本地安装，仓库聚焦 skill 定制；且发现 Claude Code 实际加载的是官方 marketplace 缓存的 superpowers 插件（同名），fork 的全部定制在 CC 中不生效。
+- **选项**：保留上游全生态 manifest；只删不用的生态、CC 插件保持上游名字；删除无用生态并把 CC 插件改名为 k-superpowers。
+- **决策**：移除 Cursor（`.cursor-plugin/`、`hooks/hooks-cursor.json`）、Gemini（`gemini-extension.json`、`GEMINI.md`、`gemini-tools.md` 及 skill 正文相关段落）、上游社区文件（`.github/`、`CODE_OF_CONDUCT.md`、`RELEASE-NOTES.md`）、版本发布工具（`.version-bump.json`、`scripts/bump-version.sh`）、Codex 官方市场发布管道（`scripts/sync-to-codex-plugin.sh`、`tests/codex-plugin-sync/`）。`.claude-plugin` 改名为 `k-superpowers`/`k-superpowers-dev`（作者 kirito，仓库地址指向 fork），并将 skills/hooks/tests 中全部 `superpowers:` 交叉引用统一替换为 `k-superpowers:`。OpenCode 链路保留。
+- **理由**：个人 fork 不走任何 marketplace 发布链路；CC 插件与官方同名会冲突且 skill 交叉引用会解析到官方版本；改名后与 Codex 侧命名一致。OpenCode 按 skills 目录注册，命名空间前缀只是引导文本，替换不影响。`assets/` 被 `.codex-plugin/plugin.json` 引用、`hooks/run-hook.cmd` 是 hooks.json 全平台入口，均保留。
+- **影响**：`.claude-plugin/*`, `skills/*`, `hooks/session-start`, `tests/*`, `README.md`，及上述删除文件
+- **状态**：已实施。
 
 ## 2026-06-03 清除 skills 内全部 TDD / RED-GREEN 残留字眼
 

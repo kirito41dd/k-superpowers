@@ -2,9 +2,9 @@
 
 <!-- SUMMARY
 覆盖范围：项目特定的代码风格、命名规则、目录结构、流程约定
-条目数：6
-最近更新：2026-05-25
-高频标签：#skills #memory #eval #personalization #codex #brainstorming #opencode #install #verification #type-driven
+条目数：7
+最近更新：2026-06-10
+高频标签：#skills #memory #eval #personalization #codex #claude-code #brainstorming #opencode #install #verification #type-driven
 -->
 
 ## 说明
@@ -27,6 +27,14 @@
 
 ---
 
+## 2026-06-10 三条安装链路并列维护，CC 插件命名 k-superpowers
+
+- **约定**：仓库只维护三条安装链路——Claude Code 本地 marketplace（`.claude-plugin/`，插件 `k-superpowers@k-superpowers-dev`）、Codex app 本地 marketplace（`.agents/plugins/`）、OpenCode git/本地安装。不维护 Cursor、Gemini 等其它生态 manifest，不走任何官方 marketplace 发布。skill 交叉引用命名空间统一写 `k-superpowers:<skill-name>`。
+- **理由**：用户主用 CC 与 Codex 本地安装；CC 插件与官方 superpowers 同名会冲突，且 `superpowers:` 交叉引用会解析到官方插件。
+- **反例**：恢复 `gemini-extension.json` / `.cursor-plugin`；新写的 skill 交叉引用用 `superpowers:xxx`。
+- **正例**：新 skill 引用写 `k-superpowers:writing-plans`；CC 安装用 `/plugin marketplace add <仓库根>` + `/plugin install k-superpowers@k-superpowers-dev`，并先卸载官方 superpowers。
+- **范围**：`.claude-plugin/*`, `.agents/plugins/*`, `.opencode/*`, `skills/*`, `hooks/session-start`, `tests/*`, `README.md`
+
 ## 2026-05-22 Codex app 本地 marketplace 使用仓库根目录
 
 - **约定**：Codex app 添加本地市场时填写仓库根目录 `/Users/kirito/my/k-superpowers`，不要填写 `.agents/plugins/marketplace.json` 文件路径；仓库内维护 `.agents/plugins/marketplace.json` 和 `plugins/k-superpowers -> ..`。
@@ -44,6 +52,8 @@
 - **范围**：`skills/type-driven-verification/SKILL.md`, `skills/writing-plans/SKILL.md`, `skills/systematic-debugging/SKILL.md`
 
 ## 2026-05-21 优先维护 OpenCode 安装链路
+
+> [DEPRECATED 2026-06-10] 已被「三条安装链路并列维护，CC 插件命名 k-superpowers」取代：CC/Codex 本地 marketplace 与 OpenCode 并列，不再以 OpenCode 为优先。
 
 - **约定**：本 fork 的安装引导优先维护 OpenCode 的 git-backed plugin、本地路径安装，以及 Codex app 的仓库级本地 marketplace；Claude Code、Cursor、Gemini 等 marketplace manifest 暂不作为主要安装方式，不做批量重命名。
 - **理由**：这是自用 fork，当前主要在 OpenCode 使用；全生态改名会引入发布、manifest、测试和 marketplace 维护成本。

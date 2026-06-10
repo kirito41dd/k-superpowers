@@ -96,7 +96,7 @@ Avoid tests that:
 
 ## Bug Fixes
 
-For bugs, first use `superpowers:systematic-debugging` to find root cause.
+For bugs, first use `k-superpowers:systematic-debugging` to find root cause.
 
 Then choose the verification level:
 - Core or recurring bug: add a regression test before or alongside the fix.

@@ -7,15 +7,15 @@ description: Use when creating new skills, editing existing skills, or verifying
 
 ## Overview
 
-**Writing skills uses pressure-scenario verification for process documentation.**
+**Writing skills uses risk-matched verification for process documentation.**
 
 **Personal skills live in agent-specific directories (`~/.claude/skills` for Claude Code, `~/.agents/skills/` for Codex)** 
 
-You create pressure scenarios with subagents, watch baseline behavior fail without guidance, write the skill documentation, verify agents comply, and then close loopholes.
+For new behavior-shaping skills and other high-risk changes: create pressure scenarios with subagents, watch baseline behavior fail without guidance, write the skill documentation, verify agents comply, then close loopholes. For lower-risk edits, lighter verification applies — see The Iron Law below.
 
-**Core principle:** If you didn't watch an agent fail without the skill, you don't know if the skill teaches the right thing.
+**Core principle:** For behavior-shaping content, if you didn't watch an agent fail without the skill, you don't know if the skill teaches the right thing.
 
-**REQUIRED BACKGROUND:** Understand `superpowers:type-driven-verification`. This skill applies the same verification discipline to process documentation.
+**REQUIRED BACKGROUND:** Understand `k-superpowers:type-driven-verification`. This skill applies the same verification discipline to process documentation.
 
 **Official guidance:** For Anthropic's official skill authoring best practices, see anthropic-best-practices.md. This document provides additional patterns and guidelines that complement the verification-focused approach in this skill.
 
@@ -33,16 +33,11 @@ A **skill** is a reference guide for proven techniques, patterns, or tools. Skil
 |-------------|----------------|
 | **Test case** | Pressure scenario with subagent |
 | **Production code** | Skill document (SKILL.md) |
-| **Test fails (RED)** | Agent violates rule without skill (baseline) |
-| **Test passes (GREEN)** | Agent complies with skill present |
-| **Refactor** | Close loopholes while maintaining compliance |
-| **Verify baseline first** | Run baseline scenario BEFORE writing skill |
-| **Watch it fail** | Document exact rationalizations agent uses |
-| **Minimal code** | Write skill addressing those specific violations |
-| **Watch it pass** | Verify agent now complies |
-| **Refactor cycle** | Find new rationalizations → plug → re-verify |
+| **Failing baseline** | Agent violates rule without skill — document exact rationalizations |
+| **Passing verification** | Agent complies with skill present |
+| **Close loopholes** | Find new rationalizations → plug → re-verify |
 
-The entire skill creation process follows a baseline-fail-fix-refactor loop.
+High-risk skill changes follow this full baseline → write → verify → close-loopholes loop. Lower-risk changes use lighter verification — see The Iron Law below.
 
 ## When to Create a Skill
 
@@ -209,6 +204,9 @@ Use words Claude would search for:
 **Use active voice, verb-first:**
 - ✅ `creating-skills` not `skill-creation`
 - ✅ `condition-based-waiting` not `async-test-helpers`
+- ✅ `flatten-with-flags` not `data-structure-refactoring`
+
+**Gerunds (-ing) work well for processes:** `creating-skills`, `debugging-with-logs` — active, describes the action you're taking.
 
 ### 4. Token Efficiency (Critical)
 
@@ -240,23 +238,11 @@ When searching, dispatch subagent with template...
 Always use subagents (50-100x context savings). REQUIRED: Use [other-skill-name] for workflow.
 ```
 
-**Compress examples:**
-```markdown
-# ❌ BAD: Verbose example (42 words)
-your human partner: "How did we handle authentication errors in React Router before?"
-You: I'll search past conversations for React Router authentication patterns.
-[Dispatch subagent with search query: "React Router authentication error handling 401"]
-
-# ✅ GOOD: Minimal example (20 words)
-Partner: "How did we handle auth errors in React Router?"
-You: Searching...
-[Dispatch subagent → synthesis]
-```
-
 **Eliminate redundancy:**
 - Don't repeat what's in cross-referenced skills
 - Don't explain what's obvious from command
 - Don't include multiple examples of same pattern
+- Compress dialogue examples to their skeleton
 
 **Verification:**
 ```bash
@@ -265,23 +251,13 @@ wc -w skills/path/SKILL.md
 # Other frequently-loaded: aim for <200 total
 ```
 
-**Name by what you DO or core insight:**
-- ✅ `condition-based-waiting` > `async-test-helpers`
-- ✅ `using-skills` not `skill-usage`
-- ✅ `flatten-with-flags` > `data-structure-refactoring`
-- ✅ `root-cause-tracing` > `debugging-techniques`
-
-**Gerunds (-ing) work well for processes:**
-- `creating-skills`, `testing-skills`, `debugging-with-logs`
-- Active, describes the action you're taking
-
-### 4. Cross-Referencing Other Skills
+### 5. Cross-Referencing Other Skills
 
 **When writing documentation that references other skills:**
 
 Use skill name only, with explicit requirement markers:
-- ✅ Good: `**REQUIRED SUB-SKILL:** Use superpowers:type-driven-verification`
-- ✅ Good: `**REQUIRED BACKGROUND:** You MUST understand superpowers:systematic-debugging`
+- ✅ Good: `**REQUIRED SUB-SKILL:** Use k-superpowers:type-driven-verification`
+- ✅ Good: `**REQUIRED BACKGROUND:** You MUST understand k-superpowers:systematic-debugging`
 - ❌ Bad: `See skills/type-driven-verification` (unclear if required)
 - ❌ Bad: `@skills/type-driven-verification/SKILL.md` (force-loads, burns context)
 
@@ -374,190 +350,79 @@ When: Reference material too large for inline
 ## The Iron Law
 
 ```
-NO BEHAVIOR-SHAPING SKILL WITHOUT BASELINE PRESSURE TESTING
+VERIFICATION STRENGTH MUST MATCH BEHAVIORAL RISK — AND IS NEVER ZERO
 ```
 
 This applies to NEW skills AND EDITS to existing skills.
 
-Write skill before testing? Delete it. Start over.
-Edit skill without testing? Same violation.
+Before any skill change, state explicitly:
+1. The invariant(s) the change must preserve
+2. The trigger conditions it could affect
+3. The failure mode if it goes wrong
 
-**No exceptions:**
-- Not for "simple additions"
-- Not for "just adding a section"
-- Not for "documentation updates"
-- Don't keep untested changes as "reference"
-- Don't "adapt" while running tests
-- Delete means delete
+Then match verification to risk:
 
-**REQUIRED BACKGROUND:** The `superpowers:type-driven-verification` skill explains type-first verification. Same verification discipline applies to documentation.
+| Risk tier | Typical changes | Required verification |
+|-----------|-----------------|----------------------|
+| **Low** — wording, formatting, fixing dead links/references | Rename a heading, fix a typo, update a path | Static review against stated invariants + search for now-conflicting wording |
+| **Medium** — process gates, checklists, cross-references, reordering steps | Add an approval gate, restructure a flow | Static review + counterexample walk-through: "how could an agent misread this?" |
+| **High** — trigger conditions, discipline rules, rationalization tables, subagent flows, new behavior-shaping skills | New discipline skill, editing descriptions, changing when a skill fires | Baseline pressure scenarios BEFORE writing + compliance verification after (see testing-skills-with-subagents.md) |
+
+**No zero tier:** "it's obviously fine" is not a verification level. Every change gets at least static review with explicitly stated invariants.
+
+**No tier-shopping:** if a "wording" change alters when an agent would invoke, skip, or rationalize around the skill, it IS a trigger-condition change — high risk. Classify by effect, not by diff size.
+
+Wrote a high-risk change without a baseline? Treat it as unverified: run the baseline scenarios now, and be prepared to discard the draft if the baseline shows it targets the wrong failures.
+
+**REQUIRED BACKGROUND:** The `k-superpowers:type-driven-verification` skill explains type-first verification. Same verification discipline applies to documentation.
 
 ## Testing All Skill Types
 
-Different skill types need different test approaches:
+Different skill types need different verification:
 
-### Discipline-Enforcing Skills (rules/requirements)
+| Skill type | Test with | Success criteria |
+|---|---|---|
+| **Discipline-enforcing** (rules/requirements) | Academic questions + pressure scenarios (3+ combined pressures: time, sunk cost, exhaustion); capture rationalizations | Agent follows rule under maximum pressure |
+| **Technique** (how-to guides) | Application + variation scenarios; missing-information tests | Agent applies technique to new scenario |
+| **Pattern** (mental models) | Recognition + application scenarios; counter-examples | Agent knows when/how — and when NOT — to apply |
+| **Reference** (docs/APIs) | Retrieval + application scenarios; gap testing | Agent finds and correctly applies information |
 
-**Examples:** verification-before-completion, designing-before-coding, type-first verification
-
-**Test with:**
-- Academic questions: Do they understand the rules?
-- Pressure scenarios: Do they comply under stress?
-- Multiple pressures combined: time + sunk cost + exhaustion
-- Identify rationalizations and add explicit counters
-
-**Success criteria:** Agent follows rule under maximum pressure
-
-### Technique Skills (how-to guides)
-
-**Examples:** condition-based-waiting, root-cause-tracing, defensive-programming
-
-**Test with:**
-- Application scenarios: Can they apply the technique correctly?
-- Variation scenarios: Do they handle edge cases?
-- Missing information tests: Do instructions have gaps?
-
-**Success criteria:** Agent successfully applies technique to new scenario
-
-### Pattern Skills (mental models)
-
-**Examples:** reducing-complexity, information-hiding concepts
-
-**Test with:**
-- Recognition scenarios: Do they recognize when pattern applies?
-- Application scenarios: Can they use the mental model?
-- Counter-examples: Do they know when NOT to apply?
-
-**Success criteria:** Agent correctly identifies when/how to apply pattern
-
-### Reference Skills (documentation/APIs)
-
-**Examples:** API documentation, command references, library guides
-
-**Test with:**
-- Retrieval scenarios: Can they find the right information?
-- Application scenarios: Can they use what they found correctly?
-- Gap testing: Are common use cases covered?
-
-**Success criteria:** Agent finds and correctly applies reference information
-
-## Common Rationalizations for Skipping Testing
+## Common Rationalizations for Skipping Verification
 
 | Excuse | Reality |
 |--------|---------|
-| "Skill is obviously clear" | Clear to you ≠ clear to other agents. Test it. |
-| "It's just a reference" | References can have gaps, unclear sections. Test retrieval. |
-| "Testing is overkill" | Untested skills have issues. Always. 15 min testing saves hours. |
-| "I'll test if problems emerge" | Problems = agents can't use skill. Test BEFORE deploying. |
-| "Too tedious to test" | Testing is less tedious than debugging bad skill in production. |
-| "I'm confident it's good" | Overconfidence guarantees issues. Test anyway. |
-| "Academic review is enough" | Reading ≠ using. Test application scenarios. |
-| "No time to test" | Deploying untested skill wastes more time fixing it later. |
+| "Skill is obviously clear" | Clear to you ≠ clear to other agents. State invariants and review against them. |
+| "It's just a wording tweak" | If it changes when the skill fires or how agents rationalize, it's high-risk. Classify by effect. |
+| "Testing is overkill" | Then the change is low-risk — static review takes minutes. Do it. |
+| "I'll test if problems emerge" | Problems = agents misbehaving in production. Verify BEFORE deploying. |
+| "I'm confident it's good" | Confidence is not a verification level. |
+| "It's just a reference" | References can have gaps. Test retrieval for new reference skills. |
+| "Academic review is enough" | For high-risk changes, reading ≠ using. Run pressure scenarios. |
+| "No time to test" | Deploying an unverified discipline skill wastes more time fixing it later. |
 
-**All of these mean: Test before deploying. No exceptions.**
+**All of these mean: classify the risk tier honestly and run its verification.**
 
 ## Bulletproofing Skills Against Rationalization
 
-Skills that enforce discipline need to resist rationalization. Agents are smart and will find loopholes when under pressure.
+Discipline skills must resist rationalization under pressure. The mechanics — explicit negations for each observed workaround, a rationalization table built from real excuses, a red flags list for self-checks, and violation symptoms in the description — live in testing-skills-with-subagents.md (Plugging Each Hole). Don't restate them here; apply them there.
+
+Two principles worth stating in the skill text itself:
+
+- **Spirit vs letter:** add "Violating the letter of the rules is violating the spirit of the rules" early — it cuts off an entire class of "I'm following the spirit" rationalizations.
+- **Close loopholes explicitly:** don't just state the rule; forbid the specific workarounds you observed ("don't keep it as reference", "don't adapt it while testing", "delete means delete").
 
 **Psychology note:** Understanding WHY persuasion techniques work helps you apply them systematically. See persuasion-principles.md for research foundation (Cialdini, 2021; Meincke et al., 2025) on authority, commitment, scarcity, social proof, and unity principles.
 
-### Close Every Loophole Explicitly
+## Baseline → Write → Verify → Close Loopholes (High-Risk Changes)
 
-Don't just state the rule - forbid specific workarounds:
+For high-risk changes, run the full cycle:
 
-<Bad>
-```markdown
-Write code before test? Delete it.
-```
-</Bad>
+1. **Baseline:** run pressure scenarios WITHOUT the skill. Document choices and rationalizations verbatim. You must see what agents naturally do before writing.
+2. **Write:** address those specific failures, minimally. No extra content for hypothetical cases.
+3. **Verify:** run the same scenarios WITH the skill. Agent should now comply.
+4. **Close loopholes:** new rationalization → add explicit counter → re-test until bulletproof.
 
-<Good>
-```markdown
-Write code before test? Delete it. Start over.
-
-**No exceptions:**
-- Don't keep it as "reference"
-- Don't "adapt" it while writing tests
-- Don't look at it
-- Delete means delete
-```
-</Good>
-
-### Address "Spirit vs Letter" Arguments
-
-Add foundational principle early:
-
-```markdown
-**Violating the letter of the rules is violating the spirit of the rules.**
-```
-
-This cuts off entire class of "I'm following the spirit" rationalizations.
-
-### Build Rationalization Table
-
-Capture rationalizations from baseline testing (see Testing section below). Every excuse agents make goes in the table:
-
-```markdown
-| Excuse | Reality |
-|--------|---------|
-| "Too simple to test" | Simple code breaks. Test takes 30 seconds. |
-| "I'll test after" | Tests passing immediately prove nothing. |
-| "Tests after achieve same goals" | Tests-after = "what does this do?" Tests-first = "what should this do?" |
-```
-
-### Create Red Flags List
-
-Make it easy for agents to self-check when rationalizing:
-
-```markdown
-## Red Flags - STOP and Start Over
-
-- Code before test
-- "I already manually tested it"
-- "Tests after achieve the same purpose"
-- "It's about spirit not ritual"
-- "This is different because..."
-
-**All of these mean: stop, discard the unverified draft, and restart from a baseline scenario.**
-```
-
-### Update CSO for Violation Symptoms
-
-Add to description: symptoms of when you're ABOUT to violate the rule:
-
-```yaml
-description: use when implementing any feature or bugfix, before writing implementation code
-```
-
-## Baseline-Verify-Refactor for Skills
-
-Follow the verification cycle:
-
-### Baseline: Observe Failure
-
-Run pressure scenario with subagent WITHOUT the skill. Document exact behavior:
-- What choices did they make?
-- What rationalizations did they use (verbatim)?
-- Which pressures triggered violations?
-
-You must see what agents naturally do before writing the skill.
-
-### Verify: Write Minimal Skill
-
-Write skill that addresses those specific rationalizations. Don't add extra content for hypothetical cases.
-
-Run same scenarios WITH skill. Agent should now comply.
-
-### REFACTOR: Close Loopholes
-
-Agent found new rationalization? Add explicit counter. Re-test until bulletproof.
-
-**Testing methodology:** See @testing-skills-with-subagents.md for the complete testing methodology:
-- How to write pressure scenarios
-- Pressure types (time, sunk cost, authority, exhaustion)
-- Plugging holes systematically
-- Meta-testing techniques
+**Full methodology:** see testing-skills-with-subagents.md — pressure scenario design, pressure types (time, sunk cost, authority, exhaustion), plugging holes systematically, meta-testing.
 
 ## Anti-Patterns
 
@@ -585,9 +450,9 @@ helper1, helper2, step3, pattern4
 **After writing ANY skill, you MUST STOP and complete the deployment process.**
 
 **Do NOT:**
-- Create multiple skills in batch without testing each
+- Create multiple skills in batch without verifying each
 - Move to next skill before current one is verified
-- Skip testing because "batching is more efficient"
+- Skip verification because "batching is more efficient"
 
 **The deployment checklist below is MANDATORY for EACH skill.**
 
@@ -597,24 +462,32 @@ Deploying untested skills = deploying untested code. It's a violation of quality
 
 **IMPORTANT: Use TodoWrite to create todos for EACH checklist item below.**
 
-**Baseline Phase:**
+**Risk Assessment (always):**
+- [ ] State the invariant(s) this change must preserve
+- [ ] Classify the risk tier honestly (low / medium / high — by effect, not diff size)
+
+**Baseline Phase (high-risk changes):**
 - [ ] Create pressure scenarios (3+ combined pressures for discipline skills)
 - [ ] Run scenarios WITHOUT skill - document baseline behavior verbatim
 - [ ] Identify patterns in rationalizations/failures
 
-**Verification Phase:**
+**Writing Phase:**
 - [ ] Name uses only letters, numbers, hyphens (no parentheses/special chars)
 - [ ] YAML frontmatter with required `name` and `description` fields (max 1024 chars; see [spec](https://agentskills.io/specification))
 - [ ] Description starts with "Use when..." and includes specific triggers/symptoms
 - [ ] Description written in third person
 - [ ] Keywords throughout for search (errors, symptoms, tools)
 - [ ] Clear overview with core principle
-- [ ] Address specific baseline failures identified in RED
 - [ ] Code inline OR link to separate file
 - [ ] One excellent example (not multi-language)
-- [ ] Run scenarios WITH skill - verify agents now comply
 
-**REFACTOR Phase - Close Loopholes:**
+**Verification Phase:**
+- [ ] Low/medium risk: static review against stated invariants + search for now-conflicting wording
+- [ ] Medium risk: counterexample walk-through ("how could an agent misread this?")
+- [ ] High risk: address the specific baseline failures you observed
+- [ ] High risk: run scenarios WITH skill - verify agents now comply
+
+**Close Loopholes (high-risk changes):**
 - [ ] Identify NEW rationalizations from testing
 - [ ] Add explicit counters (if discipline skill)
 - [ ] Build rationalization table from all test iterations
@@ -632,24 +505,12 @@ Deploying untested skills = deploying untested code. It's a violation of quality
 - [ ] Commit skill to git and push to your fork (if configured)
 - [ ] Consider contributing back via PR (if broadly useful)
 
-## Discovery Workflow
-
-How future Claude finds your skill:
-
-1. **Encounters problem** ("tests are flaky")
-3. **Finds SKILL** (description matches)
-4. **Scans overview** (is this relevant?)
-5. **Reads patterns** (quick reference table)
-6. **Loads example** (only when implementing)
-
-**Optimize for this flow** - put searchable terms early and often.
-
 ## The Bottom Line
 
-**Creating skills requires explicit verification of process documentation.**
+**Creating skills requires verification matched to behavioral risk.**
 
-Same iron law: no behavior-shaping skill without baseline pressure testing.
-Same cycle: baseline → write skill → verify compliance → close loopholes.
-Same benefits: better quality, fewer surprises, bulletproof results.
+Iron law: verification strength must match behavioral risk — and is never zero.
+High-risk cycle: baseline → write skill → verify compliance → close loopholes.
+Low-risk floor: static review against explicitly stated invariants.
 
-If you use explicit verification for core code behavior, use explicit verification for skills. Skill text changes agent behavior too.
+If you use risk-matched verification for code, use it for skills. Skill text changes agent behavior too.

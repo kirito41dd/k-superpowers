@@ -176,7 +176,7 @@ You MUST complete each phase before proceeding to the next.
    - Regression test for core or recurring bugs
    - Type-level invariant when the bug is invalid state
    - One-off test script or command when no test framework exists
-   - Use `superpowers:type-driven-verification` for type-first verification guidance
+   - Use `k-superpowers:type-driven-verification` for type-first verification guidance
 
 2. **Implement Single Fix**
    - Address the root cause identified
@@ -284,8 +284,8 @@ These techniques are part of systematic debugging and available in this director
 - **`condition-based-waiting.md`** - Replace arbitrary timeouts with condition polling
 
 **Related skills:**
-- **superpowers:type-driven-verification** - For type-first verification guidance (Phase 4, Step 1)
-- **superpowers:verification-before-completion** - Verify fix worked before claiming success
+- **k-superpowers:type-driven-verification** - For type-first verification guidance (Phase 4, Step 1)
+- **k-superpowers:verification-before-completion** - Verify fix worked before claiming success
 
 ## Real-World Impact
 
