@@ -20,6 +20,7 @@
     "workflow"
   ],
   "skills": "./skills/",
+  "hooks": "./hooks/hooks.json",
   "interface": {
     "displayName": "K Superpowers",
     "shortDescription": "Personalized planning, debugging, review, and verification workflows for coding agents",
