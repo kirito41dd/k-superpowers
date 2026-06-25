@@ -2,9 +2,9 @@
 
 <!-- SUMMARY
 覆盖范围：项目特定的代码风格、命名规则、目录结构、流程约定
-条目数：8
+条目数：9
 最近更新：2026-06-25
-高频标签：#skills #memory #eval #personalization #codex #claude-code #brainstorming #opencode #install #verification #type-driven
+高频标签：#skills #memory #eval #personalization #codex #claude-code #brainstorming #opencode #install #verification #type-driven #version
 -->
 
 ## 说明
@@ -26,6 +26,14 @@
 ```
 
 ---
+
+## 2026-06-25 重要变更必须更新插件版本号
+
+- **约定**：每次重要变更后都要 bump k-superpowers 版本号，让 Codex app / Claude Code 等 agent 产品能直观看出本地插件是否更新。需要同步更新根 `package.json`、`.codex-plugin/plugin.json`、`.claude-plugin/plugin.json`、`.claude-plugin/marketplace.json`，以及 README 中展示的验证版本号。
+- **理由**：本 fork 通过本地 marketplace / 本地路径安装，产品界面和 CLI 列表常依赖 manifest 版本判断是否有新版本；不 bump version 会让安装侧看不出 skill 行为已变化。
+- **反例**：修改 `skills/*` 或插件 manifest 后仍保持旧版本号。
+- **正例**：吸收外部 skill 实现纪律后，将 `5.1.0` bump 到 `5.1.1` 并同步 README 预期输出。
+- **范围**：`package.json`, `.codex-plugin/plugin.json`, `.claude-plugin/plugin.json`, `.claude-plugin/marketplace.json`, `README.md`
 
 ## 2026-06-25 Skill 实现纪律吸收边界
 

@@ -18,6 +18,7 @@
 ## 快速索引（按模块）
 
 - Skills 总览 → `docs/skills-overview.zh.md`
+- 版本号更新规则 → `conventions.md#2026-06-25-重要变更必须更新插件版本号`
 - 外部实现纪律吸收 → `decisions.md#2026-06-25-吸收外部-skills-中强化-agent-写代码的实现纪律`, `conventions.md#2026-06-25-skill-实现纪律吸收边界`
 - Fork 定制方向 → `decisions.md#2026-05-21-个人-fork-不面向上游贡献`
 - 安装链路收敛 / CC 插件改名 → `decisions.md#2026-06-10-收敛安装链路并将-claude-code-插件改名为-k-superpowers`
@@ -46,9 +47,11 @@
 - `#upstream-pr` → `gotchas.md`
 - `#memory` → `decisions.md`, `conventions.md`
 - `#eval` → `conventions.md`, `gotchas.md`
+- `#version` → `conventions.md`
 
 ## 最近热点
 
+- 2026-06-25 重要变更必须更新插件版本号 → `conventions.md`
 - 2026-06-25 吸收外部 skills 中强化 agent 写代码的实现纪律 → `decisions.md`
 - 2026-06-25 Skill 实现纪律吸收边界 → `conventions.md`
 - 2026-06-10 收敛安装链路并将 Claude Code 插件改名为 k-superpowers → `decisions.md`
