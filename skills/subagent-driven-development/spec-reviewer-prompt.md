@@ -2,7 +2,7 @@
 
 Use this template when dispatching a spec compliance reviewer subagent.
 
-**Purpose:** Verify implementer built what was requested (nothing more, nothing less)
+**Purpose:** Spec axis review — verify implementer built what was requested, with nothing missing and no unrequested behavior.
 
 ```
 Task tool (general-purpose):

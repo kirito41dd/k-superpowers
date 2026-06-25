@@ -49,6 +49,22 @@ You MUST complete each phase before proceeding to the next.
 
 ### Phase 1: Root Cause Investigation
 
+**Phase 1 exit criterion: bug-specific feedback loop**
+
+Before proposing causes or fixes, produce one agent-runnable command or script
+that fails on the user's exact symptom and passes after the fix. It must be:
+
+- **specific**: asserts the reported symptom, not just "does not crash"
+- **red-capable**: fails while the bug exists
+- **fast**: narrow enough to run repeatedly
+- **deterministic**: stable verdict, or high reproduction rate for flaky bugs
+- **agent-runnable**: no unstructured human clicking
+
+If you cannot build this loop, stop and report what you tried. Ask for a
+captured artifact, reproducible environment, logs, HAR/trace, or permission for
+temporary instrumentation. Do not continue into hypotheses without the loop or
+an explicit blocker.
+
 **BEFORE attempting ANY fix:**
 
 1. **Read Error Messages Carefully**
@@ -178,6 +194,21 @@ You MUST complete each phase before proceeding to the next.
    - One-off test script or command when no test framework exists
    - Use `k-superpowers:type-driven-verification` for type-first verification guidance
 
+1.5. **Decide what happens to the feedback loop**
+   - Keep as regression test when the bug affects core behavior, public APIs,
+     parsers, serializers, protocols, state machines, permissions, billing, or
+     any path where recurrence is costly.
+   - Delete temporary harnesses, one-off scripts, debug logs, trace replays, and
+     local fixtures when they were only used for diagnosis and the long-term
+     risk is covered by types, existing tests, or a better verification path.
+   - Do not commit loops that depend on production/private data, external
+     environments, manual steps, or unstable resources. Report the verification
+     and why it was not retained.
+
+   Before declaring the bug fixed, state the loop disposition:
+   `kept as regression test`, `deleted as temporary harness`, or
+   `not committed with rationale`.
+
 2. **Implement Single Fix**
    - Address the root cause identified
    - ONE change at a time
@@ -223,6 +254,7 @@ If you catch yourself thinking:
 - "I don't fully understand but this might work"
 - "Pattern says X but I'll adapt it differently"
 - "Here are the main problems: [lists fixes without investigation]"
+- Proposing causes or fixes before you have a bug-specific feedback loop
 - Proposing solutions before tracing data flow
 - **"One more fix attempt" (when already tried 2+)**
 - **Each fix reveals new problem in different place**

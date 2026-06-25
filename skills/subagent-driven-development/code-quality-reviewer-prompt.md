@@ -2,7 +2,7 @@
 
 Use this template when dispatching a code quality reviewer subagent.
 
-**Purpose:** Verify implementation is well-built (clean, tested, maintainable)
+**Purpose:** Standards axis review — verify the implementation is well-built, maintainable, tested through appropriate behavior boundaries, and consistent with project conventions.
 
 **Only dispatch after spec compliance review passes.**
 

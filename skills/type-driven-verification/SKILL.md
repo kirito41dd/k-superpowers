@@ -83,6 +83,9 @@ Write tests when they protect meaningful behavior:
 - Snapshot/golden tests when output stability matters
 
 Good tests should:
+- Prefer the entry point real callers use: public API, CLI command, HTTP
+  handler, parser entrypoint, state transition, or other stable boundary
+- Cover private helpers through public behavior by default
 - Exercise public behavior where possible
 - Cover edge cases that matter
 - Be stable in CI
@@ -92,9 +95,16 @@ Good tests should:
 Avoid tests that:
 - Only mirror implementation details
 - Lock down private helper structure
+- Reach into private helpers when the same behavior can be verified through a
+  real caller entry point
 - Require excessive mocking
 - Make simple refactors expensive without protecting behavior
 - Exist only to satisfy a blanket coverage rule
+
+Private helpers usually should not get separate tests. Test them through public
+behavior unless the helper carries complex algorithms, high-risk logic, or an
+expensive regression that cannot be observed clearly through the caller entry
+point.
 
 ## Bug Fixes
 
@@ -133,7 +143,7 @@ Before marking work complete:
 | Testing everything by default | Test core behavior and risks |
 | Relying only on tests | Move invariants into types where possible |
 | Relying only on types | Test runtime behavior types cannot prove |
-| Testing private helpers | Test through public behavior unless isolation is valuable |
+| Testing private helpers by default | Test through the real caller entry point; isolate only complex or high-risk helper logic |
 | Mock-heavy tests | Prefer real behavior or simpler boundaries |
 | No regression check for core bug | Add focused regression test or reproduction command |
 

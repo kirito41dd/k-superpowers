@@ -2,8 +2,8 @@
 
 <!-- SUMMARY
 覆盖范围：项目特定的代码风格、命名规则、目录结构、流程约定
-条目数：7
-最近更新：2026-06-10
+条目数：8
+最近更新：2026-06-25
 高频标签：#skills #memory #eval #personalization #codex #claude-code #brainstorming #opencode #install #verification #type-driven
 -->
 
@@ -26,6 +26,14 @@
 ```
 
 ---
+
+## 2026-06-25 Skill 实现纪律吸收边界
+
+- **约定**：吸收外部 skill 设计时优先选择能直接提升实现质量、且符合类型优先哲学的纪律：bug-specific feedback loop、vertical slice planning、Spec / Standards 双轴 review、通过真实入口测试行为。不吸收 Invocation 分层、`writing-great-skills` 的质量词汇体系、Deep Module / Seam 词汇体系、Design It Twice。
+- **理由**：用户明确希望保持当前 invocation 模式，且不希望引入看不懂或过重的架构词汇和设计流程；保留的四点能直接改善 agent 修 bug、写计划、做 review 和写测试的质量。
+- **反例**：把外部 skills 整套复制进本 fork；引入 `disable-model-invocation` 分层；把 Deep Module / Seam 作为默认架构语言；要求高风险接口必须 Design It Twice。
+- **正例**：bugfix 前建立能捕获具体症状的 feedback loop；计划任务默认按可独立验证的 vertical slice 切；review 输出分 Spec Findings 和 Standards Findings；测试优先通过 public API / CLI / HTTP handler / parser entrypoint / 状态机 transition 等真实入口。
+- **范围**：`skills/systematic-debugging/SKILL.md`, `skills/writing-plans/SKILL.md`, `skills/type-driven-verification/SKILL.md`, `skills/requesting-code-review/*`, `skills/subagent-driven-development/*reviewer-prompt.md`, `docs/skills-overview.zh.md`
 
 ## 2026-06-10 三条安装链路并列维护，CC 插件命名 k-superpowers
 

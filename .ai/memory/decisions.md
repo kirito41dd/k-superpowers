@@ -2,8 +2,8 @@
 
 <!-- SUMMARY
 覆盖范围：架构决策、技术选型、废弃方案（ADR 风格）
-条目数：8
-最近更新：2026-06-10
+条目数：9
+最近更新：2026-06-25
 高频标签：#memory #fork #personalization #codex #opencode #claude-code #install #verification #type-driven
 -->
 
@@ -21,6 +21,15 @@
 ```
 
 ---
+
+## 2026-06-25 吸收外部 skills 中强化 agent 写代码的实现纪律
+
+- **背景**：用户在 `refs/mattpocock-skills` 中放入外部 skills，希望评估哪些设计能提升 agent 写代码质量。经过 review，明确不吸收 Invocation 分层、`writing-great-skills` 质量词汇体系、Deep Module / Seam 词汇和 Design It Twice，只吸收直接提升实现质量的部分。
+- **选项**：整套复制外部 skills；只保留讨论记录不改当前 fork；选择性吸收与类型优先哲学兼容的实现纪律。
+- **决策**：选择性吸收四点：`systematic-debugging` 增加 bug-specific feedback loop 和 loop 归宿规则；`writing-plans` 默认按可独立验证的 vertical slice 拆任务；review prompt 按 Spec / Standards 双轴报告；`type-driven-verification` 强化“通过真实入口测试行为”，避免默认测试私有 helper。
+- **理由**：这些改动能减少猜测式修复、横向分层计划、需求符合度与质量问题混杂、以及测试锁死私有实现，同时不恢复 blanket TDD、不引入自动 commit / issue tracker / PRD workflow，也不改变当前 skill invocation 方式。
+- **影响**：`skills/systematic-debugging/SKILL.md`, `skills/writing-plans/SKILL.md`, `skills/type-driven-verification/SKILL.md`, `skills/requesting-code-review/code-reviewer.md`, `skills/subagent-driven-development/*reviewer-prompt.md`, `docs/skills-overview.zh.md`, `docs/superpowers/specs/2026-06-25-external-skill-patterns-design.md`, `docs/superpowers/plans/2026-06-25-external-skill-patterns.md`
+- **状态**：已实施。
 
 ## 2026-06-10 收敛安装链路并将 Claude Code 插件改名为 k-superpowers
 

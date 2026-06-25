@@ -2,7 +2,9 @@
 
 Use this template when dispatching a code reviewer subagent.
 
-**Purpose:** Review completed work against requirements and code quality standards before it cascades into more work.
+**Purpose:** Review completed work along two independent axes:
+1. **Spec** — does the diff implement the requirements, without missing or extra behavior?
+2. **Standards** — does the diff meet project conventions, code quality, maintainability, testing, and production-readiness expectations?
 
 ```
 Task tool (general-purpose):
@@ -32,35 +34,20 @@ Task tool (general-purpose):
 
     ## What to Check
 
-    **Plan alignment:**
+    **Spec axis:**
     - Does the implementation match the plan / requirements?
-    - Are deviations justified improvements, or problematic departures?
     - Is all planned functionality present?
+    - Are there missing, partial, wrong, or extra behaviors?
+    - Are deviations justified improvements, or problematic departures?
 
-    **Code quality:**
-    - Clean separation of concerns?
-    - Proper error handling?
-    - Type safety where applicable?
-    - DRY without premature abstraction?
-    - Edge cases handled?
-
-    **Architecture:**
-    - Sound design decisions?
-    - Reasonable scalability and performance?
-    - Security concerns?
-    - Integrates cleanly with surrounding code?
-
-    **Testing:**
-    - Tests verify real behavior, not mocks?
-    - Edge cases covered?
-    - Integration tests where they matter?
-    - All tests passing?
-
-    **Production readiness:**
-    - Migration strategy if schema changed?
-    - Backward compatibility considered?
-    - Documentation complete?
-    - No obvious bugs?
+    **Standards axis:**
+    - Does the code follow documented project conventions and local style?
+    - Is responsibility separated cleanly?
+    - Is error handling appropriate?
+    - Is type safety preserved where applicable?
+    - Is the implementation DRY without premature abstraction?
+    - Are tests focused on real behavior and stable entry points?
+    - Are edge cases, security, performance, compatibility, migrations, and docs handled where relevant?
 
     ## Calibration
 
@@ -78,16 +65,27 @@ Task tool (general-purpose):
     ### Strengths
     [What's well done? Be specific.]
 
-    ### Issues
+    ### Spec Findings
+
+    #### Critical (Must Fix)
+    [Missing, wrong, or extra behavior that breaks requirements]
+
+    #### Important (Should Fix)
+    [Partial requirements, ambiguous deviations, meaningful scope issues]
+
+    #### Minor (Nice to Have)
+    [Small requirement clarifications or polish]
+
+    ### Standards Findings
 
     #### Critical (Must Fix)
     [Bugs, security issues, data loss risks, broken functionality]
 
     #### Important (Should Fix)
-    [Architecture problems, missing features, poor error handling, test gaps]
+    [Architecture problems, maintainability risks, poor error handling, test gaps]
 
     #### Minor (Nice to Have)
-    [Code style, optimization opportunities, documentation polish]
+    [Style, optimization opportunities, documentation polish]
 
     For each issue:
     - File:line reference
@@ -99,6 +97,10 @@ Task tool (general-purpose):
     [Improvements for code quality, architecture, or process]
 
     ### Assessment
+
+    **Spec axis:** [Pass | With issues | Fail]
+
+    **Standards axis:** [Pass | With issues | Fail]
 
     **Ready to merge?** [Yes | No | With fixes]
 
@@ -127,7 +129,7 @@ Task tool (general-purpose):
 - `{BASE_SHA}` — starting commit
 - `{HEAD_SHA}` — ending commit
 
-**Reviewer returns:** Strengths, Issues (Critical / Important / Minor), Recommendations, Assessment
+**Reviewer returns:** Strengths, Spec Findings, Standards Findings, Recommendations, Assessment
 
 ## Example Output
 
@@ -137,20 +139,33 @@ Task tool (general-purpose):
 - Comprehensive test coverage (18 tests, all edge cases)
 - Good error handling with fallbacks (summarizer.ts:85-92)
 
-### Issues
+### Spec Findings
 
-#### Important
+#### Critical (Must Fix)
+None.
+
+#### Important (Should Fix)
 1. **Missing help text in CLI wrapper**
    - File: index-conversations:1-31
-   - Issue: No --help flag, users won't discover --concurrency
+   - Issue: The plan required CLI discoverability, but no --help flag was added.
    - Fix: Add --help case with usage examples
 
-2. **Date validation missing**
-   - File: search.ts:25-27
-   - Issue: Invalid dates silently return no results
-   - Fix: Validate ISO format, throw error with example
+#### Minor (Nice to Have)
+None.
 
-#### Minor
+### Standards Findings
+
+#### Critical (Must Fix)
+None.
+
+#### Important (Should Fix)
+1. **Date validation missing**
+   - File: search.ts:25-27
+   - Issue: Invalid dates silently return no results.
+   - Impact: Users cannot distinguish "no matches" from invalid input.
+   - Fix: Validate ISO format, throw error with example.
+
+#### Minor (Nice to Have)
 1. **Progress indicators**
    - File: indexer.ts:130
    - Issue: No "X of Y" counter for long operations
@@ -162,7 +177,11 @@ Task tool (general-purpose):
 
 ### Assessment
 
+**Spec axis:** With issues
+
+**Standards axis:** With issues
+
 **Ready to merge: With fixes**
 
-**Reasoning:** Core implementation is solid with good architecture and tests. Important issues (help text, date validation) are easily fixed and don't affect core functionality.
+**Reasoning:** Core implementation is solid with good architecture and tests, but it has one requirement gap and standards issues to fix before merge.
 ```

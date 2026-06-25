@@ -35,6 +35,25 @@ Before defining tasks, map out which files will be created or modified and what 
 
 This structure informs the task decomposition. Each task should produce self-contained changes that make sense independently.
 
+## Vertical Slice Task Boundaries
+
+Default to tasks that deliver one narrow, independently verifiable behavior
+through the affected path. Avoid horizontal layer tasks like "add schema",
+"add API", then "add UI" unless that layer is a genuine prerequisite with its
+own verification.
+
+Each task should state:
+- the externally observable behavior or agent behavior it delivers
+- the files likely touched
+- the local verification command
+- dependencies on earlier tasks, if any
+
+Allowed exceptions:
+- type/API boundary design that must precede implementation
+- prefactoring that makes the later behavior change simpler and has its own
+  verification
+- mechanical migration, rename, config, or documentation-only changes
+
 ## Bite-Sized Task Granularity
 
 **Each step is one action (2-5 minutes):**
@@ -71,6 +90,9 @@ This structure informs the task decomposition. Each task should produce self-con
 - Create: `exact/path/to/file.py`
 - Modify: `exact/path/to/existing.py:123-145`
 - Test: `tests/exact/path/to/test.py`
+
+**Slice behavior:** [The user-visible, externally observable, or agent-visible behavior completed by this task]
+**Depends on:** [Earlier task number, or "None"]
 
 - [ ] **Step 1: Define types and API boundary**
 
@@ -129,6 +151,10 @@ Every step must contain the actual content an engineer needs. These are **plan f
 - Exact file paths always
 - Complete code in every step — if a step changes code, show the code
 - Exact commands with expected output
+- Prefer vertical slices: each task should complete a narrow behavior that can
+  be verified independently
+- Use horizontal/layer tasks only for genuine prerequisites, prefactors, or
+  mechanical changes with clear verification
 - DRY, YAGNI, type-first design, focused verification, commit checkpoints per Commit Authorization
 
 ## Self-Review
