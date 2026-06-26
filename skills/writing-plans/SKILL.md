@@ -42,11 +42,18 @@ through the affected path. Avoid horizontal layer tasks like "add schema",
 "add API", then "add UI" unless that layer is a genuine prerequisite with its
 own verification.
 
+A task is the smallest unit that carries its own verification cycle and is
+worth a fresh reviewer's gate. Fold setup, configuration, scaffolding, and
+documentation steps into the task whose deliverable needs them. Split only
+where a reviewer could meaningfully reject one task while approving its
+neighbor. Each task ends with an independently verifiable deliverable.
+
 Each task should state:
 - the externally observable behavior or agent behavior it delivers
 - the files likely touched
 - the local verification command
 - dependencies on earlier tasks, if any
+- the interfaces it consumes from earlier tasks and produces for later tasks
 
 Allowed exceptions:
 - type/API boundary design that must precede implementation
@@ -78,6 +85,14 @@ Allowed exceptions:
 
 **Tech Stack:** [Key technologies/libraries]
 
+## Global Constraints
+
+[The spec's project-wide requirements — version floors, dependency limits,
+naming and copy rules, platform requirements, exact values, and cross-cutting
+policies — one line each, copied verbatim from the spec. Every task's
+requirements implicitly include this section. Write "None" only if the spec
+has no global constraints.]
+
 ---
 ```
 
@@ -93,6 +108,10 @@ Allowed exceptions:
 
 **Slice behavior:** [The user-visible, externally observable, or agent-visible behavior completed by this task]
 **Depends on:** [Earlier task number, or "None"]
+
+**Interfaces:**
+- Consumes: [what this task uses from earlier tasks — exact type names, function signatures, data shapes, files, commands, or "None"]
+- Produces: [what later tasks rely on — exact type names, function signatures, data shapes, files, commands, or "None"]
 
 - [ ] **Step 1: Define types and API boundary**
 
@@ -149,10 +168,15 @@ Every step must contain the actual content an engineer needs. These are **plan f
 
 ## Remember
 - Exact file paths always
+- Copy exact global constraints into the plan header so every downstream task inherits them
+- Give each task explicit `Interfaces` so low-context implementers know neighbor contracts
 - Complete code in every step — if a step changes code, show the code
 - Exact commands with expected output
 - Prefer vertical slices: each task should complete a narrow behavior that can
   be verified independently
+- Right-size tasks so setup/config/docs ride with the deliverable that needs
+  them; do not create standalone review gates for work that cannot be
+  meaningfully accepted or rejected alone
 - Use horizontal/layer tasks only for genuine prerequisites, prefactors, or
   mechanical changes with clear verification
 - DRY, YAGNI, type-first design, focused verification, commit checkpoints per Commit Authorization
@@ -166,6 +190,12 @@ After writing the complete plan, look at the spec with fresh eyes and check the 
 **2. Placeholder scan:** Search your plan for red flags — any of the patterns from the "No Placeholders" section above. Fix them.
 
 **3. Type consistency:** Do the types, method signatures, and property names you used in later tasks match what you defined in earlier tasks? A function called `clearLayers()` in Task 3 but `clearFullLayers()` in Task 7 is a bug.
+
+**4. Constraint propagation:** Did every project-wide requirement from the spec land in `Global Constraints`, with exact values copied verbatim? If a task depends on one, is it reflected in the task steps or verification?
+
+**5. Interface consistency:** Do each task's `Consumes` and `Produces` entries match the types, APIs, files, commands, and data shapes used by neighboring tasks?
+
+**6. Task sizing:** Is each task worth its own verification and review gate? Merge standalone setup/config/docs tasks into the deliverable that needs them unless they are independently verifiable.
 
 If you find issues, fix them inline. No need to re-review — just fix and move on. If you find a spec requirement with no task, add the task.
 

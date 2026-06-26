@@ -2,9 +2,9 @@
 
 <!-- SUMMARY
 覆盖范围：架构决策、技术选型、废弃方案（ADR 风格）
-条目数：9
-最近更新：2026-06-25
-高频标签：#memory #fork #personalization #codex #opencode #claude-code #install #verification #type-driven
+条目数：10
+最近更新：2026-06-26
+高频标签：#memory #fork #personalization #codex #opencode #claude-code #install #verification #type-driven #skills
 -->
 
 ## 写入格式（ADR 风格）
@@ -21,6 +21,15 @@
 ```
 
 ---
+
+## 2026-06-26 跟进上游 v6 writing-plans 结构增强
+
+- **背景**：上游 Superpowers v6.0.0 发布后，用户已将最新上游拉到 `refs/obra-superpowers`，希望评估哪些调整值得本 fork 跟进。经过 review，决定先只跟进第 1 项：`writing-plans` 中的计划结构增强。
+- **选项**：整包同步上游 v6；暂不跟进；只吸收 `writing-plans` 的 `Task Right-Sizing`、`Global Constraints` 和 `Interfaces`，并保持本 fork 的 type-first / focused verification / commit 授权语义。
+- **决策**：选择第三项。`skills/writing-plans/SKILL.md` 增加任务大小指导，要求 setup/config/docs 并入需要它们的 deliverable；计划头部增加 `Global Constraints`；每个任务增加 `Interfaces` 的 `Consumes` / `Produces`；self-review 增加约束传播、接口一致性和任务大小检查。同步更新 `docs/skills-overview.zh.md`，并将插件版本 bump 到 `5.1.2`。
+- **理由**：这些改动能减少低上下文 implementer 猜全局约束和跨任务接口、避免过小任务制造无意义 review gate，同时不恢复上游 TDD、不过早引入 SDD reviewer 合并、文件交接、visual companion 安全重构或新 harness 支持。
+- **影响**：`skills/writing-plans/SKILL.md`, `docs/skills-overview.zh.md`, `package.json`, `.codex-plugin/plugin.json`, `.claude-plugin/plugin.json`, `.claude-plugin/marketplace.json`, `README.md`
+- **状态**：已实施。
 
 ## 2026-06-25 吸收外部 skills 中强化 agent 写代码的实现纪律
 

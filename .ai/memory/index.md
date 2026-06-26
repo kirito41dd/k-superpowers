@@ -18,6 +18,7 @@
 ## 快速索引（按模块）
 
 - Skills 总览 → `docs/skills-overview.zh.md`
+- 上游 v6 writing-plans 结构增强 → `decisions.md#2026-06-26-跟进上游-v6-writing-plans-结构增强`
 - 版本号更新规则 → `conventions.md#2026-06-25-重要变更必须更新插件版本号`
 - 外部实现纪律吸收 → `decisions.md#2026-06-25-吸收外部-skills-中强化-agent-写代码的实现纪律`, `conventions.md#2026-06-25-skill-实现纪律吸收边界`
 - Fork 定制方向 → `decisions.md#2026-05-21-个人-fork-不面向上游贡献`
@@ -51,6 +52,7 @@
 
 ## 最近热点
 
+- 2026-06-26 跟进上游 v6 writing-plans 结构增强 → `decisions.md`
 - 2026-06-25 重要变更必须更新插件版本号 → `conventions.md`
 - 2026-06-25 吸收外部 skills 中强化 agent 写代码的实现纪律 → `decisions.md`
 - 2026-06-25 Skill 实现纪律吸收边界 → `conventions.md`
