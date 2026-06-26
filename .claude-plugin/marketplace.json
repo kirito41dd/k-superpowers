@@ -8,7 +8,7 @@
     {
       "name": "k-superpowers",
       "description": "Personal fork of the Superpowers core skills library for Claude Code: type-first verification, debugging, collaboration patterns, and proven techniques",
-      "version": "5.1.2",
+      "version": "5.1.3",
       "source": "./",
       "author": {
         "name": "kirito"

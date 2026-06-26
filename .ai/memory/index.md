@@ -18,6 +18,7 @@
 ## 快速索引（按模块）
 
 - Skills 总览 → `docs/skills-overview.zh.md`
+- 上游 v6 SDD 文件交接与进度账本 → `decisions.md#2026-06-26-跟进上游-v6-sdd-文件交接与进度账本`
 - 上游 v6 writing-plans 结构增强 → `decisions.md#2026-06-26-跟进上游-v6-writing-plans-结构增强`
 - 版本号更新规则 → `conventions.md#2026-06-25-重要变更必须更新插件版本号`
 - 外部实现纪律吸收 → `decisions.md#2026-06-25-吸收外部-skills-中强化-agent-写代码的实现纪律`, `conventions.md#2026-06-25-skill-实现纪律吸收边界`
@@ -52,6 +53,7 @@
 
 ## 最近热点
 
+- 2026-06-26 跟进上游 v6 SDD 文件交接与进度账本 → `decisions.md`
 - 2026-06-26 跟进上游 v6 writing-plans 结构增强 → `decisions.md`
 - 2026-06-25 重要变更必须更新插件版本号 → `conventions.md`
 - 2026-06-25 吸收外部 skills 中强化 agent 写代码的实现纪律 → `decisions.md`

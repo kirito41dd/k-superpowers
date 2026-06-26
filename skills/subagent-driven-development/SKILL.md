@@ -11,6 +11,10 @@ Execute plan by dispatching fresh subagent per task, with two-stage review after
 
 **Core principle:** Fresh subagent per task + two-stage review (spec then quality) = high quality, fast iteration
 
+**Context discipline:** Hand large artifacts to subagents as files: task briefs,
+implementer reports, review packages, and the progress ledger live in
+`.superpowers/sdd/` via the scripts in `./scripts/`.
+
 **Continuous execution:** Do not pause to check in with your human partner between tasks. Execute all tasks from the plan without stopping. The only reasons to stop are: BLOCKED status you cannot resolve, ambiguity that genuinely prevents progress, or all tasks complete. "Should I continue?" prompts and progress summaries waste their time — they asked you to execute the plan, so execute it.
 
 ## When to Use
@@ -47,40 +51,44 @@ digraph process {
 
     subgraph cluster_per_task {
         label="Per Task";
+        "Write task brief file (./scripts/task-brief)" [shape=box];
         "Dispatch implementer subagent (./implementer-prompt.md)" [shape=box];
         "Implementer subagent asks questions?" [shape=diamond];
         "Answer questions, provide context" [shape=box];
-        "Implementer subagent implements, tests, commits, self-reviews" [shape=box];
+        "Implementer subagent implements, verifies, writes report file, self-reviews" [shape=box];
+        "Write review package (./scripts/review-package BASE HEAD)" [shape=box];
         "Dispatch spec reviewer subagent (./spec-reviewer-prompt.md)" [shape=box];
         "Spec reviewer subagent confirms code matches spec?" [shape=diamond];
         "Implementer subagent fixes spec gaps" [shape=box];
         "Dispatch code quality reviewer subagent (./code-quality-reviewer-prompt.md)" [shape=box];
         "Code quality reviewer subagent approves?" [shape=diamond];
         "Implementer subagent fixes quality issues" [shape=box];
-        "Mark task complete in TodoWrite" [shape=box];
+        "Mark task complete in TodoWrite and progress ledger" [shape=box];
     }
 
-    "Read plan, extract all tasks with full text, note context, create TodoWrite" [shape=box];
+    "Read plan, note context, create TodoWrite, check progress ledger" [shape=box];
     "More tasks remain?" [shape=diamond];
     "Dispatch final code reviewer subagent for entire implementation" [shape=box];
     "Use k-superpowers:finishing-a-development-branch" [shape=box style=filled fillcolor=lightgreen];
 
-    "Read plan, extract all tasks with full text, note context, create TodoWrite" -> "Dispatch implementer subagent (./implementer-prompt.md)";
+    "Read plan, note context, create TodoWrite, check progress ledger" -> "Write task brief file (./scripts/task-brief)";
+    "Write task brief file (./scripts/task-brief)" -> "Dispatch implementer subagent (./implementer-prompt.md)";
     "Dispatch implementer subagent (./implementer-prompt.md)" -> "Implementer subagent asks questions?";
     "Implementer subagent asks questions?" -> "Answer questions, provide context" [label="yes"];
     "Answer questions, provide context" -> "Dispatch implementer subagent (./implementer-prompt.md)";
-    "Implementer subagent asks questions?" -> "Implementer subagent implements, tests, commits, self-reviews" [label="no"];
-    "Implementer subagent implements, tests, commits, self-reviews" -> "Dispatch spec reviewer subagent (./spec-reviewer-prompt.md)";
+    "Implementer subagent asks questions?" -> "Implementer subagent implements, verifies, writes report file, self-reviews" [label="no"];
+    "Implementer subagent implements, verifies, writes report file, self-reviews" -> "Write review package (./scripts/review-package BASE HEAD)";
+    "Write review package (./scripts/review-package BASE HEAD)" -> "Dispatch spec reviewer subagent (./spec-reviewer-prompt.md)";
     "Dispatch spec reviewer subagent (./spec-reviewer-prompt.md)" -> "Spec reviewer subagent confirms code matches spec?";
     "Spec reviewer subagent confirms code matches spec?" -> "Implementer subagent fixes spec gaps" [label="no"];
-    "Implementer subagent fixes spec gaps" -> "Dispatch spec reviewer subagent (./spec-reviewer-prompt.md)" [label="re-review"];
+    "Implementer subagent fixes spec gaps" -> "Write review package (./scripts/review-package BASE HEAD)" [label="re-review"];
     "Spec reviewer subagent confirms code matches spec?" -> "Dispatch code quality reviewer subagent (./code-quality-reviewer-prompt.md)" [label="yes"];
     "Dispatch code quality reviewer subagent (./code-quality-reviewer-prompt.md)" -> "Code quality reviewer subagent approves?";
     "Code quality reviewer subagent approves?" -> "Implementer subagent fixes quality issues" [label="no"];
-    "Implementer subagent fixes quality issues" -> "Dispatch code quality reviewer subagent (./code-quality-reviewer-prompt.md)" [label="re-review"];
-    "Code quality reviewer subagent approves?" -> "Mark task complete in TodoWrite" [label="yes"];
-    "Mark task complete in TodoWrite" -> "More tasks remain?";
-    "More tasks remain?" -> "Dispatch implementer subagent (./implementer-prompt.md)" [label="yes"];
+    "Implementer subagent fixes quality issues" -> "Write review package (./scripts/review-package BASE HEAD)" [label="re-review"];
+    "Code quality reviewer subagent approves?" -> "Mark task complete in TodoWrite and progress ledger" [label="yes"];
+    "Mark task complete in TodoWrite and progress ledger" -> "More tasks remain?";
+    "More tasks remain?" -> "Write task brief file (./scripts/task-brief)" [label="yes"];
     "More tasks remain?" -> "Dispatch final code reviewer subagent for entire implementation" [label="no"];
     "Dispatch final code reviewer subagent for entire implementation" -> "Use k-superpowers:finishing-a-development-branch";
 }
@@ -105,7 +113,11 @@ Use the least powerful model that can handle each role to conserve cost and incr
 
 Implementer subagents report one of four statuses. Handle each appropriately:
 
-**DONE:** Proceed to spec compliance review.
+**DONE:** Generate the review package with `./scripts/review-package BASE HEAD`
+using the commit recorded before dispatching the implementer as `BASE`. Never
+use `HEAD~1`; it drops all but the last commit of a multi-commit task. Then
+dispatch the spec reviewer with the task brief path, report file path, and
+review package path.
 
 **DONE_WITH_CONCERNS:** The implementer completed the work but flagged doubts. Read the concerns before proceeding. If the concerns are about correctness or scope, address them before review. If they're observations (e.g., "this file is getting large"), note them and proceed to review.
 
@@ -119,6 +131,46 @@ Implementer subagents report one of four statuses. Handle each appropriately:
 
 **Never** ignore an escalation or force the same model to retry without changes. If the implementer said it's stuck, something needs to change.
 
+## File Handoffs
+
+Everything pasted into a dispatch prompt and everything a subagent prints back
+stays resident in the controller's context. Hand bulky artifacts over as files:
+
+- **Workspace:** run `./scripts/sdd-workspace` to create and print the
+  per-worktree artifact directory at `.superpowers/sdd/`.
+- **Task brief:** before dispatching an implementer, run
+  `./scripts/task-brief PLAN_FILE N`. It writes the full task text to
+  `.superpowers/sdd/task-N-brief.md` and prints the path. The brief is the
+  single source of task requirements; do not paste the full task into the
+  dispatch prompt.
+- **Report file:** name the implementer report after the brief
+  (`task-N-brief.md` -> `task-N-report.md`) and include that path in the
+  dispatch. The implementer writes the full report there and returns only
+  status, commits if any, a one-line verification summary, concerns, and the
+  report path.
+- **Review package:** after implementation or fixes, run
+  `./scripts/review-package BASE HEAD`. Pass the printed diff file path to
+  reviewers instead of pasting `git diff` output into prompts.
+- **Reviewer inputs:** both review stages receive the same task brief, report
+  file, base/head SHAs, and review package path. Spec review judges requirement
+  compliance first; code quality review still runs only after spec compliance
+  passes.
+
+## Durable Progress
+
+Conversation memory can be compacted or lost mid-run. Track completed tasks in
+the ledger file, not only in todos.
+
+- At skill start, check for an existing ledger:
+  `cat "$(./scripts/sdd-workspace)/progress.md" 2>/dev/null || true`.
+- Tasks listed there as complete are DONE. Do not re-dispatch them; resume at
+  the first task not marked complete.
+- When a task's spec and code quality reviews are both clean, append one line:
+  `Task N: complete (commits <base7>..<head7>, reviews clean)`.
+- The ledger is ignored by git through `.superpowers/sdd/.gitignore`. If
+  `git clean -fdx` deletes it, recover from git history and reviewer reports if
+  available.
+
 ## Prompt Templates
 
 - `./implementer-prompt.md` - Dispatch implementer subagent
@@ -131,13 +183,13 @@ Implementer subagents report one of four statuses. Handle each appropriately:
 You: I'm using Subagent-Driven Development to execute this plan.
 
 [Read plan file once: docs/superpowers/plans/feature-plan.md]
-[Extract all 5 tasks with full text and context]
+[Check .superpowers/sdd/progress.md for completed tasks]
 [Create TodoWrite with all tasks]
 
 Task 1: Hook installation script
 
-[Get Task 1 text and context (already extracted)]
-[Dispatch implementation subagent with full task text + context]
+[Run ./scripts/task-brief docs/superpowers/plans/feature-plan.md 1]
+[Dispatch implementation subagent with task brief path + report file path + context]
 
 Implementer: "Before I begin - should the hook be installed at user or system level?"
 
@@ -148,46 +200,50 @@ Implementer: "Got it. Implementing now..."
   - Implemented install-hook command
   - Added tests, 5/5 passing
   - Self-review: Found I missed --force flag, added it
-  - Committed
+  - Report written to .superpowers/sdd/task-1-report.md
 
-[Dispatch spec compliance reviewer]
+[Run ./scripts/review-package <base> HEAD]
+[Dispatch spec compliance reviewer with brief/report/diff paths]
 Spec reviewer: ✅ Spec compliant - all requirements met, nothing extra
 
-[Get git SHAs, dispatch code quality reviewer]
+[Dispatch code quality reviewer with same brief/report/diff paths]
 Code reviewer: Strengths: Good test coverage, clean. Issues: None. Approved.
 
-[Mark Task 1 complete]
+[Mark Task 1 complete in TodoWrite and .superpowers/sdd/progress.md]
 
 Task 2: Recovery modes
 
-[Get Task 2 text and context (already extracted)]
-[Dispatch implementation subagent with full task text + context]
+[Run ./scripts/task-brief docs/superpowers/plans/feature-plan.md 2]
+[Dispatch implementation subagent with task brief path + report file path + context]
 
 Implementer: [No questions, proceeds]
 Implementer:
   - Added verify/repair modes
   - 8/8 tests passing
   - Self-review: All good
-  - Committed
+  - Report written to .superpowers/sdd/task-2-report.md
 
-[Dispatch spec compliance reviewer]
+[Run ./scripts/review-package <base> HEAD]
+[Dispatch spec compliance reviewer with brief/report/diff paths]
 Spec reviewer: ❌ Issues:
   - Missing: Progress reporting (spec says "report every 100 items")
   - Extra: Added --json flag (not requested)
 
 [Implementer fixes issues]
-Implementer: Removed --json flag, added progress reporting
+Implementer: Removed --json flag, added progress reporting, appended verification to report
 
-[Spec reviewer reviews again]
+[Run ./scripts/review-package <base> HEAD]
+[Spec reviewer reviews same brief/report and updated diff package]
 Spec reviewer: ✅ Spec compliant now
 
-[Dispatch code quality reviewer]
+[Dispatch code quality reviewer with same brief/report/diff paths]
 Code reviewer: Strengths: Solid. Issues (Important): Magic number (100)
 
 [Implementer fixes]
-Implementer: Extracted PROGRESS_INTERVAL constant
+Implementer: Extracted PROGRESS_INTERVAL constant, appended verification to report
 
-[Code reviewer reviews again]
+[Run ./scripts/review-package <base> HEAD]
+[Code reviewer reviews same brief/report and updated diff package]
 Code reviewer: ✅ Approved
 
 [Mark Task 2 complete]
@@ -215,10 +271,11 @@ Done!
 - Review checkpoints automatic
 
 **Efficiency gains:**
-- No file reading overhead (controller provides full text)
+- Less resident context (briefs, reports, and diffs move through files)
 - Controller curates exactly what context is needed
 - Subagent gets complete information upfront
 - Questions surfaced before work begins (not after)
+- Progress ledger lets the controller resume after context compaction
 
 **Quality gates:**
 - Self-review catches issues before handoff
@@ -240,7 +297,9 @@ Done!
 - Skip reviews (spec compliance OR code quality)
 - Proceed with unfixed issues
 - Dispatch multiple implementation subagents in parallel (conflicts)
-- Make subagent read plan file (provide full text instead)
+- Make subagent read the full plan file (provide a task brief file instead)
+- Paste full task text, reports, or diffs into dispatches when a file path will do
+- Re-dispatch tasks already marked complete in `.superpowers/sdd/progress.md`
 - Skip scene-setting context (subagent needs to understand where task fits)
 - Ignore subagent questions (answer before letting them proceed)
 - Accept "close enough" on spec compliance (spec reviewer found issues = not done)

@@ -2,7 +2,7 @@
 
 <!-- SUMMARY
 覆盖范围：架构决策、技术选型、废弃方案（ADR 风格）
-条目数：10
+条目数：11
 最近更新：2026-06-26
 高频标签：#memory #fork #personalization #codex #opencode #claude-code #install #verification #type-driven #skills
 -->
@@ -21,6 +21,15 @@
 ```
 
 ---
+
+## 2026-06-26 跟进上游 v6 SDD 文件交接与进度账本
+
+- **背景**：上游 Superpowers v6.0.0 将 `subagent-driven-development` 的 task brief、implementer report、review diff package 和 progress ledger 改为文件交接，以降低 controller 常驻上下文并支持压缩后恢复。用户要求在本 fork 中吸收这一部分，并明确不同时吸收 reviewer 合并等其它 v6 变化。
+- **选项**：整套同步上游 SDD；只吸收文件交接和 progress ledger；暂不跟进。
+- **决策**：选择第二项。新增 `skills/subagent-driven-development/scripts/{sdd-workspace,task-brief,review-package}`，将短期产物放到自忽略的 `.superpowers/sdd/`；SDD 主流程改为传 task brief、report、diff package 路径；新增 `progress.md` ledger 恢复规则；implementer prompt 要求详细报告写入 report 文件，最终回复保持简短；两个现有 reviewer prompt 改为读取同一套 brief/report/diff 文件。保留本 fork 的 Spec / Standards 双阶段 review，不吸收上游单 `task-reviewer-prompt.md`。
+- **理由**：文件交接能减少重复粘贴任务、报告和 diff 带来的上下文膨胀，progress ledger 能避免上下文压缩后重复派发已完成任务；同时保留双阶段 review 和未授权不提交规则，避免一次引入过多行为变化。
+- **影响**：`skills/subagent-driven-development/SKILL.md`, `skills/subagent-driven-development/implementer-prompt.md`, `skills/subagent-driven-development/spec-reviewer-prompt.md`, `skills/subagent-driven-development/code-quality-reviewer-prompt.md`, `skills/subagent-driven-development/scripts/*`, `docs/skills-overview.zh.md`, `package.json`, `.codex-plugin/plugin.json`, `.claude-plugin/plugin.json`, `.claude-plugin/marketplace.json`, `README.md`
+- **状态**：已实施。
 
 ## 2026-06-26 跟进上游 v6 writing-plans 结构增强
 

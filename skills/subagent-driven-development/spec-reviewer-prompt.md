@@ -12,11 +12,23 @@ Task tool (general-purpose):
 
     ## What Was Requested
 
-    [FULL TEXT of task requirements]
+    Read the task brief: [BRIEF_FILE]
 
     ## What Implementer Claims They Built
 
-    [From implementer's report]
+    Read the implementer's report: [REPORT_FILE]
+
+    ## Diff Under Review
+
+    **Base:** [BASE_SHA]
+    **Head:** [HEAD_SHA]
+    **Diff file:** [DIFF_FILE]
+
+    Read the diff file once. It contains the commit list, a stat summary, and
+    the full diff with surrounding context. Treat it as your primary view of
+    the change. Do not mutate the working tree, index, HEAD, or branch state.
+    Inspect code outside the diff only to evaluate a concrete requirement risk
+    you can name, and report what you checked.
 
     ## CRITICAL: Do Not Trust the Report
 
@@ -59,3 +71,10 @@ Task tool (general-purpose):
     - ✅ Spec compliant (if everything matches after code inspection)
     - ❌ Issues found: [list specifically what's missing or extra, with file:line references]
 ```
+
+**Placeholders:**
+- `[BRIEF_FILE]` — task brief file from `scripts/task-brief`
+- `[REPORT_FILE]` — implementer's detailed report file
+- `[BASE_SHA]` — commit before this task or fix round
+- `[HEAD_SHA]` — current commit
+- `[DIFF_FILE]` — review package file from `scripts/review-package BASE HEAD`

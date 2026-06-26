@@ -10,7 +10,8 @@ Task tool (general-purpose):
 
     ## Task Description
 
-    [FULL TEXT of task from plan - paste it here, don't make subagent read file]
+    Read your task brief first: [BRIEF_FILE]
+    It contains the full task text from the plan.
 
     ## Context
 
@@ -32,9 +33,10 @@ Task tool (general-purpose):
     1. Implement exactly what the task specifies
     2. Add focused tests or verification if the task calls for it
     3. Verify implementation works
-    4. Commit your work
+    4. Commit only if the plan or controller explicitly authorizes commits
     5. Self-review (see below)
-    6. Report back
+    6. Write your detailed report to [REPORT_FILE]
+    7. Report back briefly
 
     Work from: [directory]
 
@@ -94,18 +96,33 @@ Task tool (general-purpose):
     - Do tests actually verify behavior (not just mock behavior)?
     - Did I use type-first verification where required?
     - Are tests comprehensive?
+    - Is the verification output clean (no stray warnings or noise)?
 
     If you find issues during self-review, fix them now before reporting.
 
+    ## After Review Findings
+
+    If a reviewer finds issues and you fix them, re-run the tests or
+    verification that cover the amended code and append the results to
+    [REPORT_FILE]. Reviewers use your report as evidence; they will not
+    re-run broad suites for you.
+
     ## Report Format
 
-    When done, report:
-    - **Status:** DONE | DONE_WITH_CONCERNS | BLOCKED | NEEDS_CONTEXT
+    Write your full report to [REPORT_FILE]:
     - What you implemented (or what you attempted, if blocked)
-    - What you tested and test results
+    - What you tested or verified and the results
     - Files changed
+    - Commits created, if commits were explicitly authorized
     - Self-review findings (if any)
     - Any issues or concerns
+
+    Then report back with ONLY:
+    - **Status:** DONE | DONE_WITH_CONCERNS | BLOCKED | NEEDS_CONTEXT
+    - Commits created, if any (short SHA + subject)
+    - One-line verification summary
+    - Your concerns, if any
+    - The report file path
 
     Use DONE_WITH_CONCERNS if you completed the work but have doubts about correctness.
     Use BLOCKED if you cannot complete the task. Use NEEDS_CONTEXT if you need
