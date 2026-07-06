@@ -56,6 +56,14 @@ Task tool (general-purpose):
     - In existing codebases, follow established patterns. Improve code you're touching
       the way a good developer would, but don't restructure things outside your task.
 
+    ## Code Comments
+
+    Add comments near core structures, invariants, state transitions, algorithms,
+    protocols, or non-obvious boundary behavior when they preserve important
+    intent or help future human readers understand why the code works that way.
+    Follow the comment language already used in the project or target file. Do
+    not add comments that merely restate obvious assignments, names, or control flow.
+
     ## When You're in Over Your Head
 
     It is always OK to stop and say "this is too hard for me." Bad work is worse than
@@ -86,6 +94,9 @@ Task tool (general-purpose):
     - Is this my best work?
     - Are names clear and accurate (match what things do, not how they work)?
     - Is the code clean and maintainable?
+    - Did I add useful nearby comments where core structures, invariants, or
+      non-obvious logic need preserved intent or extra help for future human
+      readers, and avoid comments that only repeat clear code?
 
     **Discipline:**
     - Did I avoid overbuilding (YAGNI)?

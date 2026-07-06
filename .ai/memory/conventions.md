@@ -2,9 +2,9 @@
 
 <!-- SUMMARY
 覆盖范围：项目特定的代码风格、命名规则、目录结构、流程约定
-条目数：9
-最近更新：2026-06-25
-高频标签：#skills #memory #eval #personalization #codex #claude-code #brainstorming #opencode #install #verification #type-driven #version
+条目数：10
+最近更新：2026-07-06
+高频标签：#skills #memory #eval #personalization #codex #claude-code #brainstorming #opencode #install #verification #type-driven #version #comments
 -->
 
 ## 说明
@@ -26,6 +26,14 @@
 ```
 
 ---
+
+## 2026-07-06 Skill 写代码时的注释原则
+
+- **约定**：Skill 引导 agent 写代码时，不要求死板地给所有核心代码加注释；应提供原则让模型自行判断。只有当注释能保留意图、解释不变量/状态转换/协议/非显然边界，或帮助后续人类读者理解为什么代码这样工作时，才在相关代码附近补有价值注释。注释语言跟随目标项目/文件。避免只复述明显赋值、命名或控制流的噪音注释。
+- **理由**：用户希望核心结构附近有必要注释，但不希望形成机械注释覆盖率；注释的价值包括解释代码本身表达不出的意图，也包括降低人类理解核心代码的成本。
+- **反例**：要求所有 core structures 一律 documented；给每个字段赋值、循环或显而易见的函数名写复述性注释。
+- **正例**：在状态机转换、协议边界、复杂算法、不变量维护点附近，用项目既有注释语言解释“为什么这样做”或“保护什么约束”；如果命名和类型已经清楚表达意图，则不额外注释。
+- **范围**：`skills/writing-plans/SKILL.md`, `skills/type-driven-verification/SKILL.md`, `skills/subagent-driven-development/*`, `skills/requesting-code-review/*`, `docs/skills-overview.zh.md`
 
 ## 2026-06-25 重要变更必须更新插件版本号
 

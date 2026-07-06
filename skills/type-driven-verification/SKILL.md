@@ -121,16 +121,18 @@ Do not ship bug fixes based only on confidence. Some fresh verification must dem
 
 1. Clarify the behavior or invariant.
 2. Encode what you can in types, interfaces, visibility, and ownership.
-3. Identify what the compiler cannot prove.
-4. Add focused tests only for those behavioral risks.
-5. Implement the minimal change.
-6. Run the relevant verification: compiler, linter, unit tests, integration tests, or reproduction command.
+3. When defining types/APIs or implementing core logic, add concise nearby comments for state transitions, protocols, or non-obvious invariants when they preserve intent or help future human readers understand why the code works that way. Follow the target project's comment language.
+4. Identify what the compiler cannot prove.
+5. Add focused tests only for those behavioral risks.
+6. Implement the minimal change.
+7. Run the relevant verification: compiler, linter, unit tests, integration tests, or reproduction command.
 
 ## Verification Checklist
 
 Before marking work complete:
 - [ ] Invalid states are prevented by types where practical
 - [ ] Public API boundaries are clear
+- [ ] Core invariants and non-obvious logic have useful nearby comments where they preserve intent or help future human readers understand the code
 - [ ] Core behavior has tests when regressions would be costly
 - [ ] Bug fixes have regression coverage or a clear reproduction verification
 - [ ] Relevant verification commands were run freshly
