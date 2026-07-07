@@ -25,7 +25,7 @@ Examples: "熟悉开发规范，等下我给需求", "先熟悉这个模块", "�
 
 These mean: read context, optionally summarize, then wait. Do not ask design questions, propose approaches, create specs/plans, or transition to implementation skills until the user provides an actual build/change/fix request.
 
-**Language Adaptation:** Determine the user's conversation language from the current session. Output all documents (design doc, spec, review prompts) in that language. Code blocks, commands, and technical identifiers remain in their natural form (English).
+**Language Adaptation:** Determine the user's conversation language from the current session. Output all user-facing prose, documents (design doc, spec, review prompts), and scripted offers in that language. Code blocks, commands, and technical identifiers remain in their natural form (English).
 
 ## Checklist
 
@@ -141,15 +141,13 @@ After writing the spec document, look at it with fresh eyes:
 Fix any issues inline. No need to re-review — just fix and move on.
 
 **User Review Gate:**
-After the spec review loop passes, ask the user to review the written spec before proceeding:
-
-> "Spec written to `<path>`. Please review it and choose one:
->
-> 1. Approve and commit the spec document
-> 2. Request changes
-> 3. Approve without commit
->
-> Only option 1 authorizes a documentation-only commit. Approval of the spec does not authorize implementation."
+After the spec review loop passes, ask the user to review the written spec before proceeding. Localize the prompt into the user's conversation language while preserving these choices and authorization boundaries:
+- Spec is written to `<path>`.
+- Option 1 approves and commits the spec document.
+- Option 2 requests changes.
+- Option 3 approves without commit.
+- Only option 1 authorizes a documentation-only commit.
+- Approval of the spec does not authorize implementation.
 
 Wait for the user's response. If they request changes, make them and re-run the spec review loop. Only proceed once the user approves.
 
@@ -174,10 +172,14 @@ Commit the spec document to git only when the user explicitly chooses option 1 o
 
 A browser-based companion for showing mockups, diagrams, and visual options during brainstorming. Available as a tool — not a mode. Accepting the companion means it's available for questions that benefit from visual treatment; it does NOT mean every question goes through the browser.
 
-**Offering the companion:** When you anticipate that upcoming questions will involve visual content (mockups, layouts, diagrams), offer it once for consent:
-> "Some of what we're working on might be easier to explain if I can show it to you in a web browser. I can put together mockups, diagrams, comparisons, and other visuals as we go. This feature is still new and can be token-intensive. Want to try it? (Requires opening a local URL)"
+**Offering the companion:** When you anticipate that upcoming questions will involve visual content (mockups, layouts, diagrams), offer it once for consent. Localize this offer into the user's conversation language while preserving these points:
+- Some upcoming work may be easier to explain visually in a browser.
+- You can show mockups, diagrams, comparisons, or other visuals as needed.
+- The feature is still new and can be token-intensive.
+- Ask whether they want to try it.
+- Mention that it requires opening a local URL.
 
-**This offer MUST be its own message.** Do not combine it with clarifying questions, context summaries, or any other content. The message should contain ONLY the offer above and nothing else. Wait for the user's response before continuing. If they decline, proceed with text-only brainstorming.
+**This offer MUST be its own message.** Do not combine it with clarifying questions, context summaries, or any other content. The message should contain ONLY the localized offer and nothing else. Wait for the user's response before continuing. If they decline, proceed with text-only brainstorming.
 
 **Per-question decision:** Even after the user accepts, decide FOR EACH QUESTION whether to use the browser or the terminal. The test: **would the user understand this better by seeing it than reading it?**
 

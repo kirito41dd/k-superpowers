@@ -11,7 +11,7 @@ Write comprehensive implementation plans assuming the engineer has zero context 
 
 Assume they are a skilled developer, but know almost nothing about our toolset or problem domain. Assume they may over-test incidental details or under-test core behavior unless guided.
 
-**Language Adaptation:** Determine the user's conversation language from the current session. Output all documents (plan header, descriptions, comments, task descriptions) in that language. Code blocks, commands, and technical identifiers remain in their natural form (English).
+**Language Adaptation:** Determine the user's conversation language from the current session. Output all user-facing prose, documents (plan header, descriptions, comments, task descriptions), scripted review/approval prompts, and execution-choice prompts in that language. Code blocks, commands, and technical identifiers remain in their natural form (English).
 
 **Core Explanations:** When plan steps define core structures, core functions, or core abstractions, include explanatory comments/docs unless the code is genuinely self-explanatory. Use the form appropriate for the target language and project: doc comments, docstrings, interface comments, or nearby code comments. Explain what the abstraction represents, how callers should use it, and any important invariants, lifecycle rules, protocol boundaries, or state transitions. Do not add comments that merely restate obvious assignments, names, or control flow.
 
@@ -214,15 +214,13 @@ If you find issues, fix them inline. No need to re-review — just fix and move 
 
 After saving and self-reviewing the plan, STOP. Ask the human partner to review and approve the plan before any implementation begins:
 
-**"Plan complete and saved to `docs/superpowers/plans/<filename>.md`. Please review it and choose one:**
-
-**1. Approve and commit the plan document**
-
-**2. Request changes**
-
-**3. Approve without commit**
-
-**Only option 1 authorizes a documentation-only commit. Approval of the plan does not authorize implementation."**
+Localize the review prompt into the user's conversation language while preserving these choices and authorization boundaries:
+- Plan is complete and saved to `docs/superpowers/plans/<filename>.md`.
+- Option 1 approves and commits the plan document.
+- Option 2 requests changes.
+- Option 3 approves without commit.
+- Only option 1 authorizes a documentation-only commit.
+- Approval of the plan does not authorize implementation.
 
 Wait for the user's response. If they request changes, make them and re-run the self-review loop. Only proceed once the user approves.
 
@@ -236,13 +234,10 @@ Single source of truth for all commits in this plan's lifecycle:
 
 After the approved plan is either committed or explicitly approved without commit, offer execution choice:
 
-**"Plan approved. Two execution options:**
-
-**1. Subagent-Driven (recommended)** - I dispatch a fresh subagent per task, review between tasks, fast iteration
-
-**2. Inline Execution** - Execute tasks in this session using executing-plans, batch execution with checkpoints
-
-**Which approach?"**
+Localize the execution-choice prompt into the user's conversation language while preserving these options:
+- Option 1: Subagent-Driven (recommended) - dispatch a fresh subagent per task, review between tasks, fast iteration.
+- Option 2: Inline Execution - execute tasks in this session using executing-plans, batch execution with checkpoints.
+- Ask which approach the user wants.
 
 Do NOT invoke subagent-driven-development, executing-plans, or any implementation skill until the human explicitly chooses an execution option or otherwise tells you to proceed with implementation.
 
