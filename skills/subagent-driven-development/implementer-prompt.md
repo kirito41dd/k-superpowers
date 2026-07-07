@@ -58,11 +58,13 @@ Task tool (general-purpose):
 
     ## Code Comments
 
-    Add comments near core structures, invariants, state transitions, algorithms,
-    protocols, or non-obvious boundary behavior when they preserve important
-    intent or help future human readers understand why the code works that way.
-    Follow the comment language already used in the project or target file. Do
-    not add comments that merely restate obvious assignments, names, or control flow.
+    Add explanatory comments/docs for core structures, core functions, and core
+    abstractions unless they are genuinely self-explanatory. Use the form
+    appropriate for the target language and project: doc comments, docstrings,
+    interface comments, or nearby code comments. Explain what the abstraction
+    represents, how callers should use it, and any important invariants,
+    lifecycle rules, protocol boundaries, or state transitions. Do not add
+    comments that merely restate obvious assignments, names, or control flow.
 
     ## When You're in Over Your Head
 
@@ -94,9 +96,9 @@ Task tool (general-purpose):
     - Is this my best work?
     - Are names clear and accurate (match what things do, not how they work)?
     - Is the code clean and maintainable?
-    - Did I add useful nearby comments where core structures, invariants, or
-      non-obvious logic need preserved intent or extra help for future human
-      readers, and avoid comments that only repeat clear code?
+    - Did I add useful explanatory comments/docs for core structures, core
+      functions, and core abstractions unless they are genuinely self-explanatory,
+      and avoid comments that only repeat clear code?
 
     **Discipline:**
     - Did I avoid overbuilding (YAGNI)?

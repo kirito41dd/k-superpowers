@@ -18,7 +18,7 @@
 ## 快速索引（按模块）
 
 - Skills 总览 → `docs/skills-overview.zh.md`
-- Skill 写代码时的注释原则 → `conventions.md#2026-07-06-skill-写代码时的注释原则`
+- Skill 写代码时的注释原则 → `conventions.md#2026-07-07-skill-写代码时的注释原则`
 - 上游 v6 SDD 文件交接与进度账本 → `decisions.md#2026-06-26-跟进上游-v6-sdd-文件交接与进度账本`
 - 上游 v6 writing-plans 结构增强 → `decisions.md#2026-06-26-跟进上游-v6-writing-plans-结构增强`
 - 版本号更新规则 → `conventions.md#2026-06-25-重要变更必须更新插件版本号`
@@ -55,7 +55,7 @@
 
 ## 最近热点
 
-- 2026-07-06 Skill 写代码时的注释原则 → `conventions.md`
+- 2026-07-07 更新 Skill 写代码时的注释原则 → `conventions.md`
 - 2026-06-26 跟进上游 v6 SDD 文件交接与进度账本 → `decisions.md`
 - 2026-06-26 跟进上游 v6 writing-plans 结构增强 → `decisions.md`
 - 2026-06-25 重要变更必须更新插件版本号 → `conventions.md`

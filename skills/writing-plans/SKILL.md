@@ -13,7 +13,7 @@ Assume they are a skilled developer, but know almost nothing about our toolset o
 
 **Language Adaptation:** Determine the user's conversation language from the current session. Output all documents (plan header, descriptions, comments, task descriptions) in that language. Code blocks, commands, and technical identifiers remain in their natural form (English).
 
-**Code Comments:** When plan steps include code for core structures, invariants, state transitions, algorithms, protocols, or non-obvious boundary behavior, include nearby comments where they preserve intent or help future human readers understand why the code works that way. Follow the comment language already used in the target project/file. Do not add comments that merely restate obvious assignments, names, or control flow.
+**Core Explanations:** When plan steps define core structures, core functions, or core abstractions, include explanatory comments/docs unless the code is genuinely self-explanatory. Use the form appropriate for the target language and project: doc comments, docstrings, interface comments, or nearby code comments. Explain what the abstraction represents, how callers should use it, and any important invariants, lifecycle rules, protocol boundaries, or state transitions. Do not add comments that merely restate obvious assignments, names, or control flow.
 
 **Announce at start:** "I'm using the writing-plans skill to create the implementation plan."
 
@@ -128,10 +128,11 @@ def function(input: ValidInput) -> Expected: ...
 
 - [ ] **Step 2: Write minimal implementation**
 
-If the implementation introduces core structures, invariants, state transitions,
-algorithms, protocols, or non-obvious boundary behavior, include actual nearby
-comments where they add value beyond clear names and types or make the code
-easier for future human readers to understand. Do not leave placeholder comments.
+If the implementation introduces core structures, core functions, or core
+abstractions, include actual explanatory comments/docs unless the code is
+genuinely self-explanatory. Explain what the abstraction represents, how callers
+should use it, and any important invariants, lifecycle rules, protocol
+boundaries, or state transitions. Do not leave placeholder comments.
 
 ```python
 def function(input):
@@ -187,7 +188,7 @@ Every step must contain the actual content an engineer needs. These are **plan f
 - Use horizontal/layer tasks only for genuine prerequisites, prefactors, or
   mechanical changes with clear verification
 - DRY, YAGNI, type-first design, focused verification, commit checkpoints per Commit Authorization
-- Add comments near core structures and non-obvious logic when they preserve design intent; avoid comments that repeat self-explanatory code
+- Add explanatory comments/docs for core structures, core functions, and core abstractions unless they are genuinely self-explanatory; avoid comments that repeat obvious code
 
 ## Self-Review
 
@@ -203,7 +204,7 @@ After writing the complete plan, look at the spec with fresh eyes and check the 
 
 **5. Interface consistency:** Do each task's `Consumes` and `Produces` entries match the types, APIs, files, commands, and data shapes used by neighboring tasks?
 
-**6. Valuable comment check:** Where comments would preserve intent or help future human readers understand core types, invariants, state transitions, algorithms, protocols, or non-obvious boundary behavior, are those comments present? Remove comments that only repeat obvious code.
+**6. Core explanation check:** Do core structures, core functions, and core abstractions have useful explanatory comments/docs unless they are genuinely self-explanatory? Do they explain what the abstraction represents, how to use it, and important invariants or lifecycle/protocol/state rules? Remove comments that only repeat obvious code.
 
 **7. Task sizing:** Is each task worth its own verification and review gate? Merge standalone setup/config/docs tasks into the deliverable that needs them unless they are independently verifiable.
 

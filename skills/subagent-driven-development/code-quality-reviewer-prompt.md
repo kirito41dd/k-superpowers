@@ -23,7 +23,7 @@ Task tool (general-purpose):
 - Are units decomposed so they can be understood and tested independently?
 - Is the implementation following the file structure from the plan?
 - Did this implementation create new files that are already large, or significantly grow existing files? (Don't flag pre-existing file sizes — focus on what this change contributed.)
-- Where comments would preserve intent or help future human readers understand core structures, invariants, state transitions, algorithms, protocols, or non-obvious boundary behavior, are those comments present?
+- Do core structures, core functions, and core abstractions have useful explanatory comments/docs unless they are genuinely self-explanatory?
 - Did the implementation avoid noisy comments that only restate obvious code?
 
 **Code reviewer returns:** Strengths, Issues (Critical/Important/Minor), Assessment

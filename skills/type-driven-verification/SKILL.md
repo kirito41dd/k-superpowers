@@ -121,7 +121,7 @@ Do not ship bug fixes based only on confidence. Some fresh verification must dem
 
 1. Clarify the behavior or invariant.
 2. Encode what you can in types, interfaces, visibility, and ownership.
-3. When defining types/APIs or implementing core logic, add concise nearby comments for state transitions, protocols, or non-obvious invariants when they preserve intent or help future human readers understand why the code works that way. Follow the target project's comment language.
+3. When defining core types/APIs/functions/abstractions, add explanatory comments/docs unless they are genuinely self-explanatory. Explain what the abstraction represents, how callers should use it, and important invariants, lifecycle rules, protocol boundaries, or state transitions. Follow the target project's comment language and documentation style.
 4. Identify what the compiler cannot prove.
 5. Add focused tests only for those behavioral risks.
 6. Implement the minimal change.
@@ -132,7 +132,7 @@ Do not ship bug fixes based only on confidence. Some fresh verification must dem
 Before marking work complete:
 - [ ] Invalid states are prevented by types where practical
 - [ ] Public API boundaries are clear
-- [ ] Core invariants and non-obvious logic have useful nearby comments where they preserve intent or help future human readers understand the code
+- [ ] Core structures, functions, and abstractions have useful explanatory comments/docs unless genuinely self-explanatory
 - [ ] Core behavior has tests when regressions would be costly
 - [ ] Bug fixes have regression coverage or a clear reproduction verification
 - [ ] Relevant verification commands were run freshly

@@ -46,7 +46,7 @@ Task tool (general-purpose):
     - Is error handling appropriate?
     - Is type safety preserved where applicable?
     - Is the implementation DRY without premature abstraction?
-    - Where comments would preserve intent or help future human readers understand core structures, invariants, state transitions, algorithms, protocols, or non-obvious boundary behavior, are those comments present?
+    - Do core structures, core functions, and core abstractions have useful explanatory comments/docs unless they are genuinely self-explanatory?
     - Does the diff avoid noisy comments that only restate obvious code?
     - Are tests focused on real behavior and stable entry points?
     - Are edge cases, security, performance, compatibility, migrations, and docs handled where relevant?
