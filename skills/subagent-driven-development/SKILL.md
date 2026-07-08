@@ -110,6 +110,20 @@ digraph process {
 }
 ```
 
+## Pre-Flight Plan Review
+
+Before dispatching Task 1, scan the plan once for conflicts:
+
+- tasks that contradict each other or the plan's `Global Constraints`
+- anything the plan explicitly mandates that reviewer discipline treats as a
+  defect
+- task ordering or interface assumptions that would make a later task impossible
+
+Present everything you find to the human as one batched question, each finding
+beside the plan text that mandates it, asking which governs. If the scan is
+clean, proceed without comment. The review loop remains the net for conflicts
+that only emerge from implementation.
+
 ## Model Selection
 
 Use the least powerful model that can handle each role to conserve cost and increase speed.
@@ -118,7 +132,21 @@ Use the least powerful model that can handle each role to conserve cost and incr
 
 **Integration and judgment tasks** (multi-file coordination, pattern matching, debugging): use a standard model.
 
-**Architecture, design, and review tasks**: use the most capable available model.
+**Architecture and design tasks:** use the most capable available model.
+
+**Final whole-change review:** use the most capable available model.
+
+**Review tasks:** choose the model by diff size, complexity, and risk. A small
+mechanical diff does not need the most capable model; a subtle concurrency,
+API, state, security, or cross-file change does.
+
+**When the platform supports explicit model selection, specify it in every
+subagent dispatch.** An omitted model may inherit the session's most expensive
+model and silently defeat this section.
+
+**Turn count beats token price.** Cheap models that take multiple clarification
+or correction turns can cost more overall. Use the cheapest tier only when the
+task is mechanical and the brief contains complete code or exact edits.
 
 **Task complexity signals:**
 - Touches 1-2 files with a complete spec → cheap model
@@ -146,6 +174,43 @@ review package path.
 4. If the plan itself is wrong, escalate to the human
 
 **Never** ignore an escalation or force the same model to retry without changes. If the implementer said it's stuck, something needs to change.
+
+## Handling Spec Reviewer ⚠️ Items
+
+The spec reviewer may report `⚠️ Cannot verify from diff` for requirements that
+live in unchanged code or span tasks. These items do not automatically fail the
+task, but the controller must resolve each one before marking the task
+complete. Check the smallest concrete code or artifact needed, record what you
+checked in the progress ledger or task notes, and if the item is a real gap,
+treat it as a failed spec review.
+
+## Reviewer Prompt Hygiene
+
+Per-task reviews are task-scoped gates. The broad review happens once, at the
+final whole-change review. When dispatching reviewers:
+
+- Do not add open-ended directives like "check all uses" or "run race tests if
+  useful" without a concrete, task-specific risk.
+- Do not ask reviewers to re-run tests the implementer already ran on the same
+  code. The implementer's report carries the verification evidence.
+- Do not pre-judge findings for the reviewer. Never instruct a reviewer to
+  ignore or not flag a specific issue. If a prompt contains "do not flag",
+  "don't treat X as a defect", or "at most Minor", stop and remove the bias.
+- Do not paste accumulated prior-task summaries into later dispatches. A fresh
+  subagent needs the task brief, report file, review package, relevant
+  interfaces, and global constraints.
+- Record Minor findings in the progress ledger or task notes as you go, and
+  point the final whole-change reviewer at that list for triage.
+- A finding that conflicts with what the plan text requires is the human's
+  decision: present the finding beside the plan text and ask which governs. Do
+  not dismiss the finding because the plan mandates it, and do not dispatch a
+  fix that contradicts the plan without asking.
+- The final whole-change review gets a package too: run
+  `./scripts/review-package MERGE_BASE HEAD`, where `MERGE_BASE` is the commit
+  the branch started from, and include the printed path in the final review
+  dispatch.
+- If the final whole-change review returns findings, dispatch one fix subagent
+  with the complete findings list. Do not create one fixer per finding.
 
 ## File Handoffs
 
@@ -357,6 +422,11 @@ Done!
 - Dispatch multiple implementation subagents in parallel (conflicts)
 - Make subagent read the full plan file (provide a task brief file instead)
 - Paste full task text, reports, or diffs into dispatches when a file path will do
+- Bias a reviewer prompt by telling the reviewer what not to flag, how severe a
+  finding may be, or which plan-mandated issue to ignore
+- Dispatch a reviewer without a review package file
+- Leave `⚠️ Cannot verify from diff` items unresolved
+- Drop Minor findings without recording them for final review triage
 - Re-dispatch tasks already marked complete in `.superpowers/sdd/progress.md`
 - Leave `.superpowers/sdd/` in place after the final whole-change reviewer
   approves the completed SDD run

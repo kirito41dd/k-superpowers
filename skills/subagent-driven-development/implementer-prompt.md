@@ -43,6 +43,11 @@ Task tool (general-purpose):
     **While you work:** If you encounter something unexpected or unclear, **ask questions**.
     It's always OK to pause and clarify. Don't guess or make assumptions.
 
+    While iterating, run the focused verification for what you are changing.
+    Before reporting DONE or DONE_WITH_CONCERNS, run the relevant task
+    verification from the brief once and record the command and output summary
+    in [REPORT_FILE].
+
     ## Code Organization
 
     You reason best about code you can hold in context at once, and your edits are more
@@ -136,6 +141,9 @@ Task tool (general-purpose):
     - One-line verification summary
     - Your concerns, if any
     - The report file path
+
+    If BLOCKED or NEEDS_CONTEXT, put the specifics in the final message itself;
+    the controller acts on it directly.
 
     Use DONE_WITH_CONCERNS if you completed the work but have doubts about correctness.
     Use BLOCKED if you cannot complete the task. Use NEEDS_CONTEXT if you need

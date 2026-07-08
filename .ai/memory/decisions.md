@@ -2,7 +2,7 @@
 
 <!-- SUMMARY
 覆盖范围：架构决策、技术选型、废弃方案（ADR 风格）
-条目数：12
+条目数：13
 最近更新：2026-07-08
 高频标签：#memory #fork #personalization #codex #opencode #claude-code #install #verification #type-driven #skills #sdd
 -->
@@ -21,6 +21,15 @@
 ```
 
 ---
+
+## 2026-07-08 吸收上游 SDD reviewer 与 controller 纪律
+
+- **背景**：用户指出基于文件的 SDD 流程来自上游 `refs/obra-superpowers`，希望对比后继续优化。本 fork 已保留 Spec / Standards 双阶段 review，但上游在 controller 与 reviewer 纪律上仍有可吸收的设计。
+- **选项**：整合上游单 `task-reviewer-prompt.md`；只吸收 controller / reviewer 纪律并保持双 reviewer；暂不继续吸收。
+- **决策**：选择第二项。新增计划文档 `docs/superpowers/plans/2026-07-08-sdd-upstream-review-optimizations.md`；SDD skill 增加 pre-flight plan review、细化 model selection、Handling Spec Reviewer ⚠️ Items、Reviewer Prompt Hygiene、final whole-change review package、Minor findings triage；将 code-quality reviewer 改为自包含 Standards-axis prompt；spec reviewer 增加 `⚠️ Cannot verify from diff`；implementer prompt 增加 focused verification cadence 和 blocker final-message 细节；版本 bump 到 `5.1.10`。
+- **理由**：保留双阶段 review 可以避免需求符合度和代码质量混在一起；吸收上游纪律能减少 reviewer prompt bias、broad crawl、重复测试、上下文膨胀和 final review fix wave 成本。
+- **影响**：`docs/superpowers/plans/2026-07-08-sdd-upstream-review-optimizations.md`, `skills/subagent-driven-development/SKILL.md`, `skills/subagent-driven-development/code-quality-reviewer-prompt.md`, `skills/subagent-driven-development/spec-reviewer-prompt.md`, `skills/subagent-driven-development/implementer-prompt.md`, `docs/skills-overview.zh.md`, `package.json`, `.codex-plugin/plugin.json`, `.claude-plugin/plugin.json`, `.claude-plugin/marketplace.json`, `README.md`
+- **状态**：已实施。
 
 ## 2026-07-08 强化 SDD task brief 全局约束与复审路由
 

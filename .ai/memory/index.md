@@ -18,6 +18,7 @@
 ## 快速索引（按模块）
 
 - Skills 总览 → `docs/skills-overview.zh.md`
+- SDD reviewer/controller 上游纪律吸收 → `decisions.md#2026-07-08-吸收上游-sdd-reviewer-与-controller-纪律`
 - SDD task brief 全局约束与复审路由 → `decisions.md#2026-07-08-强化-sdd-task-brief-全局约束与复审路由`
 - Skill 写代码时的注释原则 → `conventions.md#2026-07-07-skill-写代码时的注释原则`
 - 上游 v6 SDD 文件交接与进度账本 → `decisions.md#2026-06-26-跟进上游-v6-sdd-文件交接与进度账本`
@@ -57,6 +58,7 @@
 
 ## 最近热点
 
+- 2026-07-08 吸收上游 SDD reviewer 与 controller 纪律 → `decisions.md`
 - 2026-07-08 强化 SDD task brief 全局约束与复审路由 → `decisions.md`
 - 2026-07-07 更新 Skill 写代码时的注释原则 → `conventions.md`
 - 2026-06-26 跟进上游 v6 SDD 文件交接与进度账本 → `decisions.md`

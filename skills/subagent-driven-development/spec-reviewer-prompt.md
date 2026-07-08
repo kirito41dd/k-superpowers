@@ -26,9 +26,12 @@ Task tool (general-purpose):
 
     Read the diff file once. It contains the commit list, a stat summary, and
     the full diff with surrounding context. Treat it as your primary view of
-    the change. Do not mutate the working tree, index, HEAD, or branch state.
-    Inspect code outside the diff only to evaluate a concrete requirement risk
-    you can name, and report what you checked.
+    the change. The diff's context lines ARE the changed files; do not read a
+    changed file separately unless a hunk you must judge is cut off
+    mid-function, and say so in your report. Do not mutate the working tree,
+    index, HEAD, or branch state. Inspect code outside the diff only to evaluate
+    one concrete requirement risk you can name, and report both the risk and
+    what you checked.
 
     ## CRITICAL: Do Not Trust the Report
 
@@ -70,11 +73,16 @@ Task tool (general-purpose):
     - Did they solve the wrong problem?
     - Did they implement the right feature but wrong way?
 
+    If a requirement cannot be verified from this diff alone because it lives
+    in unchanged code or spans tasks, report it as a `⚠️ Cannot verify from
+    diff` item instead of broadening your search or assuming it passed.
+
     **Verify by reading code, not by trusting report.**
 
     Report:
     - ✅ Spec compliant (if everything matches after code inspection)
     - ❌ Issues found: [list specifically what's missing or extra, with file:line references]
+    - ⚠️ Cannot verify from diff: [requirements that live in unchanged code or span tasks, and what the controller should check]
 ```
 
 **Placeholders:**
