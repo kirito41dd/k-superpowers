@@ -11,7 +11,13 @@ description: Use when creating new skills, editing existing skills, or verifying
 
 **Personal skills live in agent-specific directories (`~/.claude/skills` for Claude Code, `~/.agents/skills/` for Codex)** 
 
-For new behavior-shaping skills and other high-risk changes: create pressure scenarios with subagents, watch baseline behavior fail without guidance, write the skill documentation, verify agents comply, then close loopholes. For lower-risk edits, lighter verification applies — see The Iron Law below.
+For new behavior-shaping skills and high-risk changes without observed failure
+evidence: create pressure scenarios with subagents, watch baseline behavior fail
+without guidance, write the skill documentation, verify agents comply, then
+close loopholes. When a real user report, production incident, agent transcript,
+or review finding already shows the failure, treat that as baseline evidence and
+verify the fix against that failure. For lower-risk edits, lighter verification
+applies — see The Iron Law below.
 
 **Core principle:** For behavior-shaping content, if you didn't watch an agent fail without the skill, you don't know if the skill teaches the right thing.
 
@@ -38,6 +44,39 @@ A **skill** is a reference guide for proven techniques, patterns, or tools. Skil
 | **Close loopholes** | Find new rationalizations → plug → re-verify |
 
 High-risk skill changes follow this full baseline → write → verify → close-loopholes loop. Lower-risk changes use lighter verification — see The Iron Law below.
+
+## Mode Selection
+
+Choose the mode before editing anything:
+
+| Mode | Use when | First action |
+|---|---|---|
+| **Create new skill** | No existing skill covers the technique, pattern, or reference | Check whether a skill is the right artifact |
+| **Edit existing skill** | Improving behavior, wording, triggers, workflow, examples, references, or verification guidance in an existing skill | Read the existing skill and identify current invariants |
+| **Verify existing skill** | Testing whether a skill works before deployment or after a change | Choose verification by skill type and risk |
+| **Review only** | Asked to critique or assess a skill without changing it | Report findings and risks; do not edit |
+
+If the task is edit, verify, or review-only, do not drift into creating a new
+skill unless the existing skill is demonstrably the wrong artifact.
+
+## Editing Existing Skills
+
+Existing skills already shape behavior. Preserve their valid behavior while
+changing only the targeted failure.
+
+Before editing an existing skill:
+
+1. Read the target `SKILL.md` and relevant supporting files.
+2. State the current invariants the edit must preserve.
+3. Identify affected surfaces: trigger conditions, workflow gates, subagent
+   behavior, verification requirements, examples, cross-references, or
+   deployment instructions.
+4. State the observed failure or desired behavior change.
+5. Classify risk by behavioral effect, not diff size.
+6. Choose verification strength from The Iron Law.
+
+Prefer minimal, local edits. Do not rewrite unrelated sections for taste while
+fixing a specific behavior.
 
 ## When to Create a Skill
 
@@ -287,7 +326,7 @@ digraph when_flowchart {
 - Linear instructions → Numbered lists
 - Labels without semantic meaning (step1, helper2)
 
-See @graphviz-conventions.dot for graphviz style rules.
+See `graphviz-conventions.dot` for graphviz style rules.
 
 **Visualizing for your human partner:** Use `render-graphs.js` in this directory to render a skill's flowcharts to SVG:
 ```bash
@@ -370,7 +409,16 @@ Then match verification to risk:
 
 **No tier-shopping:** if a "wording" change alters when an agent would invoke, skip, or rationalize around the skill, it IS a trigger-condition change — high risk. Classify by effect, not by diff size.
 
-Wrote a high-risk change without a baseline? Treat it as unverified: run the baseline scenarios now, and be prepared to discard the draft if the baseline shows it targets the wrong failures.
+For high-risk changes, baseline evidence may be either observed or synthetic:
+
+- **Observed evidence:** real user reports, production incidents, agent
+  transcripts, failed evals, or review findings that show the failure mode.
+- **Synthetic evidence:** pressure scenarios created before writing the skill
+  when no observed evidence exists.
+
+Wrote a high-risk change without either kind of baseline evidence? Treat it as
+unverified: gather baseline evidence now, and be prepared to discard the draft
+if the evidence shows it targets the wrong failure.
 
 **REQUIRED BACKGROUND:** The `k-superpowers:type-driven-verification` skill explains type-first verification. Same verification discipline applies to documentation.
 
@@ -415,7 +463,9 @@ Two principles worth stating in the skill text itself:
 
 For high-risk changes, run the full cycle:
 
-1. **Baseline:** run pressure scenarios WITHOUT the skill. Document choices and rationalizations verbatim. You must see what agents naturally do before writing.
+1. **Baseline:** use observed failure evidence, or run pressure scenarios
+   WITHOUT the skill when no observed evidence exists. Document choices and
+   rationalizations verbatim.
 2. **Write:** address those specific failures, minimally. No extra content for hypothetical cases.
 3. **Verify:** run the same scenarios WITH the skill. Agent should now comply.
 4. **Close loopholes:** new rationalization → add explicit counter → re-test until bulletproof.
@@ -445,7 +495,8 @@ helper1, helper2, step3, pattern4
 
 ## STOP: Before Moving to Next Skill
 
-**After writing ANY skill, you MUST STOP and complete the deployment process.**
+**After creating or changing ANY skill, you MUST STOP and complete the
+deployment process.**
 
 **Do NOT:**
 - Create multiple skills in batch without verifying each
@@ -456,24 +507,29 @@ helper1, helper2, step3, pattern4
 
 Deploying untested skills = deploying untested code. It's a violation of quality standards.
 
-## Skill Creation Checklist
+## Skill Change Checklist
 
 **IMPORTANT: Use TodoWrite to create todos for EACH checklist item below.**
 
 **Risk Assessment (always):**
+- [ ] Choose mode: create new skill / edit existing skill / verify existing skill / review only
 - [ ] State the invariant(s) this change must preserve
 - [ ] Classify the risk tier honestly (low / medium / high — by effect, not diff size)
 
 **Baseline Phase (high-risk changes):**
-- [ ] Create pressure scenarios (3+ combined pressures for discipline skills)
-- [ ] Run scenarios WITHOUT skill - document baseline behavior verbatim
+- [ ] Gather observed baseline evidence, or create pressure scenarios when no observed evidence exists
+- [ ] Document baseline behavior verbatim
 - [ ] Identify patterns in rationalizations/failures
 
 **Writing Phase:**
-- [ ] Name uses only letters, numbers, hyphens (no parentheses/special chars)
-- [ ] YAML frontmatter with required `name` and `description` fields (max 1024 chars; see [spec](https://agentskills.io/specification))
-- [ ] Description starts with "Use when..." and includes specific triggers/symptoms
-- [ ] Description written in third person
+- [ ] For edits: read the existing skill and preserve unrelated valid behavior
+- [ ] For new skills or frontmatter edits: name uses only letters, numbers,
+  hyphens (no parentheses/special chars)
+- [ ] For new skills or frontmatter edits: YAML frontmatter has required
+  `name` and `description` fields (max 1024 chars; see [spec](https://agentskills.io/specification))
+- [ ] For new skills or description edits: description starts with "Use when..."
+  and includes specific triggers/symptoms
+- [ ] For new skills or description edits: description is written in third person
 - [ ] Keywords throughout for search (errors, symptoms, tools)
 - [ ] Clear overview with core principle
 - [ ] Code inline OR link to separate file
@@ -500,12 +556,15 @@ Deploying untested skills = deploying untested code. It's a violation of quality
 - [ ] Supporting files only for tools or heavy reference
 
 **Deployment:**
-- [ ] Commit skill to git and push to your fork (if configured)
-- [ ] Consider contributing back via PR (if broadly useful)
+- [ ] Run the verification required by the risk tier
+- [ ] Update any indexes, manifests, packaging metadata, or installation copies
+  this skill collection uses
+- [ ] Commit, push, publish, install, or open a PR only when the current
+  project, user, or platform workflow authorizes it
 
 ## The Bottom Line
 
-**Creating skills requires verification matched to behavioral risk.**
+**Creating or editing skills requires verification matched to behavioral risk.**
 
 Iron law: verification strength must match behavioral risk — and is never zero.
 High-risk cycle: baseline → write skill → verify compliance → close loopholes.

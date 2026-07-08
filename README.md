@@ -110,7 +110,7 @@ codex plugin list | grep k-superpowers
 预期能看到：
 
 ```text
-k-superpowers@k-superpowers-dev  installed, enabled  5.1.7
+k-superpowers@k-superpowers-dev  installed, enabled  5.1.8
 ```
 
 本地 marketplace 的结构是：
