@@ -23,17 +23,39 @@ else
   out="$dir/task-${n}-brief.md"
 fi
 
-awk -v n="$n" '
+global_constraints=$(awk '
+  /^```/ { infence = !infence }
+  !infence && /^##[ \t]+Global Constraints[ \t]*$/ {
+    insection = 1
+    next
+  }
+  !infence && insection && /^##[ \t]+/ { exit }
+  insection { print }
+' "$plan")
+
+task_text=$(awk -v n="$n" '
   /^```/ { infence = !infence }
   !infence && /^#+[ \t]+Task[ \t]+[0-9]+/ {
     intask = ($0 ~ ("^#+[ \t]+Task[ \t]+" n "([^0-9]|$)"))
   }
   intask { print }
-' "$plan" > "$out"
+' "$plan")
 
-if [ ! -s "$out" ]; then
+if [ -z "$task_text" ]; then
   echo "task ${n} not found in ${plan} (no heading matching 'Task ${n}')" >&2
   exit 3
 fi
+
+{
+  printf "# Task %s Brief\n\n" "$n"
+  printf "## Global Constraints\n\n"
+  if [ -n "$global_constraints" ]; then
+    printf "%s\n\n" "$global_constraints"
+  else
+    printf "None (no ## Global Constraints section found in plan)\n\n"
+  fi
+  printf "## Task\n\n"
+  printf "%s\n" "$task_text"
+} > "$out"
 
 echo "wrote ${out}: $(wc -l < "$out" | tr -d ' ') lines"

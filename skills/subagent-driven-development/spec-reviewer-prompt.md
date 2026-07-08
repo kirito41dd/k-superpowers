@@ -50,6 +50,11 @@ Task tool (general-purpose):
 
     Read the implementation code and verify:
 
+    **Global constraints:**
+    - Does the implementation satisfy every `Global Constraints` item in the task brief?
+    - Are required manifest, docs, version, dependency, naming, platform, or cross-cutting updates present?
+    - Did the implementer ignore a plan-wide constraint because it was not repeated in the task body?
+
     **Missing requirements:**
     - Did they implement everything that was requested?
     - Are there requirements they skipped or missed?

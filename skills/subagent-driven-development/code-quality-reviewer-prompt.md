@@ -25,6 +25,9 @@ Task tool (general-purpose):
 - Did this implementation create new files that are already large, or significantly grow existing files? (Don't flag pre-existing file sizes — focus on what this change contributed.)
 - Do core structures, core functions, and core abstractions have useful explanatory comments/docs unless they are genuinely self-explanatory?
 - Did the implementation avoid noisy comments that only restate obvious code?
+- If any recommended fix could change behavior, public API, config, manifests,
+  tests, docs, touched files, or task scope, mark it `Requires spec re-review`
+  so the controller restarts at the spec axis after the fix.
 
 **Code reviewer returns:** Strengths, Issues (Critical/Important/Minor), Assessment
 

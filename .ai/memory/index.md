@@ -18,6 +18,7 @@
 ## 快速索引（按模块）
 
 - Skills 总览 → `docs/skills-overview.zh.md`
+- SDD task brief 全局约束与复审路由 → `decisions.md#2026-07-08-强化-sdd-task-brief-全局约束与复审路由`
 - Skill 写代码时的注释原则 → `conventions.md#2026-07-07-skill-写代码时的注释原则`
 - 上游 v6 SDD 文件交接与进度账本 → `decisions.md#2026-06-26-跟进上游-v6-sdd-文件交接与进度账本`
 - 上游 v6 writing-plans 结构增强 → `decisions.md#2026-06-26-跟进上游-v6-writing-plans-结构增强`
@@ -52,9 +53,11 @@
 - `#eval` → `conventions.md`, `gotchas.md`
 - `#version` → `conventions.md`
 - `#comments` → `conventions.md`
+- `#sdd` → `decisions.md`
 
 ## 最近热点
 
+- 2026-07-08 强化 SDD task brief 全局约束与复审路由 → `decisions.md`
 - 2026-07-07 更新 Skill 写代码时的注释原则 → `conventions.md`
 - 2026-06-26 跟进上游 v6 SDD 文件交接与进度账本 → `decisions.md`
 - 2026-06-26 跟进上游 v6 writing-plans 结构增强 → `decisions.md`

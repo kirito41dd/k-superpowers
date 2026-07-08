@@ -2,9 +2,9 @@
 
 <!-- SUMMARY
 覆盖范围：架构决策、技术选型、废弃方案（ADR 风格）
-条目数：11
-最近更新：2026-06-26
-高频标签：#memory #fork #personalization #codex #opencode #claude-code #install #verification #type-driven #skills
+条目数：12
+最近更新：2026-07-08
+高频标签：#memory #fork #personalization #codex #opencode #claude-code #install #verification #type-driven #skills #sdd
 -->
 
 ## 写入格式（ADR 风格）
@@ -21,6 +21,15 @@
 ```
 
 ---
+
+## 2026-07-08 强化 SDD task brief 全局约束与复审路由
+
+- **背景**：真实 SDD 执行中，Task 3 的 spec reviewer 发现 brief 细节不足，漏掉 manifest 更新频率和 `tokio::fs::OpenOptions` 等要求。进一步检查发现 `scripts/task-brief` 只抽取 `Task N` 段落，不会带上计划头部的 `Global Constraints`；同时 quality 修复后是否需要回到 spec review 的路由不够明确。
+- **选项**：合并 Spec / Standards reviewer 降低调用次数；保留双阶段 reviewer 但增加 brief readiness gate；只修 `task-brief` 不改流程文字。
+- **决策**：选择第二项。`task-brief` 输出 `Task N Brief`，包含 `Global Constraints` 和完整 `Task N` 正文；SDD 主流程在派发 implementer 前要求 controller 读取 brief 做 self-contained 检查，必要时追加 `Controller Notes` 或停止澄清；review loop 明确为 spec fix 后重跑 spec review，quality fix 若影响行为、API、配置、manifest、测试、文档、触及文件或任务范围则回到 spec review，行为中性的 quality fix 只重跑 quality review。Spec reviewer 负责检查全局约束，quality reviewer 对会影响 spec 的建议标记 `Requires spec re-review`。
+- **理由**：Spec / Standards 双轴 review 仍能避免需求符合度和代码质量混在一起；问题根因是 handoff 信息丢失和复审路由含糊，而不是双 reviewer 本身。把全局约束前置进 brief 并加 readiness gate，能减少 implementer 低上下文猜测；按风险路由复审能控制成本。
+- **影响**：`skills/subagent-driven-development/SKILL.md`, `skills/subagent-driven-development/scripts/task-brief`, `skills/subagent-driven-development/spec-reviewer-prompt.md`, `skills/subagent-driven-development/code-quality-reviewer-prompt.md`, `docs/skills-overview.zh.md`, `package.json`, `.codex-plugin/plugin.json`, `.claude-plugin/plugin.json`, `.claude-plugin/marketplace.json`, `README.md`
+- **状态**：已实施。
 
 ## 2026-06-26 跟进上游 v6 SDD 文件交接与进度账本
 

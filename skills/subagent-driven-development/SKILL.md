@@ -54,6 +54,9 @@ digraph process {
     subgraph cluster_per_task {
         label="Per Task";
         "Write task brief file (./scripts/task-brief)" [shape=box];
+        "Read task brief for readiness" [shape=box];
+        "Brief is self-contained?" [shape=diamond];
+        "Append Controller Notes or escalate missing requirements" [shape=box];
         "Dispatch implementer subagent (./implementer-prompt.md)" [shape=box];
         "Implementer subagent asks questions?" [shape=diamond];
         "Answer questions, provide context" [shape=box];
@@ -65,6 +68,8 @@ digraph process {
         "Dispatch code quality reviewer subagent (./code-quality-reviewer-prompt.md)" [shape=box];
         "Code quality reviewer subagent approves?" [shape=diamond];
         "Implementer subagent fixes quality issues" [shape=box];
+        "Rewrite review package after quality fix" [shape=box];
+        "Quality fix can affect spec?" [shape=diamond];
         "Mark task complete in TodoWrite and progress ledger" [shape=box];
     }
 
@@ -75,7 +80,11 @@ digraph process {
     "Use k-superpowers:finishing-a-development-branch" [shape=box style=filled fillcolor=lightgreen];
 
     "Read plan, note context, create TodoWrite, check progress ledger" -> "Write task brief file (./scripts/task-brief)";
-    "Write task brief file (./scripts/task-brief)" -> "Dispatch implementer subagent (./implementer-prompt.md)";
+    "Write task brief file (./scripts/task-brief)" -> "Read task brief for readiness";
+    "Read task brief for readiness" -> "Brief is self-contained?";
+    "Brief is self-contained?" -> "Dispatch implementer subagent (./implementer-prompt.md)" [label="yes"];
+    "Brief is self-contained?" -> "Append Controller Notes or escalate missing requirements" [label="no"];
+    "Append Controller Notes or escalate missing requirements" -> "Read task brief for readiness";
     "Dispatch implementer subagent (./implementer-prompt.md)" -> "Implementer subagent asks questions?";
     "Implementer subagent asks questions?" -> "Answer questions, provide context" [label="yes"];
     "Answer questions, provide context" -> "Dispatch implementer subagent (./implementer-prompt.md)";
@@ -88,7 +97,10 @@ digraph process {
     "Spec reviewer subagent confirms code matches spec?" -> "Dispatch code quality reviewer subagent (./code-quality-reviewer-prompt.md)" [label="yes"];
     "Dispatch code quality reviewer subagent (./code-quality-reviewer-prompt.md)" -> "Code quality reviewer subagent approves?";
     "Code quality reviewer subagent approves?" -> "Implementer subagent fixes quality issues" [label="no"];
-    "Implementer subagent fixes quality issues" -> "Write review package (./scripts/review-package BASE HEAD)" [label="re-review"];
+    "Implementer subagent fixes quality issues" -> "Rewrite review package after quality fix";
+    "Rewrite review package after quality fix" -> "Quality fix can affect spec?";
+    "Quality fix can affect spec?" -> "Dispatch spec reviewer subagent (./spec-reviewer-prompt.md)" [label="yes"];
+    "Quality fix can affect spec?" -> "Dispatch code quality reviewer subagent (./code-quality-reviewer-prompt.md)" [label="no"];
     "Code quality reviewer subagent approves?" -> "Mark task complete in TodoWrite and progress ledger" [label="yes"];
     "Mark task complete in TodoWrite and progress ledger" -> "More tasks remain?";
     "More tasks remain?" -> "Write task brief file (./scripts/task-brief)" [label="yes"];
@@ -144,9 +156,18 @@ stays resident in the controller's context. Hand bulky artifacts over as files:
   per-worktree artifact directory at `.superpowers/sdd/`.
 - **Task brief:** before dispatching an implementer, run
   `./scripts/task-brief PLAN_FILE N`. It writes the full task text to
-  `.superpowers/sdd/task-N-brief.md` and prints the path. The brief is the
-  single source of task requirements; do not paste the full task into the
-  dispatch prompt.
+  `.superpowers/sdd/task-N-brief.md` and prints the path. The generated brief
+  includes the plan's `Global Constraints` followed by the full `Task N` text.
+  The brief is the single source of task requirements; do not paste the full
+  task into the dispatch prompt.
+- **Brief readiness gate:** after generating the task brief, read it once before
+  dispatching the implementer. The brief must be self-contained: it includes
+  `Global Constraints`, the full task text, exact files, required manifest,
+  docs, or version updates, dependency/API constraints, and verification
+  commands with expected results. If a required detail is missing but can be
+  copied from the plan, append a `Controller Notes` section to the brief before
+  dispatch. If it cannot be derived from the plan, stop and ask the human or
+  revise the plan. Do not let the implementer infer missing requirements.
 - **Report file:** name the implementer report after the brief
   (`task-N-brief.md` -> `task-N-report.md`) and include that path in the
   dispatch. The implementer writes the full report there and returns only
@@ -163,6 +184,25 @@ stays resident in the controller's context. Hand bulky artifacts over as files:
   approves, run `./scripts/sdd-cleanup`. It deletes `.superpowers/sdd/` for the
   current worktree so the next SDD run starts without stale briefs, reports,
   review packages, or `progress.md`.
+
+## Review Loop Routing
+
+Spec compliance remains the first gate:
+
+- Any spec finding requires an implementer fix.
+- After a spec fix, regenerate the review package and run spec review again.
+- Run code quality review only after spec review passes.
+
+Quality fixes route by risk:
+
+- If the quality fix changes behavior, public API, config, manifests, tests,
+  docs, touched files, or task scope, regenerate the review package and restart
+  at spec review.
+- If the quality fix is behavior-neutral standards work such as a local rename,
+  extraction, comment/doc improvement, or cleanup, regenerate the review package
+  and re-run code quality review only.
+- When unsure, restart at spec review. Do not mark the task complete while
+  either review axis has open issues.
 
 ## Durable Progress
 
@@ -202,6 +242,7 @@ You: I'm using Subagent-Driven Development to execute this plan.
 Task 1: Hook installation script
 
 [Run ./scripts/task-brief docs/superpowers/plans/feature-plan.md 1]
+[Read .superpowers/sdd/task-1-brief.md and confirm it includes Global Constraints, exact files, and verification. Append Controller Notes if the plan contains required details not present in the brief.]
 [Dispatch implementation subagent with task brief path + report file path + context]
 
 Implementer: "Before I begin - should the hook be installed at user or system level?"
@@ -256,7 +297,7 @@ Code reviewer: Strengths: Solid. Issues (Important): Magic number (100)
 Implementer: Extracted PROGRESS_INTERVAL constant, appended verification to report
 
 [Run ./scripts/review-package <base> HEAD]
-[Code reviewer reviews same brief/report and updated diff package]
+[Behavior-neutral quality fix: re-run code quality review with same brief/report and updated diff package]
 Code reviewer: ✅ Approved
 
 [Mark Task 2 complete]
@@ -311,6 +352,7 @@ Done!
 **Never:**
 - Start implementation on main/master branch without explicit user consent
 - Skip reviews (spec compliance OR code quality)
+- Dispatch an implementer before reading the generated brief for readiness
 - Proceed with unfixed issues
 - Dispatch multiple implementation subagents in parallel (conflicts)
 - Make subagent read the full plan file (provide a task brief file instead)
@@ -326,6 +368,8 @@ Done!
 - Skip review loops (reviewer found issues = implementer fixes = review again)
 - Let implementer self-review replace actual review (both are needed)
 - **Start code quality review before spec compliance is ✅** (wrong order)
+- Skip spec re-review after a quality fix that changes behavior, API, config,
+  manifests, tests, docs, touched files, or task scope
 - Move to next task while either review has open issues
 
 **If subagent asks questions:**
