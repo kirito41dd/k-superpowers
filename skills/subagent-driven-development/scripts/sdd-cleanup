@@ -1,0 +1,27 @@
+#!/usr/bin/env bash
+# Remove short-lived SDD artifacts after a successful SDD run.
+#
+# This intentionally deletes only the current worktree's `.superpowers/sdd`
+# directory. Incomplete or blocked SDD runs should keep this directory so the
+# progress ledger, task briefs, reports, and review packages remain available
+# for recovery.
+set -euo pipefail
+
+root=$(git rev-parse --show-toplevel)
+dir="$root/.superpowers/sdd"
+
+if [ ! -d "$dir" ]; then
+  echo "no SDD artifacts to clean: $dir"
+  exit 0
+fi
+
+case "$dir" in
+  "$root"/.superpowers/sdd) ;;
+  *)
+    echo "refusing to remove unexpected SDD artifact path: $dir" >&2
+    exit 2
+    ;;
+esac
+
+rm -rf -- "$dir"
+echo "removed $dir"

@@ -12,8 +12,10 @@ Execute plan by dispatching fresh subagent per task, with two-stage review after
 **Core principle:** Fresh subagent per task + two-stage review (spec then quality) = high quality, fast iteration
 
 **Context discipline:** Hand large artifacts to subagents as files: task briefs,
-implementer reports, review packages, and the progress ledger live in
-`.superpowers/sdd/` via the scripts in `./scripts/`.
+implementer reports, review packages, and the progress ledger live in the
+short-lived `.superpowers/sdd/` workspace via the scripts in `./scripts/`.
+After a successful SDD run, remove that workspace with `./scripts/sdd-cleanup`
+so old ledgers and reports cannot pollute the next plan.
 
 **Continuous execution:** Do not pause to check in with your human partner between tasks. Execute all tasks from the plan without stopping. The only reasons to stop are: BLOCKED status you cannot resolve, ambiguity that genuinely prevents progress, or all tasks complete. "Should I continue?" prompts and progress summaries waste their time — they asked you to execute the plan, so execute it.
 
@@ -69,6 +71,7 @@ digraph process {
     "Read plan, note context, create TodoWrite, check progress ledger" [shape=box];
     "More tasks remain?" [shape=diamond];
     "Dispatch final code reviewer subagent for entire implementation" [shape=box];
+    "Clean SDD artifact workspace (./scripts/sdd-cleanup)" [shape=box];
     "Use k-superpowers:finishing-a-development-branch" [shape=box style=filled fillcolor=lightgreen];
 
     "Read plan, note context, create TodoWrite, check progress ledger" -> "Write task brief file (./scripts/task-brief)";
@@ -90,7 +93,8 @@ digraph process {
     "Mark task complete in TodoWrite and progress ledger" -> "More tasks remain?";
     "More tasks remain?" -> "Write task brief file (./scripts/task-brief)" [label="yes"];
     "More tasks remain?" -> "Dispatch final code reviewer subagent for entire implementation" [label="no"];
-    "Dispatch final code reviewer subagent for entire implementation" -> "Use k-superpowers:finishing-a-development-branch";
+    "Dispatch final code reviewer subagent for entire implementation" -> "Clean SDD artifact workspace (./scripts/sdd-cleanup)";
+    "Clean SDD artifact workspace (./scripts/sdd-cleanup)" -> "Use k-superpowers:finishing-a-development-branch";
 }
 ```
 
@@ -155,6 +159,10 @@ stays resident in the controller's context. Hand bulky artifacts over as files:
   file, base/head SHAs, and review package path. Spec review judges requirement
   compliance first; code quality review still runs only after spec compliance
   passes.
+- **Cleanup:** after every task is complete and the final whole-change reviewer
+  approves, run `./scripts/sdd-cleanup`. It deletes `.superpowers/sdd/` for the
+  current worktree so the next SDD run starts without stale briefs, reports,
+  review packages, or `progress.md`.
 
 ## Durable Progress
 
@@ -170,6 +178,11 @@ the ledger file, not only in todos.
 - The ledger is ignored by git through `.superpowers/sdd/.gitignore`. If
   `git clean -fdx` deletes it, recover from git history and reviewer reports if
   available.
+- Treat `.superpowers/sdd/` as resume state for the current unfinished SDD run,
+  not as durable project history. Do not clean it while tasks, review loops, or
+  blockers remain. Once the whole SDD run succeeds, `./scripts/sdd-cleanup`
+  removes it so future plans cannot mistake old `progress.md` entries for
+  current work.
 
 ## Prompt Templates
 
@@ -254,6 +267,9 @@ Code reviewer: ✅ Approved
 [Dispatch final code-reviewer]
 Final reviewer: All requirements met, ready to merge
 
+[Run ./scripts/sdd-cleanup]
+Cleanup: removed .superpowers/sdd
+
 Done!
 ```
 
@@ -300,6 +316,10 @@ Done!
 - Make subagent read the full plan file (provide a task brief file instead)
 - Paste full task text, reports, or diffs into dispatches when a file path will do
 - Re-dispatch tasks already marked complete in `.superpowers/sdd/progress.md`
+- Leave `.superpowers/sdd/` in place after the final whole-change reviewer
+  approves the completed SDD run
+- Clean `.superpowers/sdd/` while the run is blocked, interrupted, mid-review,
+  or otherwise incomplete
 - Skip scene-setting context (subagent needs to understand where task fits)
 - Ignore subagent questions (answer before letting them proceed)
 - Accept "close enough" on spec compliance (spec reviewer found issues = not done)
