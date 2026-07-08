@@ -11,9 +11,9 @@ Write comprehensive implementation plans assuming the engineer has zero context 
 
 Assume they are a skilled developer, but know almost nothing about our toolset or problem domain. Assume they may over-test incidental details or under-test core behavior unless guided.
 
-**Language Adaptation:** Determine the user's conversation language from the current session. Output all user-facing prose, documents (plan header, descriptions, comments, task descriptions), scripted review/approval prompts, and execution-choice prompts in that language. Code blocks, commands, and technical identifiers remain in their natural form (English).
+**Language Adaptation:** Determine the user's conversation language from the current session. Output all user-facing prose, documents (plan header, descriptions, task descriptions), scripted review/approval prompts, and execution-choice prompts in that language. Code blocks, commands, technical identifiers, and comments/docs inside code examples follow project instructions and nearby file style first; use conversation language for code comments only when no project style exists.
 
-**Core Explanations:** When plan steps define core structures, core functions, or core abstractions, include explanatory comments/docs unless the code is genuinely self-explanatory. Use the form appropriate for the target language and project: doc comments, docstrings, interface comments, or nearby code comments. Explain what the abstraction represents, how callers should use it, and any important invariants, lifecycle rules, protocol boundaries, or state transitions. Do not add comments that merely restate obvious assignments, names, or control flow.
+**Core Explanations:** When plan steps define core structures, core functions, or core abstractions, include explanatory comments/docs unless the code is genuinely self-explanatory. Use the form appropriate for the target language and project: doc comments, docstrings, interface comments, or nearby code comments. Follow project instructions and nearby file style for comment language. Explain what the abstraction represents, how callers should use it, and any important invariants, lifecycle rules, protocol boundaries, or state transitions. Do not add comments that merely restate obvious assignments, names, or control flow.
 
 **Announce at start:** "I'm using the writing-plans skill to create the implementation plan."
 
@@ -149,7 +149,7 @@ def test_specific_behavior():
 
 - [ ] **Step 4: Run relevant verification**
 
-Run: `pytest tests/path/test.py::test_name -v` (plus type check/build for the touched module)
+Run: `pytest tests/path/test.py::test_name -v` (copy the narrowest relevant CI, project script, package/task config, or memory command when available; do not broaden target/suite/matrix scope unless explicitly optional)
 Expected: PASS, exit 0
 
 - [ ] **Step 5: Commit checkpoint if authorized**
@@ -179,7 +179,8 @@ Every step must contain the actual content an engineer needs. These are **plan f
 - Copy exact global constraints into the plan header so every downstream task inherits them
 - Give each task explicit `Interfaces` so low-context implementers know neighbor contracts
 - Complete code in every step — if a step changes code, show the code
-- Exact commands with expected output
+- Exact commands with expected output, copied from project source of truth when
+  available; do not broaden target/suite/matrix scope on your own
 - Prefer vertical slices: each task should complete a narrow behavior that can
   be verified independently
 - Right-size tasks so setup/config/docs ride with the deliverable that needs
@@ -200,11 +201,11 @@ After writing the complete plan, look at the spec with fresh eyes and check the 
 
 **3. Type consistency:** Do the types, method signatures, and property names you used in later tasks match what you defined in earlier tasks? A function called `clearLayers()` in Task 3 but `clearFullLayers()` in Task 7 is a bug.
 
-**4. Constraint propagation:** Did every project-wide requirement from the spec land in `Global Constraints`, with exact values copied verbatim? If a task depends on one, is it reflected in the task steps or verification?
+**4. Constraint propagation:** Did every project-wide requirement from the spec land in `Global Constraints`, with exact values copied verbatim? If a task depends on one, is it reflected in the task steps or verification? Do verification commands match the project source of truth when one exists, without broadening scope on your own?
 
 **5. Interface consistency:** Do each task's `Consumes` and `Produces` entries match the types, APIs, files, commands, and data shapes used by neighboring tasks?
 
-**6. Core explanation check:** Do core structures, core functions, and core abstractions have useful explanatory comments/docs unless they are genuinely self-explanatory? Do they explain what the abstraction represents, how to use it, and important invariants or lifecycle/protocol/state rules? Remove comments that only repeat obvious code.
+**6. Core explanation check:** Do core structures, core functions, and core abstractions have useful explanatory comments/docs unless they are genuinely self-explanatory? Do they explain what the abstraction represents, how to use it, and important invariants or lifecycle/protocol/state rules? Do comment language and style follow project instructions and nearby files? Remove comments that only repeat obvious code.
 
 **7. Task sizing:** Is each task worth its own verification and review gate? Merge standalone setup/config/docs tasks into the deliverable that needs them unless they are independently verifiable.
 

@@ -2,8 +2,8 @@
 
 <!-- SUMMARY
 覆盖范围：项目特定的代码风格、命名规则、目录结构、流程约定
-条目数：10
-最近更新：2026-07-07
+条目数：11
+最近更新：2026-07-08
 高频标签：#skills #memory #eval #personalization #codex #claude-code #brainstorming #opencode #install #verification #type-driven #version #comments
 -->
 
@@ -26,6 +26,14 @@
 ```
 
 ---
+
+## 2026-07-08 Skill 验证命令与代码注释 source-of-truth
+
+- **约定**：Skill 生成计划或执行任务时，验证命令优先复用 CI、项目脚本、package/task 配置或项目记忆中的最小相关命令，不自动扩大 target/suite/matrix scope；代码注释、doc comments、docstrings、接口注释的语言和风格优先跟随项目指令和邻近文件，会话语言只影响用户可见文本。
+- **理由**：避免 agent 把项目既有 lint/test gate 泛化成更宽 target 导致无关噪音，也避免通用语言适配规则覆盖仓库的代码注释约定。
+- **反例**：计划把项目已有的窄 lint 命令升级成全量 target；因为会话是中文就强制把所有代码注释改成中文，忽略邻近文件风格。
+- **正例**：从 CI 或项目脚本复制最小相关验证命令；只有在明确标为 optional broader check 或先获确认后才跑更宽检查；代码注释语言按项目指令和局部风格选择。
+- **范围**：`skills/writing-plans/SKILL.md`, `skills/subagent-driven-development/*`, `docs/skills-overview.zh.md`
 
 ## 2026-07-07 Skill 写代码时的注释原则
 

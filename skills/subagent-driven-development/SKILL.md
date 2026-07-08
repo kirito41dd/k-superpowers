@@ -117,6 +117,10 @@ Before dispatching Task 1, scan the plan once for conflicts:
 - tasks that contradict each other or the plan's `Global Constraints`
 - anything the plan explicitly mandates that reviewer discipline treats as a
   defect
+- verification commands that conflict with project source of truth or broaden
+  target/suite/matrix scope without saying so
+- code comment/doc language or style that conflicts with project instructions
+  or nearby files
 - task ordering or interface assumptions that would make a later task impossible
 
 Present everything you find to the human as one batched question, each finding
@@ -205,6 +209,8 @@ final whole-change review. When dispatching reviewers:
   decision: present the finding beside the plan text and ask which governs. Do
   not dismiss the finding because the plan mandates it, and do not dispatch a
   fix that contradicts the plan without asking.
+- A plan requirement that conflicts with project source of truth is the same
+  kind of conflict: present both sources and ask which governs.
 - The final whole-change review gets a package too: run
   `./scripts/review-package MERGE_BASE HEAD`, where `MERGE_BASE` is the commit
   the branch started from, and include the printed path in the final review
@@ -229,10 +235,12 @@ stays resident in the controller's context. Hand bulky artifacts over as files:
   dispatching the implementer. The brief must be self-contained: it includes
   `Global Constraints`, the full task text, exact files, required manifest,
   docs, or version updates, dependency/API constraints, and verification
-  commands with expected results. If a required detail is missing but can be
-  copied from the plan, append a `Controller Notes` section to the brief before
-  dispatch. If it cannot be derived from the plan, stop and ask the human or
-  revise the plan. Do not let the implementer infer missing requirements.
+  commands with expected results and scope. If a required detail is missing but
+  can be copied from the plan, append a `Controller Notes` section to the brief
+  before dispatch. If it cannot be derived from the plan, stop and ask the
+  human or revise the plan. If verification scope conflicts with CI, project
+  scripts, package/task config, or memory, resolve it here before dispatch. Do
+  not let the implementer infer missing requirements.
 - **Report file:** name the implementer report after the brief
   (`task-N-brief.md` -> `task-N-report.md`) and include that path in the
   dispatch. The implementer writes the full report there and returns only

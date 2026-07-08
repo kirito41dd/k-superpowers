@@ -46,7 +46,11 @@ Task tool (general-purpose):
     While iterating, run the focused verification for what you are changing.
     Before reporting DONE or DONE_WITH_CONCERNS, run the relevant task
     verification from the brief once and record the command and output summary
-    in [REPORT_FILE].
+    in [REPORT_FILE]. If the brief's verification command conflicts with CI,
+    project scripts, package/task config, or memory, or clearly broadens
+    target/suite/matrix scope without authorization, report NEEDS_CONTEXT or
+    DONE_WITH_CONCERNS instead of treating the extra noise as an implementation
+    defect.
 
     ## Code Organization
 
@@ -66,10 +70,12 @@ Task tool (general-purpose):
     Add explanatory comments/docs for core structures, core functions, and core
     abstractions unless they are genuinely self-explanatory. Use the form
     appropriate for the target language and project: doc comments, docstrings,
-    interface comments, or nearby code comments. Explain what the abstraction
-    represents, how callers should use it, and any important invariants,
-    lifecycle rules, protocol boundaries, or state transitions. Do not add
-    comments that merely restate obvious assignments, names, or control flow.
+    interface comments, or nearby code comments. Project instructions and
+    nearby file style override plan examples and conversation language for code
+    comment language. Explain what the abstraction represents, how callers
+    should use it, and any important invariants, lifecycle rules, protocol
+    boundaries, or state transitions. Do not add comments that merely restate
+    obvious assignments, names, or control flow.
 
     ## When You're in Over Your Head
 
@@ -103,7 +109,8 @@ Task tool (general-purpose):
     - Is the code clean and maintainable?
     - Did I add useful explanatory comments/docs for core structures, core
       functions, and core abstractions unless they are genuinely self-explanatory,
-      and avoid comments that only repeat clear code?
+      follow project comment language/style, and avoid comments that only
+      repeat clear code?
 
     **Discipline:**
     - Did I avoid overbuilding (YAGNI)?
@@ -114,6 +121,8 @@ Task tool (general-purpose):
     - Do tests actually verify behavior (not just mock behavior)?
     - Did I use type-first verification where required?
     - Are tests comprehensive?
+    - Did I keep verification scope aligned with the brief and project source
+      of truth?
     - Is the verification output clean (no stray warnings or noise)?
 
     If you find issues during self-review, fix them now before reporting.

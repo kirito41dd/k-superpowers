@@ -68,6 +68,8 @@ Task tool (general-purpose):
     - Do new or changed tests verify real behavior, not mocks?
     - Are tests focused on stable entry points where possible?
     - Does verification cover the runtime risks the task identified?
+    - Does verification match project source of truth without unrequested
+      target/suite/matrix broadening?
     - Is verification output clean?
 
     **Structure and maintainability:**
@@ -79,6 +81,7 @@ Task tool (general-purpose):
       focus on what this change contributed.
     - Do core structures, core functions, and core abstractions have useful
       explanatory comments/docs unless they are genuinely self-explanatory?
+    - Do code comments/docs follow project instructions and nearby file style?
     - Did the implementation avoid noisy comments that only restate obvious
       code?
 
@@ -94,6 +97,8 @@ Task tool (general-purpose):
     fragile behavior, maintainability damage you would block a merge over,
     swallowed errors, tests that assert nothing, or significant convention
     violations. "Coverage could be broader" and polish suggestions are Minor.
+    If the plan itself conflicts with project source of truth, report it as a
+    plan/controller issue instead of blaming only the implementer.
 
     Acknowledge what was done well before listing issues. Every finding needs a
     file:line reference, what is wrong, why it matters, and how to fix it if

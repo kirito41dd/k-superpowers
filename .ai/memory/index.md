@@ -18,6 +18,7 @@
 ## 快速索引（按模块）
 
 - Skills 总览 → `docs/skills-overview.zh.md`
+- Skill 验证命令与代码注释 source-of-truth → `conventions.md#2026-07-08-skill-验证命令与代码注释-source-of-truth`
 - SDD reviewer/controller 上游纪律吸收 → `decisions.md#2026-07-08-吸收上游-sdd-reviewer-与-controller-纪律`
 - SDD task brief 全局约束与复审路由 → `decisions.md#2026-07-08-强化-sdd-task-brief-全局约束与复审路由`
 - Skill 写代码时的注释原则 → `conventions.md#2026-07-07-skill-写代码时的注释原则`
@@ -58,6 +59,7 @@
 
 ## 最近热点
 
+- 2026-07-08 Skill 验证命令与代码注释 source-of-truth → `conventions.md`
 - 2026-07-08 吸收上游 SDD reviewer 与 controller 纪律 → `decisions.md`
 - 2026-07-08 强化 SDD task brief 全局约束与复审路由 → `decisions.md`
 - 2026-07-07 更新 Skill 写代码时的注释原则 → `conventions.md`
