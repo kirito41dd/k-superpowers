@@ -2,8 +2,8 @@
 
 <!-- SUMMARY
 覆盖范围：架构决策、技术选型、废弃方案（ADR 风格）
-条目数：13
-最近更新：2026-07-08
+条目数：14
+最近更新：2026-07-10
 高频标签：#memory #fork #personalization #codex #opencode #claude-code #install #verification #type-driven #skills #sdd
 -->
 
@@ -21,6 +21,15 @@
 ```
 
 ---
+
+## 2026-07-10 SDD 改为风险自适应执行并合并 Task Reviewer
+
+- **背景**：用户反馈当前 SDD 完成普通任务过慢。原流程对每个 Task 固定派发 implementer、Spec reviewer、Quality reviewer，最后再做 whole-change review，最低调用数为 `3N+1`；详细计划、implementer self-review 和多层 review 还会重复检查相同证据。与此同时，`review-package BASE HEAD` 依赖稳定 commit range，但 fork 的“未授权不提交”政策使多 Task SDD 无法可靠隔离和恢复。
+- **选项**：继续固定双 reviewer 只优化 prompt；所有 Task 统一使用上游式 merged reviewer；按 Task 风险分流并在 delegated Task 上使用 merged reviewer。
+- **决策**：选择第三项。`writing-plans` 为每个 Task 强制写 `Risk: low | medium | high` 和具体 rationale，缺失风险不能默认为 low，controller 只能基于新证据升级、不能静默降级。low Task 由 controller 直接实现、验证和 self-check，不派 subagent；medium/high Task 使用 fresh implementer + 单 merged task reviewer，reviewer 在一次 diff 读取中分别输出独立阻断的 Spec Compliance 与 Task Quality verdict；high 或跨 Task 共享接口/状态/组合行为额外触发独立 final whole-change review。SDD 启动前一次性请求当前计划的 local checkpoint commit 授权，拒绝则转 `executing-plans`，不提供 stash/patch 等 commitless 降级模式。每个 Task 路由前记录原始 `TASK_BASE` 和 pre-existing dirty patch/hash，dirty path 与 brief 重叠时停止处理，避免吸收用户已有 hunks。Task executor 负责 exact-checkpoint verification，controller 检查 report/diff/range/verdict，最终完成声明前由 controller 跑新鲜整体验证。
+- **理由**：风险分流把 all-low 调用降为 `0`，普通 `N` 个 delegated Task 降为 `2N`，需要 final review 时为 `2N+1`，同时保留双轴 verdict 和高风险独立审查。真实 checkpoint commits 比维护 stash、patch 或临时 tree-object 协议更简单可靠，且一次性显式授权仍保留用户对 Git 历史的控制。merged reviewer 减少重复上下文和 token，同时通过严格输出契约防止 Spec 与 Quality 互相掩盖。
+- **影响**：`skills/writing-plans/SKILL.md`, `skills/subagent-driven-development/*`, `skills/verification-before-completion/SKILL.md`, `skills/requesting-code-review/SKILL.md`, `skills/writing-skills/SKILL.md`, `tests/claude-code/*`, `docs/skills-overview.zh.md`, `docs/testing.md`, `docs/superpowers/specs/2026-07-10-risk-adaptive-sdd-design.md`, plugin manifests, `README.md`
+- **状态**：已实施。六个 fresh-agent 压力场景通过，独立 whole-change reviewer 最终无 findings；Bash/JSON/版本/残留/parser 正反例检查通过。真实 Claude integration test 因耗时未运行，新会话或重启后才能验证 plugin registry 加载新版 skill。
 
 ## 2026-07-08 吸收上游 SDD reviewer 与 controller 纪律
 

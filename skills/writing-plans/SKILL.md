@@ -44,10 +44,11 @@ through the affected path. Avoid horizontal layer tasks like "add schema",
 "add API", then "add UI" unless that layer is a genuine prerequisite with its
 own verification.
 
-A task is the smallest unit that carries its own verification cycle and is
-worth a fresh reviewer's gate. Fold setup, configuration, scaffolding, and
-documentation steps into the task whose deliverable needs them. Split only
-where a reviewer could meaningfully reject one task while approving its
+A task is the smallest unit that carries its own verification cycle and, when
+risk requires review, is worth a fresh reviewer's gate. Fold setup,
+configuration, scaffolding, and documentation steps into the task whose
+deliverable needs them. Split only where tasks can be independently verified
+and a risk-required reviewer could meaningfully reject one while approving its
 neighbor. Each task ends with an independently verifiable deliverable.
 
 Each task should state:
@@ -62,6 +63,27 @@ Allowed exceptions:
 - prefactoring that makes the later behavior change simpler and has its own
   verification
 - mechanical migration, rename, config, or documentation-only changes
+
+## Task Risk Classification
+
+Every task must declare:
+
+```markdown
+**Risk:** low | medium | high
+**Risk rationale:** [Concrete behavioral and integration risks]
+```
+
+Classify by behavioral effect, not diff size:
+
+| Risk | Use when |
+|------|----------|
+| `low` | Documentation, comments, formatting, mechanical configuration, or a local rename with no runtime behavior or public contract change |
+| `medium` | Local runtime behavior with bounded files, stable interfaces, and a focused verification entry point |
+| `high` | Public API, persisted format, security boundary, concurrency, protocol, state machine, cross-module contract, or high-risk migration |
+
+Missing risk metadata is a plan failure, never an implicit `low`. Shared
+interfaces, shared mutable state, or behavior created only by composing tasks
+must be named because they require final whole-change review during SDD.
 
 ## Bite-Sized Task Granularity
 
@@ -110,6 +132,8 @@ has no global constraints.]
 
 **Slice behavior:** [The user-visible, externally observable, or agent-visible behavior completed by this task]
 **Depends on:** [Earlier task number, or "None"]
+**Risk:** low | medium | high
+**Risk rationale:** [Concrete behavioral and integration risks]
 
 **Interfaces:**
 - Consumes: [what this task uses from earlier tasks — exact type names, function signatures, data shapes, files, commands, or "None"]
@@ -207,7 +231,13 @@ After writing the complete plan, look at the spec with fresh eyes and check the 
 
 **6. Core explanation check:** Do core structures, core functions, and core abstractions have useful explanatory comments/docs unless they are genuinely self-explanatory? Do they explain what the abstraction represents, how to use it, and important invariants or lifecycle/protocol/state rules? Do comment language and style follow project instructions and nearby files? Remove comments that only repeat obvious code.
 
-**7. Task sizing:** Is each task worth its own verification and review gate? Merge standalone setup/config/docs tasks into the deliverable that needs them unless they are independently verifiable.
+**7. Task sizing:** Is each task worth its own verification boundary and, when its risk requires one, a review gate? Merge standalone setup/config/docs tasks into the deliverable that needs them unless they are independently verifiable.
+
+**8. Risk classification:** Does every task declare `low`, `medium`, or
+`high` with a concrete behavioral rationale? Did you classify by effect rather
+than diff size? Did you identify shared interfaces, shared mutable state, or
+cross-task behavior that requires final whole-change review? Missing metadata
+is a plan failure, not an implicit `low`.
 
 If you find issues, fix them inline. No need to re-review — just fix and move on. If you find a spec requirement with no task, add the task.
 
@@ -232,11 +262,17 @@ Single source of truth for all commits in this plan's lifecycle:
 - **Plan document:** commit only when the user explicitly chooses option 1 or otherwise explicitly asks for a commit. The authorization covers the plan document only. If project instructions prohibit commits unless explicitly requested, that rule prevails.
 - **Plan approval ≠ implementation authorization:** approving the plan (with or without commit) does not grant permission to start implementation or commit implementation code.
 - **Implementation commit checkpoints** (template Step 5): execute only if project instructions allow commits, the user explicitly requested commits, or the user approved a workflow option that includes implementation commits. Otherwise stop after verification and ask before committing.
+- **SDD checkpoint commits:** Choosing Subagent-Driven does not itself grant
+  commit permission. Before SDD starts, it asks once for authorization to
+  create local task/fix checkpoint commits for the approved plan. This does not
+  authorize push, merge, PR creation, amend, force operations, or unrelated
+  commits. If authorization is declined, use Inline Execution instead; do not
+  run commitless SDD.
 
 After the approved plan is either committed or explicitly approved without commit, offer execution choice:
 
 Localize the execution-choice prompt into the user's conversation language while preserving these options:
-- Option 1: Subagent-Driven (recommended) - dispatch a fresh subagent per task, review between tasks, fast iteration.
+- Option 1: Subagent-Driven (recommended) - risk-adaptive execution with review strength matched to each task.
 - Option 2: Inline Execution - execute tasks in this session using executing-plans, batch execution with checkpoints.
 - Ask which approach the user wants.
 
@@ -244,7 +280,7 @@ Do NOT invoke subagent-driven-development, executing-plans, or any implementatio
 
 **If Subagent-Driven chosen:**
 - **REQUIRED SUB-SKILL:** Use k-superpowers:subagent-driven-development
-- Fresh subagent per task + two-stage review
+- Risk-adaptive execution: controller handles low-risk tasks; medium/high tasks use a fresh implementer and merged task review; high or cross-task risk adds final review.
 
 **If Inline Execution chosen:**
 - **REQUIRED SUB-SKILL:** Use k-superpowers:executing-plans

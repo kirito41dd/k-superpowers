@@ -83,12 +83,12 @@ echo "=== All tests passed ==="
 ### Fast Tests (run by default)
 
 #### test-subagent-driven-development.sh
-Tests skill content and requirements (~2 minutes):
+Tests skill content, risk routing, and pressure behavior (~5-10 minutes; token intensive):
 - Skill loading and accessibility
-- Workflow ordering (spec compliance before code quality)
+- Merged-review ordering and separate Spec/Quality verdicts
 - Self-review requirements documented
 - Plan reading efficiency documented
-- Spec compliance reviewer skepticism documented
+- Merged task reviewer skepticism documented
 - Review loops documented
 - Task context provision documented
 
@@ -101,10 +101,10 @@ Full workflow execution test (~10-30 minutes):
 - Executes plan using subagent-driven-development
 - Verifies actual behaviors:
   - Plan read once at start (not per task)
-  - Full task text provided in subagent prompts
+  - Task requirements handed off through brief files
   - Subagents perform self-review before reporting
-  - Spec compliance review happens before code quality
-  - Spec reviewer reads code independently
+  - One merged reviewer checks Spec before Quality and returns both verdicts
+  - Merged task reviewer reads code independently
   - Working implementation is produced
   - Tests pass
   - Proper git commits created

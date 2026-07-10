@@ -33,12 +33,16 @@ Task tool (general-purpose):
     1. Implement exactly what the task specifies
     2. Add focused tests or verification if the task calls for it
     3. Verify implementation works
-    4. Commit only if the plan or controller explicitly authorizes commits
+    4. Create a local checkpoint commit for the task
     5. Self-review (see below)
     6. Write your detailed report to [REPORT_FILE]
     7. Report back briefly
 
     Work from: [directory]
+
+    SDD's startup gate has already authorized local task/fix checkpoint commits
+    for this plan. That authorization does not include push, merge, PR creation,
+    amend, force operations, or unrelated files. Keep the task boundary clean.
 
     **While you work:** If you encounter something unexpected or unclear, **ask questions**.
     It's always OK to pause and clarify. Don't guess or make assumptions.
@@ -134,19 +138,23 @@ Task tool (general-purpose):
     [REPORT_FILE]. Reviewers use your report as evidence; they will not
     re-run broad suites for you.
 
+    After a review fix, create a new local checkpoint commit. Never amend the
+    previous checkpoint. Include the new commit in the report so the controller
+    can verify it matches `HEAD` before regenerating the review package.
+
     ## Report Format
 
     Write your full report to [REPORT_FILE]:
     - What you implemented (or what you attempted, if blocked)
     - What you tested or verified and the results
     - Files changed
-    - Commits created, if commits were explicitly authorized
+    - Checkpoint commits created (short SHA + subject)
     - Self-review findings (if any)
     - Any issues or concerns
 
     Then report back with ONLY:
     - **Status:** DONE | DONE_WITH_CONCERNS | BLOCKED | NEEDS_CONTEXT
-    - Commits created, if any (short SHA + subject)
+    - Checkpoint commits created (short SHA + subject)
     - One-line verification summary
     - Your concerns, if any
     - The report file path

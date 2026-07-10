@@ -12,11 +12,11 @@ echo "========================================"
 echo ""
 echo "This test executes a real plan using the skill and verifies:"
 echo "  1. Plan is read once (not per task)"
-echo "  2. Full task text provided to subagents"
+echo "  2. Task briefs are handed to subagents by file"
 echo "  3. Subagents perform self-review"
-echo "  4. Spec compliance review before code quality"
+echo "  4. One task reviewer returns Spec then Quality verdicts"
 echo "  5. Review loops when issues found"
-echo "  6. Spec reviewer reads code independently"
+echo "  6. Merged task reviewer reads code independently"
 echo ""
 echo "WARNING: This test may take 10-30 minutes to complete."
 echo ""
@@ -52,6 +52,9 @@ This is a minimal plan to test the subagent-driven-development workflow.
 
 ## Task 1: Create Add Function
 
+**Risk:** medium
+**Risk rationale:** Adds local runtime behavior behind a stable module API with focused `npm test` verification.
+
 Create a function that adds two numbers.
 
 **File:** `src/math.js`
@@ -77,6 +80,9 @@ export function add(a, b) {
 **Verification:** `npm test`
 
 ## Task 2: Create Multiply Function
+
+**Risk:** medium
+**Risk rationale:** Adds local runtime behavior behind a stable module API with focused `npm test` verification.
 
 Create a function that multiplies two numbers.
 
@@ -125,12 +131,13 @@ I want you to execute the implementation plan at docs/superpowers/plans/implemen
 
 IMPORTANT: Follow the skill exactly. I will be verifying that you:
 1. Read the plan once at the beginning
-2. Provide full task text to subagents (don't make them read files)
+2. Provide each task through a generated task brief file
 3. Ensure subagents do self-review before reporting
-4. Run spec compliance review before code quality review
+4. Use one task reviewer that returns Spec Compliance before Code Quality
 5. Use review loops when issues are found
 
-Begin now. Execute the plan.
+You are explicitly authorized to create local checkpoint commits for this test.
+Do not push, merge, amend, or create a PR. Begin now and execute the plan.
 EOF
 
 # Note: We use a longer timeout since this is integration testing
@@ -139,12 +146,13 @@ PROMPT="Execute the implementation plan at docs/superpowers/plans/implementation
 
 IMPORTANT: Follow the skill exactly. I will be verifying that you:
 1. Read the plan once at the beginning
-2. Provide full task text to subagents (don't make them read files)
+2. Provide each task through a generated task brief file
 3. Ensure subagents do self-review before reporting
-4. Run spec compliance review before code quality review
+4. Use one task reviewer that returns Spec Compliance before Code Quality
 5. Use review loops when issues are found
 
-Begin now. Execute the plan."
+You are explicitly authorized to create local checkpoint commits for this test.
+Do not push, merge, amend, or create a PR. Begin now and execute the plan."
 
 PLUGIN_DIR=$(cd "$SCRIPT_DIR/../.." && pwd)
 
@@ -202,20 +210,67 @@ else
 fi
 echo ""
 
-# Test 2: Subagents were used (Agent / Task tool — name varies by harness version)
-echo "Test 2: Subagents dispatched..."
-task_count=$(grep -cE '"name":"(Agent|Task)"' "$SESSION_FILE" || echo "0")
-if [ "$task_count" -ge 2 ]; then
-    echo "  [PASS] $task_count subagents dispatched"
+# Test 2: One implementer and one merged reviewer were used per medium task
+echo "Test 2: Risk-routed subagents dispatched..."
+task_count=$(grep -cE '"name":"(Agent|Task)"' "$SESSION_FILE" || true)
+implementer_count=$(grep -c 'Implement Task' "$SESSION_FILE" || true)
+reviewer_count=$(grep -c 'Review Task.*spec.*quality\|Review Task.*Spec.*Quality' "$SESSION_FILE" || true)
+approved_review_count=$(node - "$SESSION_FILE" <<'NODE'
+const fs = require('fs');
+const sessionFile = process.argv[2];
+const approvedTasks = new Set();
+
+function resultText(result) {
+  const value = result.content ?? result.result ?? result.output ?? '';
+  if (typeof value === 'string') return value;
+  if (!Array.isArray(value)) return '';
+  return value.map((item) => {
+    if (typeof item === 'string') return item;
+    if (item && typeof item.text === 'string') return item.text;
+    if (item && typeof item.content === 'string') return item.content;
+    return '';
+  }).join('\n');
+}
+
+for (const line of fs.readFileSync(sessionFile, 'utf8').split('\n')) {
+  if (!line.trim()) continue;
+
+  let event;
+  try {
+    event = JSON.parse(line);
+  } catch {
+    continue;
+  }
+
+  if (event.type !== 'user' || !event.toolUseResult) continue;
+  const result = event.toolUseResult;
+  const prompt = typeof result.prompt === 'string' ? result.prompt : '';
+  if (!prompt.includes('Both verdicts are independently blocking')) continue;
+
+  const taskMatch = prompt.match(/task-(\d+)-brief/i);
+  const text = resultText(result);
+  const specSection = text.match(/^### Spec Compliance\s*$([\s\S]*?)(?=^### |(?![\s\S]))/m)?.[1] ?? '';
+  const specPassed = /^-\s*✅\s+Spec compliant\s*$/m.test(specSection);
+  const qualityPassed = /^\*\*Task quality:\*\*\s*Approved\s*$/m.test(text);
+
+  if (taskMatch && specPassed && qualityPassed) approvedTasks.add(taskMatch[1]);
+}
+
+process.stdout.write(String(approvedTasks.size));
+NODE
+)
+if [ "$task_count" -ge 4 ] && [ "$implementer_count" -ge 2 ] && [ "$reviewer_count" -ge 2 ] && [ "$approved_review_count" -ge 2 ]; then
+    echo "  [PASS] $implementer_count implementer and $reviewer_count merged reviewer dispatch records found"
+    echo "  [PASS] $approved_review_count merged reviewer tool results contain concrete passing verdicts"
 else
-    echo "  [FAIL] Only $task_count subagent(s) dispatched (expected >= 2)"
+    echo "  [FAIL] Expected >=2 implementers and merged reviewer tool results with concrete passing verdicts (total=$task_count implementers=$implementer_count reviewers=$reviewer_count approved=$approved_review_count)"
     FAILED=$((FAILED + 1))
 fi
 echo ""
 
 # Test 3: TodoWrite was used for tracking
 echo "Test 3: Task tracking..."
-todo_count=$(grep -c '"name":"TodoWrite"' "$SESSION_FILE" || echo "0")
+todo_count=$(grep -c '"name":"TodoWrite"' "$SESSION_FILE" || true)
 if [ "$todo_count" -ge 1 ]; then
     echo "  [PASS] TodoWrite used $todo_count time(s) for task tracking"
 else
@@ -305,10 +360,10 @@ if [ $FAILED -eq 0 ]; then
     echo ""
     echo "The subagent-driven-development skill correctly:"
     echo "  ✓ Reads plan once at start"
-    echo "  ✓ Provides full task text to subagents"
+    echo "  ✓ Hands task briefs to subagents by file"
     echo "  ✓ Enforces self-review"
-    echo "  ✓ Runs spec compliance before code quality"
-    echo "  ✓ Spec reviewer verifies independently"
+    echo "  ✓ Uses one task reviewer with Spec then Quality verdicts"
+    echo "  ✓ Task reviewer verifies independently"
     echo "  ✓ Produces working implementation"
     exit 0
 else

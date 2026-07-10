@@ -16,15 +16,19 @@ Claiming work is complete without verification is dishonesty, not efficiency.
 ## The Iron Law
 
 ```
-NO COMPLETION CLAIMS WITHOUT FRESH VERIFICATION EVIDENCE
+NO WHOLE-CHANGE COMPLETION CLAIMS WITHOUT CONTROLLER-RUN FRESH VERIFICATION
 ```
 
-If you haven't run the verification command in this message, you cannot claim it passes.
+If you are claiming the whole implementation passes, you must have run the
+whole-change verification command in this message. Delegated task advancement
+uses the exact-checkpoint evidence contract below; it does not authorize a
+whole-change success claim.
 
 ## The Gate Function
 
 ```
-BEFORE claiming any status or expressing satisfaction:
+BEFORE claiming whole-change status or expressing satisfaction with the
+completed implementation:
 
 1. IDENTIFY: What command proves this claim?
 2. RUN: Execute the FULL command (fresh, complete)
@@ -46,7 +50,7 @@ Skip any step = lying, not verifying
 | Build succeeds | Build command: exit 0 | Linter passing, logs look good |
 | Bug fixed | Test original symptom: passes | Code changed, assumed fixed |
 | Regression test works | Failing case reproduced, then passes after fix | Test passes once |
-| Agent completed | VCS diff shows changes | Agent reports "success" |
+| Delegated task completed | Inspected diff and checkpoint, executor verification evidence, required review verdicts | Agent reports "success" |
 | Requirements met | Line-by-line checklist | Tests passing |
 
 ## Red Flags - STOP
@@ -114,15 +118,31 @@ From 24 failure memories:
 - Time wasted on false completion → redirect → rework
 - Violates: "Honesty is a core value. If you lie, you'll be replaced."
 
+## Delegated Workflow Evidence
+
+Fresh evidence must exist for the exact code being advanced, but the same
+command does not need a second owner:
+
+- The task executor runs and records focused task verification.
+- The controller inspects the report, diff, commit range, and required review
+  verdicts before advancing.
+- Reviewers inspect code and evidence; they do not repeat broad suites without
+  a concrete unanswered doubt.
+- Before claiming the whole implementation complete, the controller runs fresh
+  whole-change verification.
+
+An uninspected subagent success message is never evidence. Advancing from an
+unchanged, verified checkpoint does not require rerunning the identical command
+solely because the next action is delegation or task bookkeeping.
+
 ## When To Apply
 
 **ALWAYS before:**
 - ANY variation of success/completion claims
 - ANY expression of satisfaction
 - ANY positive statement about work state
-- Committing, PR creation, task completion
-- Moving to next task
-- Delegating to agents
+- Committing the completed implementation, PR creation, or whole-change completion
+- Advancing delegated work without inspecting its exact checkpoint evidence
 
 **Rule applies to:**
 - Exact phrases

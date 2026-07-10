@@ -12,7 +12,8 @@ Dispatch a code reviewer subagent to catch issues before they cascade. The revie
 ## When to Request Review
 
 **Mandatory:**
-- After each task in subagent-driven development
+- For medium/high tasks in subagent-driven development, through its merged task reviewer
+- For high or cross-task SDD changes, through final whole-change review
 - After completing major feature
 - Before merge to main
 
@@ -75,9 +76,10 @@ You: [Fix progress indicators]
 ## Integration with Workflows
 
 **Subagent-Driven Development:**
-- Review after EACH task
-- Catch issues before they compound
-- Fix before moving to next task
+- Low-risk tasks do not dispatch a reviewer
+- Medium/high tasks use one merged reviewer with separate Spec and Quality verdicts
+- High or cross-task integration risk requires final whole-change review
+- Fix Critical/Important findings before proceeding; record Minor findings for final triage when final review is required
 
 **Executing Plans:**
 - Review after each task or at natural checkpoints
@@ -90,7 +92,7 @@ You: [Fix progress indicators]
 ## Red Flags
 
 **Never:**
-- Skip review because "it's simple"
+- Skip a risk-required review by calling the task "simple"; use the plan's explicit risk classification
 - Ignore Critical issues
 - Proceed with unfixed Important issues
 - Argue with valid technical feedback

@@ -33,9 +33,9 @@ cd tests/claude-code
 
 ### Requirements
 
-- Must run from the **superpowers plugin directory** (not from temp directories)
+- The harness creates a temporary project and passes this checkout through `--plugin-dir`
 - Claude Code must be installed and available as `claude` command
-- Local dev marketplace must be enabled: `"superpowers@superpowers-dev": true` in `~/.claude/settings.json`
+- When testing marketplace installation instead of `--plugin-dir`, enable `k-superpowers@k-superpowers-dev`
 
 ## Integration Test: subagent-driven-development
 
@@ -44,11 +44,11 @@ cd tests/claude-code
 The integration test verifies the `subagent-driven-development` skill correctly:
 
 1. **Plan Loading**: Reads the plan once at the beginning
-2. **Full Task Text**: Provides complete task descriptions to subagents (doesn't make them read files)
+2. **Task Brief Handoff**: Provides complete task requirements through generated brief files
 3. **Self-Review**: Ensures subagents perform self-review before reporting
-4. **Review Order**: Runs spec compliance review before code quality review
+4. **Merged Review Contract**: One task reviewer checks Spec before Quality and returns both verdicts
 5. **Review Loops**: Uses review loops when issues are found
-6. **Independent Verification**: Spec reviewer reads code independently, doesn't trust implementer reports
+6. **Independent Verification**: Merged task reviewer reads code independently and doesn't trust implementer reports
 
 ### How It Works
 
@@ -56,7 +56,8 @@ The integration test verifies the `subagent-driven-development` skill correctly:
 2. **Execution**: Runs Claude Code in headless mode with the skill
 3. **Verification**: Parses the session transcript (`.jsonl` file) to verify:
    - Skill tool was invoked
-   - Subagents were dispatched (Task tool)
+   - Medium-task implementers and merged reviewers were dispatched (Task tool)
+   - Reviewer tool results contain concrete passing Spec and Quality verdicts
    - TodoWrite was used for tracking
    - Implementation files were created
    - Tests pass
@@ -77,8 +78,9 @@ Test project: /tmp/tmp.xyz123
 Test 1: Skill tool invoked...
   [PASS] subagent-driven-development skill was invoked
 
-Test 2: Subagents dispatched...
-  [PASS] 7 subagents dispatched
+Test 2: Risk-routed subagents dispatched...
+  [PASS] 2 implementer and 2 merged reviewer dispatch records found
+  [PASS] 2 merged reviewer tool results contain concrete passing verdicts
 
 Test 3: Task tracking...
   [PASS] TodoWrite used 5 time(s)
@@ -100,32 +102,10 @@ Test 8: No extra features added...
  Token Usage Analysis
 =========================================
 
-Usage Breakdown:
-----------------------------------------------------------------------------------------------------
-Agent           Description                          Msgs      Input     Output      Cache     Cost
-----------------------------------------------------------------------------------------------------
-main            Main session (coordinator)             34         27      3,996  1,213,703 $   4.09
-3380c209        implementing Task 1: Create Add Function     1          2        787     24,989 $   0.09
-34b00fde        implementing Task 2: Create Multiply Function     1          4        644     25,114 $   0.09
-3801a732        reviewing whether an implementation matches...   1          5        703     25,742 $   0.09
-4c142934        doing a final code review...                    1          6        854     25,319 $   0.09
-5f017a42        a code reviewer. Review Task 2...               1          6        504     22,949 $   0.08
-a6b7fbe4        a code reviewer. Review Task 1...               1          6        515     22,534 $   0.08
-f15837c0        reviewing whether an implementation matches...   1          6        416     22,485 $   0.07
-----------------------------------------------------------------------------------------------------
-
-TOTALS:
-  Total messages:         41
-  Input tokens:           62
-  Output tokens:          8,419
-  Cache creation tokens:  132,742
-  Cache read tokens:      1,382,835
-
-  Total input (incl cache): 1,515,639
-  Total tokens:             1,524,058
-
-  Estimated cost: $4.67
-  (at $3/$15 per M tokens for input/output)
+The exact token table varies by model and harness version. For this two-task
+all-medium fixture, the expected steady-state shape is four subagents (`2N`):
+two implementers and two merged task reviewers, with no final reviewer unless
+the run discovers cross-task integration risk.
 
 ========================================
  Test Summary
@@ -182,8 +162,8 @@ ls -lt "$SESSION_DIR"/*.jsonl | head -5
 **Problem**: Skill not found when running headless tests
 
 **Solutions**:
-1. Ensure you're running FROM the superpowers directory: `cd /path/to/superpowers && tests/...`
-2. Check `~/.claude/settings.json` has `"superpowers@superpowers-dev": true` in `enabledPlugins`
+1. Ensure you're running from the k-superpowers checkout: `cd /path/to/k-superpowers && tests/...`
+2. For marketplace-based tests, check `~/.claude/settings.json` enables `k-superpowers@k-superpowers-dev`; `--plugin-dir` tests do not require this
 3. Verify skill exists in `skills/` directory
 
 ### Permission Errors
@@ -258,7 +238,7 @@ python3 "$SCRIPT_DIR/analyze-token-usage.py" "$SESSION_FILE"
 1. **Always cleanup**: Use trap to cleanup temp directories
 2. **Parse transcripts**: Don't grep user-facing output - parse the `.jsonl` session file
 3. **Grant permissions**: Use `--permission-mode bypassPermissions` and `--add-dir`
-4. **Run from plugin dir**: Skills only load when running from the superpowers directory
+4. **Load this checkout**: Run from the checkout or pass it explicitly with `--plugin-dir`
 5. **Show token usage**: Always include token analysis for cost visibility
 6. **Test real behavior**: Verify actual files created, tests passing, commits made
 
