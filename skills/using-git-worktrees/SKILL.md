@@ -38,11 +38,19 @@ Report with branch state:
 
 **If `GIT_DIR == GIT_COMMON` (or in a submodule):** You are in a normal repo checkout.
 
-Has the user already indicated their worktree preference in your instructions? If not, ask for consent before creating a worktree:
+First consume any Unified Execution Handoff decision:
+
+- "create worktree" is explicit consent; create one without asking again
+- "current workspace" is an explicit decline; work in place and skip creation
+- an existing user instruction expressing the same preference is equally
+  authoritative
+
+Only when no prior workspace decision exists, ask for consent before creating a worktree:
 
 > "Would you like me to set up an isolated worktree? It protects your current branch from changes."
 
-Honor any existing declared preference without asking. If the user declines consent, work in place and skip to Step 3.
+Never turn safety detection into duplicate consent. If the prior decision is
+current workspace, skip to Step 3 after detection.
 
 ## Step 1: Create Isolated Workspace
 
@@ -80,7 +88,9 @@ Follow this priority order. Explicit user preference always beats observed files
    ```
    If found, use it (backward compatibility with legacy global path).
 
-4. **If there is no other guidance available**, default to `.worktrees/` at the project root.
+4. **If there is no other guidance available**, prefer `.worktrees/` only when
+   it is already ignored; otherwise use
+   `~/.config/superpowers/worktrees/$project/` without modifying the repository.
 
 #### Safety Verification (project-local directories only)
 
@@ -90,7 +100,10 @@ Follow this priority order. Explicit user preference always beats observed files
 git check-ignore -q .worktrees 2>/dev/null || git check-ignore -q worktrees 2>/dev/null
 ```
 
-**If NOT ignored:** Add to .gitignore, commit the change, then proceed.
+**If NOT ignored:** Do not edit or commit `.gitignore` under worktree consent.
+Use the global worktree directory instead. Editing `.gitignore` requires
+separate file-edit authorization, and committing it requires separate commit
+authorization.
 
 **Why critical:** Prevents accidentally committing worktree contents to repository.
 
@@ -109,7 +122,9 @@ git worktree add "$path" -b "$BRANCH_NAME"
 cd "$path"
 ```
 
-**Sandbox fallback:** If `git worktree add` fails with a permission error (sandbox denial), tell the user the sandbox blocked worktree creation and you're working in the current directory instead. Then run setup and baseline tests in place.
+**Creation failure:** If worktree creation fails, stop and report the error.
+Ask whether to retry or change the Unified Execution Handoff to current
+workspace. Never silently convert explicit isolation consent into in-place work.
 
 ## Step 3: Project Setup
 
@@ -162,10 +177,10 @@ Ready to implement <feature-name>
 | `.worktrees/` exists | Use it (verify ignored) |
 | `worktrees/` exists | Use it (verify ignored) |
 | Both exist | Use `.worktrees/` |
-| Neither exists | Check instruction file, then default `.worktrees/` |
+| Neither exists | Use `.worktrees/` only if ignored; otherwise use global path |
 | Global path exists | Use it (backward compat) |
-| Directory not ignored | Add to .gitignore + commit |
-| Permission error on create | Sandbox fallback, work in place |
+| Directory not ignored | Use global worktree path; repository edits need separate authorization |
+| Worktree creation fails | Stop and ask whether to retry or change handoff |
 | Tests fail during baseline | Report failures + ask |
 | No package.json/Cargo.toml | Skip dependency install |
 

@@ -11,15 +11,15 @@ description: Use when creating new skills, editing existing skills, or verifying
 
 **Personal skills live in agent-specific directories (`~/.claude/skills` for Claude Code, `~/.agents/skills/` for Codex)** 
 
-For new behavior-shaping skills and high-risk changes without observed failure
-evidence: create pressure scenarios with subagents, watch baseline behavior fail
-without guidance, write the skill documentation, verify agents comply, then
-close loopholes. When a real user report, production incident, agent transcript,
-or review finding already shows the failure, treat that as baseline evidence and
-verify the fix against that failure. For lower-risk edits, lighter verification
-applies — see The Iron Law below.
+For behavior-shaping skills and high-risk changes, start from observed failure
+evidence when available; otherwise create representative pressure scenarios and
+watch baseline behavior fail. Write the minimum guidance, verify post-change
+behavior, and close only loopholes testing exposes. Lower-risk edits use lighter
+verification — see The Iron Law below.
 
-**Core principle:** For behavior-shaping content, if you didn't watch an agent fail without the skill, you don't know if the skill teaches the right thing.
+**Core principle:** If you do not have concrete observed or synthetic failure
+evidence, you do not know whether a behavior-shaping skill teaches the right
+thing.
 
 **REQUIRED BACKGROUND:** Understand `k-superpowers:type-driven-verification`. This skill applies the same verification discipline to process documentation.
 
@@ -37,13 +37,14 @@ A **skill** is a reference guide for proven techniques, patterns, or tools. Skil
 
 | Verification Concept | Skill Creation |
 |-------------|----------------|
-| **Test case** | Pressure scenario with subagent |
+| **Test case** | Observed failure trace or pressure scenario with subagent |
 | **Production code** | Skill document (SKILL.md) |
-| **Failing baseline** | Agent violates rule without skill — document exact rationalizations |
+| **Failing baseline** | Observed violation, or agent violates rule without skill when observed evidence is absent |
 | **Passing verification** | Agent complies with skill present |
 | **Close loopholes** | Find new rationalizations → plug → re-verify |
 
-High-risk skill changes follow this full baseline → write → verify → close-loopholes loop. Lower-risk changes use lighter verification — see The Iron Law below.
+High-risk skill changes follow evidence → write → verify → close-loopholes.
+Lower-risk changes use lighter verification — see The Iron Law below.
 
 ## Mode Selection
 
@@ -403,7 +404,7 @@ Then match verification to risk:
 |-----------|-----------------|----------------------|
 | **Low** — wording, formatting, fixing dead links/references | Rename a heading, fix a typo, update a path | Static review against stated invariants + search for now-conflicting wording |
 | **Medium** — process gates, checklists, cross-references, reordering steps | Add an approval gate, restructure a flow | Static review + counterexample walk-through: "how could an agent misread this?" |
-| **High** — trigger conditions, discipline rules, rationalization tables, subagent flows, new behavior-shaping skills | New discipline skill, editing descriptions, changing when a skill fires | Baseline pressure scenarios BEFORE writing + compliance verification after (see testing-skills-with-subagents.md) |
+| **High** — trigger conditions, discipline rules, rationalization tables, subagent flows, new behavior-shaping skills | New discipline skill, editing descriptions, changing when a skill fires | Observed-or-synthetic baseline evidence before writing + post-change behavioral verification (see testing-skills-with-subagents.md) |
 
 **No zero tier:** "it's obviously fine" is not a verification level. Every change gets at least static review with explicitly stated invariants.
 
@@ -415,6 +416,23 @@ For high-risk changes, baseline evidence may be either observed or synthetic:
   transcripts, failed evals, or review findings that show the failure mode.
 - **Synthetic evidence:** pressure scenarios created before writing the skill
   when no observed evidence exists.
+
+Observed evidence covering the target failure replaces synthetic baseline for
+that failure. Do not rerun a contrived "without skill" scenario merely to make
+the campaign look complete.
+
+### Campaign Sizing
+
+- Start with 2-3 representative scenarios that cover distinct failure classes,
+  not one scenario per rule.
+- Run one whole-change review after implementation. Batch all findings into one
+  fix pass, then run one re-review.
+- Add scenarios or review rounds only when testing reveals a new
+  rationalization/failure class, or a material fix changes the behavior under
+  review.
+- Create todos only for checklist items that apply to the selected mode and
+  risk. Do not create visible placeholders for inapplicable frontmatter,
+  examples, or deployment actions.
 
 Wrote a high-risk change without either kind of baseline evidence? Treat it as
 unverified: gather baseline evidence now, and be prepared to discard the draft
@@ -428,7 +446,7 @@ Different skill types need different verification:
 
 | Skill type | Test with | Success criteria |
 |---|---|---|
-| **Discipline-enforcing** (rules/requirements) | Academic questions + pressure scenarios (3+ combined pressures: time, sunk cost, exhaustion); capture rationalizations | Agent follows rule under maximum pressure |
+| **Discipline-enforcing** (rules/requirements) | Observed trace plus representative pressure scenarios, or synthetic baseline when no trace exists | Agent follows rule under relevant pressure |
 | **Technique** (how-to guides) | Application + variation scenarios; missing-information tests | Agent applies technique to new scenario |
 | **Pattern** (mental models) | Recognition + application scenarios; counter-examples | Agent knows when/how — and when NOT — to apply |
 | **Reference** (docs/APIs) | Retrieval + application scenarios; gap testing | Agent finds and correctly applies information |
@@ -463,9 +481,9 @@ Two principles worth stating in the skill text itself:
 
 For high-risk changes, run the full cycle:
 
-1. **Baseline:** use observed failure evidence, or run pressure scenarios
-   WITHOUT the skill when no observed evidence exists. Document choices and
-   rationalizations verbatim.
+1. **Baseline:** use observed failure evidence. Only when none exists, run
+   representative pressure scenarios WITHOUT the skill. Document the relevant
+   choices and rationalizations.
 2. **Write:** address those specific failures, minimally. No extra content for hypothetical cases.
 3. **Verify:** run the same scenarios WITH the skill. Agent should now comply.
 4. **Close loopholes:** new rationalization → add explicit counter → re-test until bulletproof.
@@ -495,21 +513,23 @@ helper1, helper2, step3, pattern4
 
 ## STOP: Before Moving to Next Skill
 
-**After creating or changing ANY skill, you MUST STOP and complete the
-deployment process.**
+**After creating or changing a skill or one coherent cross-skill workflow,
+complete its verification and deployment process before unrelated skill work.**
 
 **Do NOT:**
-- Create multiple skills in batch without verifying each
-- Move to next skill before current one is verified
+- Batch unrelated skills into one campaign
+- Move to unrelated skill work before the current behavior contract is verified
 - Skip verification because "batching is more efficient"
 
-**The deployment checklist below is MANDATORY for EACH skill.**
+The deployment checklist below applies once per coherent behavior contract.
+Create todos only for applicable items.
 
 Deploying untested skills = deploying untested code. It's a violation of quality standards.
 
 ## Skill Change Checklist
 
-**IMPORTANT: Use TodoWrite to create todos for EACH checklist item below.**
+**IMPORTANT: Use TodoWrite for applicable checklist items below. Do not add
+inapplicable placeholders.**
 
 **Risk Assessment (always):**
 - [ ] Choose mode: create new skill / edit existing skill / verify existing skill / review only
@@ -541,12 +561,10 @@ Deploying untested skills = deploying untested code. It's a violation of quality
 - [ ] High risk: address the specific baseline failures you observed
 - [ ] High risk: run scenarios WITH skill - verify agents now comply
 
-**Close Loopholes (high-risk changes):**
-- [ ] Identify NEW rationalizations from testing
-- [ ] Add explicit counters (if discipline skill)
-- [ ] Build rationalization table from all test iterations
-- [ ] Create red flags list
-- [ ] Re-test until bulletproof
+**Close Loopholes (high-risk changes, only when testing exposes them):**
+- [ ] Identify NEW rationalizations or failure classes
+- [ ] Add explicit counters where needed
+- [ ] Re-test affected representative scenarios
 
 **Quality Checks:**
 - [ ] Small flowchart only if decision non-obvious

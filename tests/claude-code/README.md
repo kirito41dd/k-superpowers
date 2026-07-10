@@ -82,6 +82,12 @@ echo "=== All tests passed ==="
 
 ### Fast Tests (run by default)
 
+#### test-compact-development-flow.sh
+Runs three representative behavior scenarios:
+- clear single-domain work selects Compact with bounded questions/approvals
+- irreversible or unresolved architecture work selects Full
+- current-main Inline work skips the branch-finishing menu
+
 #### test-subagent-driven-development.sh
 Tests skill content, risk routing, and pressure behavior (~5-10 minutes; token intensive):
 - Skill loading and accessibility

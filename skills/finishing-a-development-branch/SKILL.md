@@ -1,6 +1,6 @@
 ---
 name: finishing-a-development-branch
-description: Use when implementation is complete, all tests pass, and you need to decide how to integrate the work - guides completion of development work by presenting structured options for merge, PR, or cleanup
+description: Use when verified work on a feature branch or worktree needs a merge, PR, retention, discard, or cleanup decision
 ---
 
 # Finishing a Development Branch
@@ -12,6 +12,13 @@ Guide completion of development work by presenting clear options and handling ch
 **Core principle:** Verify tests → Detect environment → Present options → Execute choice → Clean up.
 
 **Announce at start:** "I'm using the finishing-a-development-branch skill to complete this work."
+
+## When Not to Use
+
+Do not use this skill when the user explicitly chose Inline + current workspace,
+work was performed on main/master with consent, and no merge, PR, push, discard,
+or cleanup decision remains. After fresh verification, report that changes
+remain in the current workspace.
 
 ## The Process
 

@@ -5,9 +5,9 @@ description: "You MUST use this before any creative work - creating features, bu
 
 # Brainstorming Ideas Into Designs
 
-Help turn ideas into fully formed designs and specs through natural collaborative dialogue.
-
-Start by understanding the current project context, then ask questions one at a time to refine the idea. Once you understand what you're building, present the design and get user approval.
+Help turn ideas into approved designs and specs with interaction proportional
+to uncertainty. Clear single-domain work uses Compact Flow; uncertain or
+consequential design work uses Full Flow.
 
 <HARD-GATE>
 Do NOT invoke any implementation skill, write any code, scaffold any project, or take any implementation action until you have presented a design and the user has approved it. This applies to EVERY project regardless of perceived simplicity.
@@ -25,65 +25,90 @@ Examples: "熟悉开发规范，等下我给需求", "先熟悉这个模块", "�
 
 These mean: read context, optionally summarize, then wait. Do not ask design questions, propose approaches, create specs/plans, or transition to implementation skills until the user provides an actual build/change/fix request.
 
+## Flow Selection
+
+After exploring project context, choose one flow and state it internally in the
+spec/plan as `Flow: Compact` or `Flow: Full`.
+
+Use **Compact** only when all are true:
+
+- one problem domain
+- the goal and success criteria are clear, or one blocking question can make
+  them clear
+- no unresolved long-term architecture choice between materially different
+  approaches
+- no irreversible migration, security/permission boundary, protocol design,
+  or major compatibility contract
+- the user can directly evaluate the technical trade-offs
+
+Use **Full** when any are true:
+
+- multiple independent subsystems
+- two or more unresolved blocking requirement questions
+- several viable approaches materially affect long-term architecture
+- irreversible migration, security, permissions, protocol, or major public
+  compatibility risk
+- the user explicitly requests a complete design process
+
+Compact and Full are exhaustive: if any Compact eligibility condition is not
+proven true, use Full. The list above names common mandatory Full signals; it is
+not the complete complement.
+
+New uncertainty upgrades Compact to Full. Never downgrade Full merely to save
+time.
+
 **Language Adaptation:** Determine the user's conversation language from the current session. Output all user-facing prose, documents (design doc, spec, review prompts), and scripted offers in that language. Code blocks, commands, and technical identifiers remain in their natural form (English).
 
 ## Checklist
 
-You MUST create a task for each of these items and complete them in order:
+Create todos only for applicable items:
 
-1. **Explore project context** — check files, docs, recent commits
-2. **Offer visual companion** (if topic will involve visual questions) — this is its own message, not combined with a clarifying question. See the Visual Companion section below.
-3. **Ask clarifying questions** — one at a time, understand purpose/constraints/success criteria
-4. **Propose 2-3 approaches** — with trade-offs and your recommendation
-5. **Present design** — in sections scaled to their complexity, get user approval after each section
-6. **Write design doc** — save to `docs/superpowers/specs/YYYY-MM-DD-<topic>-design.md`
-7. **Spec self-review** — quick inline check for placeholders, contradictions, ambiguity, scope (see below)
-8. **User reviews written spec** — ask user to choose whether to approve with commit, request changes, or approve without commit
-9. **Commit approved spec only if explicitly chosen** — commit only when the user selects the commit option or otherwise explicitly asks
-10. **Transition to implementation** — invoke writing-plans skill to create implementation plan
+1. Explore project context and select Compact or Full.
+2. Offer the visual companion only when visual questions are likely.
+3. Complete the selected design flow and obtain design approval.
+4. Write and self-review the design spec.
+5. If Full, or if the written Compact spec introduces a material delta, obtain
+   written-spec approval.
+6. Commit the spec only when explicitly authorized.
+7. Invoke `k-superpowers:writing-plans`.
 
 ## Process Flow
 
 ```dot
 digraph brainstorming {
-    "Build/change request received" [shape=doublecircle];
-    "Explore project context" [shape=box];
-    "Visual questions ahead?" [shape=diamond];
-    "Offer Visual Companion\n(own message, no other content)" [shape=box];
-    "Ask clarifying questions" [shape=box];
-    "Propose 2-3 approaches" [shape=box];
-    "Present design sections" [shape=box];
-    "User approves design?" [shape=diamond];
-    "Write design doc" [shape=box];
-    "Spec self-review\n(fix inline)" [shape=box];
-    "User reviews spec?" [shape=diamond];
-    "Commit spec?\n(explicit user choice)" [shape=diamond];
-    "Commit approved spec" [shape=box];
-    "Invoke writing-plans skill" [shape=doublecircle];
-
-    "Build/change request received" -> "Explore project context";
-    "Explore project context" -> "Visual questions ahead?";
-    "Visual questions ahead?" -> "Offer Visual Companion\n(own message, no other content)" [label="yes"];
-    "Visual questions ahead?" -> "Ask clarifying questions" [label="no"];
-    "Offer Visual Companion\n(own message, no other content)" -> "Ask clarifying questions";
-    "Ask clarifying questions" -> "Propose 2-3 approaches";
-    "Propose 2-3 approaches" -> "Present design sections";
-    "Present design sections" -> "User approves design?";
-    "User approves design?" -> "Present design sections" [label="no, revise"];
-    "User approves design?" -> "Write design doc" [label="yes"];
-    "Write design doc" -> "Spec self-review\n(fix inline)";
-    "Spec self-review\n(fix inline)" -> "User reviews spec?";
-    "User reviews spec?" -> "Write design doc" [label="changes requested"];
-    "User reviews spec?" -> "Commit spec?\n(explicit user choice)" [label="approved"];
-    "Commit spec?\n(explicit user choice)" -> "Commit approved spec" [label="commit requested"];
-    "Commit spec?\n(explicit user choice)" -> "Invoke writing-plans skill" [label="no commit"];
-    "Commit approved spec" -> "Invoke writing-plans skill";
+    "Explore context" -> "Compact eligible?";
+    "Compact eligible?" -> "Compact: <=1 blocking question" [label="yes"];
+    "Compact: <=1 blocking question" -> "Approaches + complete design\nin one message";
+    "Approaches + complete design\nin one message" -> "One design approval";
+    "One design approval" -> "Write + self-review spec";
+    "Write + self-review spec" -> "Material delta?";
+    "Material delta?" -> "Invoke writing-plans" [label="no"];
+    "Material delta?" -> "Approve delta" [label="yes"];
+    "Compact eligible?" -> "Full clarification + sectional approval" [label="no"];
+    "Full clarification + sectional approval" -> "Written spec review";
+    "Written spec review" -> "Invoke writing-plans";
 }
 ```
 
 **The terminal state is invoking writing-plans.** Do NOT invoke any implementation or domain-specific skill. The ONLY skill you invoke after brainstorming is writing-plans.
 
 ## The Process
+
+### Compact Flow
+
+- Ask at most one blocking question. If more are required, upgrade to Full.
+- Present 2-3 approaches, recommendation, and the complete design in one
+  message. Cover architecture, boundaries, data/control flow, failure handling,
+  and verification in proportion to the task.
+- Obtain one approval for that complete design. Do not ask for sectional
+  approvals.
+- Write the equivalent spec. If self-review finds no new architecture, scope,
+  dependency, public contract, or risk decision, the chat approval also
+  approves the faithful written spec.
+- If the written spec contains a material delta, present only that delta for
+  approval before planning.
+
+### Full Flow
 
 **Understanding the idea:**
 
@@ -140,8 +165,8 @@ After writing the spec document, look at it with fresh eyes:
 
 Fix any issues inline. No need to re-review — just fix and move on.
 
-**User Review Gate:**
-After the spec review loop passes, ask the user to review the written spec before proceeding. Localize the prompt into the user's conversation language while preserving these choices and authorization boundaries:
+**Full / Delta User Review Gate:**
+For Full Flow, or a Compact spec with a material delta, ask the user to review the written spec before proceeding. Localize the prompt into the user's conversation language while preserving these choices and authorization boundaries:
 - Spec is written to `<path>`.
 - Option 1 approves and commits the spec document.
 - Option 2 requests changes.
@@ -149,10 +174,12 @@ After the spec review loop passes, ask the user to review the written spec befor
 - Only option 1 authorizes a documentation-only commit.
 - Approval of the spec does not authorize implementation.
 
-Wait for the user's response. If they request changes, make them and re-run the spec review loop. Only proceed once the user approves.
+Wait for the user's response. If they request changes, make them and re-run the
+spec review loop. A faithful Compact spec skips this duplicate gate.
 
 **Commit Gate (single source of truth for spec commits):**
-Commit the spec document to git only when the user explicitly chooses option 1 or otherwise explicitly asks for a commit. If project instructions prohibit commits unless explicitly requested, that rule prevails. The authorization applies to the spec document only; it does not grant permission to commit implementation code or skip later plan review gates. If the user approves without commit, proceed to writing the implementation plan without committing.
+Commit the spec document only when the user explicitly asks. Design approval,
+including faithful Compact spec approval, never authorizes a commit.
 
 **Implementation:**
 
@@ -161,7 +188,7 @@ Commit the spec document to git only when the user explicitly chooses option 1 o
 
 ## Key Principles
 
-- **One question at a time** - Don't overwhelm with multiple questions
+- **One blocking question in Compact; one question at a time in Full**
 - **Multiple choice preferred** - Easier to answer than open-ended when possible
 - **YAGNI ruthlessly** - Remove unnecessary features from all designs
 - **Explore alternatives** - Always propose 2-3 approaches before settling

@@ -7,7 +7,10 @@ description: Use when you have a spec or requirements for a multi-step task, bef
 
 ## Overview
 
-Write comprehensive implementation plans assuming the engineer has zero context for our codebase and questionable taste. Document everything they need to know: which files to touch for each task, code, verification, docs they might need to check, and how to validate it. Give them the whole plan as bite-sized tasks. DRY. YAGNI. Type-first design. Focused verification. Commit checkpoints that respect project and user commit policy.
+Write implementation plans for an engineer with little codebase context.
+Compact plans preserve decisions, risk, interfaces, and verification without
+mechanical expansion; Full plans provide comprehensive bite-sized steps. DRY.
+YAGNI. Type-first design. Focused verification. Explicit Git authorization.
 
 Assume they are a skilled developer, but know almost nothing about our toolset or problem domain. Assume they may over-test incidental details or under-test core behavior unless guided.
 
@@ -25,6 +28,37 @@ Assume they are a skilled developer, but know almost nothing about our toolset o
 ## Scope Check
 
 If the spec covers multiple independent subsystems, it should have been broken into sub-project specs during brainstorming. If it wasn't, suggest breaking this into separate plans — one per subsystem. Each plan should produce working, testable software on its own.
+
+## Flow Mode
+
+Read `Flow: Compact | Full` from the approved spec. If absent, infer it only
+from an explicit brainstorming handoff; never silently treat uncertainty as
+Compact.
+
+### Compact Plan
+
+Use for a faithful implementation of an approved Compact design. Retain:
+
+- Goal, Architecture, Tech Stack, and Global Constraints
+- per-task Files, Slice behavior, Dependencies, Risk, and Risk rationale
+- Interfaces only where another task depends on them
+- implementation approach and exact public signatures/data shapes when they
+  matter
+- focused verification command and expected result
+
+Do not require a fixed five-step template, two-to-five-minute actions, complete
+code blocks for routine edits, or code repeated unambiguously from the spec or
+nearby source. Exact code or pseudocode remains required for public APIs,
+protocols, parsers, state machines, complex algorithms, and any detail where
+prose leaves a meaningful implementation choice.
+
+After self-review, proceed directly to Unified Execution Handoff when the plan
+adds no architecture, scope, dependency, public contract, or risk decision. If
+it adds one, present that delta for approval first.
+
+### Full Plan
+
+Use the detailed structure below and retain its separate plan review gate.
 
 ## File Structure
 
@@ -85,7 +119,7 @@ Missing risk metadata is a plan failure, never an implicit `low`. Shared
 interfaces, shared mutable state, or behavior created only by composing tasks
 must be named because they require final whole-change review during SDD.
 
-## Bite-Sized Task Granularity
+## Full Plan: Bite-Sized Task Granularity
 
 **Each step is one action (2-5 minutes):**
 - "Define the type/API boundary" - step
@@ -94,9 +128,9 @@ must be named because they require final whole-change review during SDD.
 - "Run the relevant verification" - step
 - "Commit checkpoint if authorized" - step
 
-## Plan Document Header
+## Full Plan Document Header
 
-**Every plan MUST start with this header:**
+**Every Full plan MUST start with this header:**
 
 ```markdown
 # [Feature Name] Implementation Plan
@@ -120,7 +154,7 @@ has no global constraints.]
 ---
 ```
 
-## Task Structure
+## Full Plan Task Structure
 
 ````markdown
 ### Task N: [Component Name]
@@ -190,19 +224,20 @@ Include/execute this step only when commits are authorized — see Commit Author
 
 ## No Placeholders
 
-Every step must contain the actual content an engineer needs. These are **plan failures** — never write them:
+Every step must contain the actual content an engineer needs. These are **Full
+plan failures** — never write them:
 - "TBD", "TODO", "implement later", "fill in details"
 - "Add appropriate error handling" / "add validation" / "handle edge cases"
 - "Write tests for the above" (without specifying what behavior needs tests)
 - "Similar to Task N" (repeat the code — the engineer may be reading tasks out of order)
-- Steps that describe what to do without showing how (code blocks required for code steps)
+- Full-plan code steps that describe what to do without showing how
 - References to types, functions, or methods not defined in any task
 
-## Remember
+## Full Plan Remember
 - Exact file paths always
 - Copy exact global constraints into the plan header so every downstream task inherits them
 - Give each task explicit `Interfaces` so low-context implementers know neighbor contracts
-- Complete code in every step — if a step changes code, show the code
+- Complete code in every Full-plan code step
 - Exact commands with expected output, copied from project source of truth when
   available; do not broaden target/suite/matrix scope on your own
 - Prefer vertical slices: each task should complete a narrow behavior that can
@@ -243,45 +278,48 @@ If you find issues, fix them inline. No need to re-review — just fix and move 
 
 ## Execution Handoff
 
-After saving and self-reviewing the plan, STOP. Ask the human partner to review and approve the plan before any implementation begins:
+### Full Plan Review Gate
 
-Localize the review prompt into the user's conversation language while preserving these choices and authorization boundaries:
-- Plan is complete and saved to `docs/superpowers/plans/<filename>.md`.
-- Option 1 approves and commits the plan document.
-- Option 2 requests changes.
-- Option 3 approves without commit.
-- Only option 1 authorizes a documentation-only commit.
-- Approval of the plan does not authorize implementation.
+For Full plans, save and self-review the plan, then ask the user to approve it,
+request changes, or approve and explicitly commit only the plan document. Plan
+approval does not authorize implementation. Compact plans skip this duplicate
+gate unless they introduce a material design delta.
 
-Wait for the user's response. If they request changes, make them and re-run the self-review loop. Only proceed once the user approves.
+### Unified Execution Handoff
+
+After an approved Full plan, or directly after a faithful Compact plan, present
+one localized choice:
+
+1. Subagent-Driven + create worktree + authorize local checkpoint commits
+2. Subagent-Driven + current workspace + authorize local checkpoint commits
+3. Inline + create worktree + no implementation commits
+4. Inline + current workspace + no implementation commits
+5. Revise design or plan
+
+The selected option authorizes implementation and only the workspace/local
+commit actions it names. It never authorizes push, merge, PR creation, amend,
+force operations, or unrelated commits.
+
+Use prior execution/worktree/commit preferences to preselect or shorten this
+handoff, not to infer implementation authorization. Skip confirmation only when
+the user previously authorized the complete combination and explicitly told you
+to start implementation. SDD requires checkpoint commits; a user who declines
+them must use Inline.
+
+Do not invoke an implementation skill until an execution option is selected.
+
+- Options 1-2: **REQUIRED SUB-SKILL:** use
+  `k-superpowers:subagent-driven-development` with the handoff's worktree and
+  checkpoint authorization.
+- Options 3-4: **REQUIRED SUB-SKILL:** use
+  `k-superpowers:executing-plans` with the handoff's worktree decision and no
+  implementation commits.
 
 ### Commit Authorization
 
-Single source of truth for all commits in this plan's lifecycle:
-
-- **Plan document:** commit only when the user explicitly chooses option 1 or otherwise explicitly asks for a commit. The authorization covers the plan document only. If project instructions prohibit commits unless explicitly requested, that rule prevails.
-- **Plan approval ≠ implementation authorization:** approving the plan (with or without commit) does not grant permission to start implementation or commit implementation code.
-- **Implementation commit checkpoints** (template Step 5): execute only if project instructions allow commits, the user explicitly requested commits, or the user approved a workflow option that includes implementation commits. Otherwise stop after verification and ask before committing.
-- **SDD checkpoint commits:** Choosing Subagent-Driven does not itself grant
-  commit permission. Before SDD starts, it asks once for authorization to
-  create local task/fix checkpoint commits for the approved plan. This does not
-  authorize push, merge, PR creation, amend, force operations, or unrelated
-  commits. If authorization is declined, use Inline Execution instead; do not
-  run commitless SDD.
-
-After the approved plan is either committed or explicitly approved without commit, offer execution choice:
-
-Localize the execution-choice prompt into the user's conversation language while preserving these options:
-- Option 1: Subagent-Driven (recommended) - risk-adaptive execution with review strength matched to each task.
-- Option 2: Inline Execution - execute tasks in this session using executing-plans, batch execution with checkpoints.
-- Ask which approach the user wants.
-
-Do NOT invoke subagent-driven-development, executing-plans, or any implementation skill until the human explicitly chooses an execution option or otherwise tells you to proceed with implementation.
-
-**If Subagent-Driven chosen:**
-- **REQUIRED SUB-SKILL:** Use k-superpowers:subagent-driven-development
-- Risk-adaptive execution: controller handles low-risk tasks; medium/high tasks use a fresh implementer and merged task review; high or cross-task risk adds final review.
-
-**If Inline Execution chosen:**
-- **REQUIRED SUB-SKILL:** Use k-superpowers:executing-plans
-- Batch execution with checkpoints for review
+- Spec/plan documents: commit only when explicitly requested.
+- SDD implementation: options 1-2 authorize local task/fix checkpoint commits
+  for this plan only.
+- Inline implementation: options 3-4 do not authorize implementation commits.
+- No option authorizes push, merge, PR, amend, force operations, or unrelated
+  commits.

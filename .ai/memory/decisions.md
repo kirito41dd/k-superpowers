@@ -2,7 +2,7 @@
 
 <!-- SUMMARY
 覆盖范围：架构决策、技术选型、废弃方案（ADR 风格）
-条目数：14
+条目数：15
 最近更新：2026-07-10
 高频标签：#memory #fork #personalization #codex #opencode #claude-code #install #verification #type-driven #skills #sdd
 -->
@@ -21,6 +21,15 @@
 ```
 
 ---
+
+## 2026-07-10 主开发流程增加自动 Compact/Full 分流与统一 Handoff
+
+- **背景**：完成风险自适应 SDD 后回顾真实对话，发现主要延迟已不在 SDD task execution，而在实现前外围流程：从用户提出“优化 skills”到首次编辑约有十二次用户回复，分别消耗在方案/设计分段批准、written spec、plan、execution mode、worktree、commit authorization 等重复 gate；Inline + current-main 完成后还无意义地加载 branch-finishing 流程。skill 修改验证也为每条规则建立场景并多轮 review，token 与 wall-clock 成本偏高。
+- **选项**：新增独立 compact workflow skill 绕过现有 owner skills；只在 agent 配置层用偏好覆盖；在现有 `brainstorming`、`writing-plans`、execution/finish 和 `writing-skills` 中加入显式 Compact/Full 与 bounded 分支。
+- **决策**：选择第三项。`brainstorming` 探索上下文后自动判定 `Flow: Compact | Full`：Compact 仅在单一问题域、目标明确（最多一个 blocking question）、无未决长期架构选择、无不可逆迁移/安全权限/协议/重大兼容风险且用户可直接评估取舍时成立；任一条件未证明为真即 Full，不能为了速度降级。Compact 一次呈现 2-3 个方案、推荐与完整设计，用户一次批准；faithful written spec/plan 若无新增 architecture/scope/dependency/public contract/risk decision，不重复审批。`writing-plans` 的 Compact plan 保留 Goal/Architecture/Global Constraints、Task files/slice/risk、必要 interfaces、实现要点与 verification，不强制五步模板、2-5 分钟动作或 routine full-code blocks；Full 保留详细 plan 和独立审批。Unified Execution Handoff 一次选择 SDD/Inline、worktree/current workspace 和 local checkpoint commit authorization；选择才授权实现及明示动作，不授权 push/merge/PR/amend/force。历史偏好只能预选 handoff，不能合成 implementation authorization。execution skills 在任何编辑前落实 workspace 决策；worktree consent 不授权修改/提交 `.gitignore`，创建失败不能静默 fallback。current-main Inline 且无 Git 集成请求时不触发 `finishing-a-development-branch`。`writing-skills` 优先 observed baseline，缺失才 synthetic baseline；默认 2-3 个代表性 failure-class 场景、one whole-change review、one batch fix、one re-review，只有新 rationalization/failure class 或 material fix 才扩展。
+- **理由**：清晰单域工作从需求到实现正常只需两次用户回复（完整设计批准、Unified Execution Handoff），同时保留 design hard gate、material-delta gate、Full escalation、显式 Git 授权和最终新鲜验证。把规则写入各 owner skill 避免新增旁路 skill 或配置层覆盖造成两套 source of truth；bounded campaign 复用真实失败证据并只为新风险扩展验证。
+- **影响**：`skills/brainstorming/SKILL.md`, `skills/writing-plans/SKILL.md`, `skills/using-superpowers/SKILL.md`, `skills/using-git-worktrees/SKILL.md`, `skills/subagent-driven-development/SKILL.md`, `skills/executing-plans/SKILL.md`, `skills/finishing-a-development-branch/SKILL.md`, `skills/writing-skills/*`, `tests/claude-code/*`, `docs/skills-overview.zh.md`, `docs/testing.md`, `docs/superpowers/specs/2026-07-10-compact-development-flow-design.md`, plugin manifests, `README.md`
+- **状态**：已实施。三个 fresh-agent 代表性场景通过，独立 whole-change review 最终 PASS；shell/JSON/版本/残留/whitespace 检查通过。真实 `claude -p` persistent test 因本机 Claude token 认证失效未运行；测试 helper 已增加 macOS portable timeout 和当前 checkout `--plugin-dir` 加载。
 
 ## 2026-07-10 SDD 改为风险自适应执行并合并 Task Reviewer
 

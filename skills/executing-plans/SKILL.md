@@ -1,6 +1,6 @@
 ---
 name: executing-plans
-description: Use when you have a written implementation plan to execute in a separate session with review checkpoints
+description: Use when executing an approved implementation plan inline or without SDD checkpoint commits
 ---
 
 # Executing Plans
@@ -14,6 +14,14 @@ Load plan, review critically, execute all tasks, report when complete.
 **Note:** Tell your human partner that Superpowers works much better with access to subagents. The quality of its work will be significantly higher if run on a platform with subagent support (such as Claude Code or Codex). If subagents are available, use k-superpowers:subagent-driven-development instead of this skill.
 
 ## The Process
+
+### Step 0: Apply Unified Execution Handoff
+
+Before setup, edits, or task execution, invoke
+`k-superpowers:using-git-worktrees` with the handoff's explicit "create
+worktree" or "current workspace" decision. Complete workspace setup and
+baseline verification before Step 1. Do not rely on the Integration section as
+an implicit action.
 
 ### Step 1: Load and Review Plan
 1. Read plan file
@@ -32,9 +40,13 @@ For each task:
 ### Step 3: Complete Development
 
 After all tasks complete and verified:
-- Announce: "I'm using the finishing-a-development-branch skill to complete this work."
-- **REQUIRED SUB-SKILL:** Use k-superpowers:finishing-a-development-branch
-- Follow that skill to verify tests, present options, execute choice
+- If on a feature branch or linked worktree, the user requested Git
+  integration/cleanup, or a real integration decision remains: use
+  `k-superpowers:finishing-a-development-branch`.
+- If the Unified Execution Handoff selected current workspace, execution is on
+  main/master with explicit consent, and no integration was requested: run
+  fresh completion verification and report that changes remain in the current
+  workspace. Do not show merge/PR/discard options.
 
 ## When to Stop and Ask for Help
 
@@ -67,4 +79,4 @@ After all tasks complete and verified:
 **Required workflow skills:**
 - **k-superpowers:using-git-worktrees** - Ensures isolated workspace (creates one or verifies existing)
 - **k-superpowers:writing-plans** - Creates the plan this skill executes
-- **k-superpowers:finishing-a-development-branch** - Complete development after all tasks
+- **k-superpowers:finishing-a-development-branch** - Complete feature-branch/worktree integration when a decision remains

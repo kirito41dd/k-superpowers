@@ -18,6 +18,7 @@
 ## 快速索引（按模块）
 
 - Skills 总览 → `docs/skills-overview.zh.md`
+- Compact/Full 主流程、faithful spec/plan 与 Unified Execution Handoff → `decisions.md#2026-07-10-主开发流程增加自动-compactfull-分流与统一-handoff`
 - SDD 风险自适应执行、merged reviewer 与 checkpoint commit gate → `decisions.md#2026-07-10-sdd-改为风险自适应执行并合并-task-reviewer`
 - Skill 验证命令与代码注释 source-of-truth → `conventions.md#2026-07-08-skill-验证命令与代码注释-source-of-truth`
 - SDD reviewer/controller 上游纪律吸收 → `decisions.md#2026-07-08-吸收上游-sdd-reviewer-与-controller-纪律`
@@ -60,6 +61,7 @@
 
 ## 最近热点
 
+- 2026-07-10 主开发流程增加自动 Compact/Full 分流与统一 Handoff → `decisions.md`
 - 2026-07-10 SDD 改为风险自适应执行并合并 Task Reviewer → `decisions.md`
 - 2026-07-08 Skill 验证命令与代码注释 source-of-truth → `conventions.md`
 - 2026-07-08 吸收上游 SDD reviewer 与 controller 纪律 → `decisions.md`

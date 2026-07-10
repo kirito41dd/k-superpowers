@@ -44,13 +44,16 @@ tasks are intentionally controller-owned.
 
 ## Startup
 
+0. Before creating the SDD workspace or editing anything, invoke
+   `k-superpowers:using-git-worktrees` with the Unified Execution Handoff's
+   workspace decision. Complete setup and baseline verification.
 1. Read the plan once, note global constraints and task interfaces, and create
    todos.
 2. Run `./scripts/sdd-workspace` and inspect `progress.md`. Do not redispatch a
    task already recorded complete.
 3. Run the pre-flight review below.
-4. Ask once for authorization to create local task/fix checkpoint commits for
-   this approved plan.
+4. Consume checkpoint authorization from the Unified Execution Handoff. Ask
+   once only when no prior handoff or explicit user authorization exists.
 
 ### Checkpoint Commit Authorization
 
@@ -58,7 +61,9 @@ The authorization covers only local commits for tasks and review fixes in the
 current SDD run. It does not authorize push, merge, PR creation, amend, force
 operations, or unrelated changes.
 
-Choosing SDD, approving a spec, or approving a plan is not commit authorization.
+Unified Execution Handoff options 1-2 explicitly authorize these local
+checkpoint commits. Choosing SDD without that explicit handoff, approving a
+spec, or approving a plan is not commit authorization.
 If authorization is declined, route to `k-superpowers:executing-plans` and stop
 SDD. Do not simulate commitless SDD with working-tree diffs, stash entries,
 temporary patches, or undocumented snapshots. Stable `BASE..HEAD` ranges are
@@ -294,6 +299,14 @@ Do not redispatch completed tasks. Keep `.superpowers/sdd/` while blocked,
 interrupted, or mid-review. After all required reviews and fresh whole-change
 verification succeed, run `./scripts/sdd-cleanup`.
 
+## Completion Routing
+
+After cleanup, use `k-superpowers:finishing-a-development-branch` only when the
+run is on a feature branch or linked worktree, the user requested Git
+integration/cleanup, or a real merge/PR/retain/discard decision remains. For an
+explicit current-main run with no integration request, report verified changes
+in place and do not show a branch-finishing menu.
+
 ## Prompt Templates
 
 - `./implementer-prompt.md` - delegated medium/high implementation
@@ -328,7 +341,7 @@ Never:
 - **k-superpowers:using-git-worktrees** - establish or verify isolation
 - **k-superpowers:writing-plans** - produce explicit task risk metadata
 - **k-superpowers:requesting-code-review** - conditional final review
-- **k-superpowers:finishing-a-development-branch** - finish after verification
+- **k-superpowers:finishing-a-development-branch** - conditional branch integration after verification
 
 **Subagents should use:**
 

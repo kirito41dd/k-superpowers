@@ -55,6 +55,10 @@ For preparation-only requests: load only the requested context, summarize if use
 
 Only invoke `brainstorming` after an actual creative/build/change request: "实现 X", "设计 Y", "修复 Z", "添加功能", or "改成...".
 
+For actual change requests, let `brainstorming` select Compact or Full from the
+problem's uncertainty. Do not equate "small diff" with Compact, and do not copy
+its flow rules here; the owner skill is the source of truth.
+
 ```dot
 digraph skill_flow {
     "User message received" [shape=doublecircle];

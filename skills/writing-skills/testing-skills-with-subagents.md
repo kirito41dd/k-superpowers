@@ -4,11 +4,14 @@
 
 ## Overview
 
-**Testing skills is pressure-scenario verification applied to process documentation.**
+**Testing skills is observed-or-synthetic behavioral verification applied to process documentation.**
 
-You run scenarios without the skill (baseline — watch agent fail), write skill addressing those failures (verify — watch agent comply), then close loopholes (stay compliant).
+Start from a real failure trace when available; otherwise run representative
+scenarios without the skill. Write guidance addressing those failures, verify
+post-change behavior, then close only loopholes testing exposes.
 
-**Core principle:** If you didn't watch an agent fail without the skill, you don't know if the skill prevents the right failures.
+**Core principle:** Without concrete observed or synthetic failure evidence, you
+do not know whether the skill prevents the right failures.
 
 **REQUIRED BACKGROUND:** Understand `k-superpowers:type-driven-verification`. This reference provides skill-specific test formats: pressure scenarios and rationalization tables.
 
@@ -31,7 +34,7 @@ Don't test:
 
 | Verification Phase | Skill Testing | What You Do |
 |-----------|---------------|-------------|
-| **Baseline** | Observe failure | Run scenario WITHOUT skill, watch agent fail |
+| **Baseline** | Establish failure | Use observed failure, or run scenario WITHOUT skill when needed |
 | **Capture** | Record rationalizations | Document exact failures verbatim |
 | **Write** | Write skill | Address specific baseline failures |
 | **Verify** | Pressure test | Run scenario WITH skill, verify compliance |
@@ -40,16 +43,18 @@ Don't test:
 
 Same discipline as code verification, different test format.
 
-## Baseline Phase: Watch It Fail
+## Baseline Phase: Establish Failure Evidence
 
-**Goal:** Run test WITHOUT the skill - watch agent fail, document exact failures.
+**Goal:** Start from concrete failure evidence.
 
-You MUST see what agents naturally do before writing the skill.
+Use an observed user trace, production incident, failed eval, or review finding
+when it already covers the target failure. Only run a scenario WITHOUT the skill
+when no observed evidence exists for that failure.
 
 **Process:**
 
-- [ ] **Create pressure scenarios** (3+ combined pressures)
-- [ ] **Run WITHOUT skill** - give agents realistic task with pressures
+- [ ] **Select observed evidence, or create 2-3 representative pressure scenarios**
+- [ ] **Run WITHOUT skill only when observed evidence is absent**
 - [ ] **Document choices and rationalizations** word-for-word
 - [ ] **Identify patterns** - which excuses appear repeatedly?
 - [ ] **Note effective pressures** - which scenarios trigger violations?
@@ -92,6 +97,10 @@ If agent still fails: skill is unclear or incomplete. Revise and re-test.
 **Goal:** Confirm agents follow rules when they want to break them.
 
 **Method:** Realistic scenarios with multiple pressures.
+
+Start with 2-3 scenarios covering distinct failure classes. Do not create one
+scenario per sentence or rule. Expand only when an agent produces a new
+rationalization or the fix introduces materially different behavior.
 
 ### Writing Pressure Scenarios
 
@@ -310,8 +319,8 @@ Meta-test: "Skill was clear, I should follow it"
 Before deploying skill, verify you followed the baseline → write → verify → close-loopholes loop:
 
 **Baseline Phase:**
-- [ ] Created pressure scenarios (3+ combined pressures)
-- [ ] Ran scenarios WITHOUT skill (baseline)
+- [ ] Selected observed evidence, or created 2-3 representative scenarios
+- [ ] Ran scenarios WITHOUT skill only if observed evidence was absent
 - [ ] Documented agent failures and rationalizations verbatim
 
 **Write & Verify Phase:**
@@ -320,20 +329,19 @@ Before deploying skill, verify you followed the baseline → write → verify �
 - [ ] Agent now complies
 
 **Close-Loopholes Phase:**
-- [ ] Identified NEW rationalizations from testing
-- [ ] Added explicit counters for each loophole
-- [ ] Updated rationalization table
-- [ ] Updated red flags list
-- [ ] Updated description with violation symptoms
-- [ ] Re-tested - agent still complies
-- [ ] Meta-tested to verify clarity
-- [ ] Agent follows rule under maximum pressure
+- [ ] If testing exposed a new rationalization, added a focused counter
+- [ ] Re-tested the affected representative scenario
+
+**Review Phase:**
+- [ ] Ran one whole-change review
+- [ ] Batched findings into one fix pass
+- [ ] Ran one re-review; expanded only for new findings or material behavior changes
 
 ## Common Mistakes
 
-**❌ Writing skill before testing (skipping baseline)**
+**❌ Writing skill without observed or synthetic baseline evidence**
 Reveals what YOU think needs preventing, not what ACTUALLY needs preventing.
-✅ Fix: Always run baseline scenarios first.
+✅ Fix: Use the real failure trace; only synthesize scenarios when it is absent.
 
 **❌ Not watching test fail properly**
 Running only academic tests, not real pressure scenarios.
@@ -359,7 +367,7 @@ Tests pass once ≠ bulletproof.
 
 | Verification Phase | Skill Testing | Success Criteria |
 |-----------|---------------|------------------|
-| **Baseline** | Run scenario without skill | Agent fails, document rationalizations |
+| **Baseline** | Use observed failure, or run representative scenario without skill | Concrete failure and rationalizations documented |
 | **Capture** | Record exact wording | Verbatim documentation of failures |
 | **Write** | Write skill addressing failures | Agent now complies with skill |
 | **Verify** | Re-test scenarios | Agent follows rule under pressure |
@@ -372,7 +380,8 @@ Tests pass once ≠ bulletproof.
 
 If you wouldn't ship core code behavior without verification, don't ship skills without testing them on agents.
 
-Baseline → write → verify → close loopholes for documentation gives the same confidence as explicit code verification.
+Observed/synthetic baseline → write → verify → close loopholes gives the same
+discipline as explicit code verification without duplicating evidence.
 
 ## Real-World Impact
 

@@ -114,6 +114,14 @@ the run discovers cross-task integration risk.
 STATUS: PASSED
 ```
 
+## Behavior Test: compact-development-flow
+
+`tests/claude-code/test-compact-development-flow.sh` loads the current checkout
+with `--plugin-dir` and runs three representative scenarios: clear single-domain
+Compact routing, uncertain/irreversible Full escalation, and current-main Inline
+completion without a branch-finishing menu. It intentionally stays bounded
+unless a new failure class appears.
+
 ## Token Analysis Tool
 
 ### Usage
