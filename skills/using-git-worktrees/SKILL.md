@@ -81,29 +81,57 @@ Follow this priority order. Explicit user preference always beats observed files
    ```
    If found, use it. If both exist, `.worktrees` wins.
 
-3. **Check for an existing global directory:**
+3. **Honor an explicit global-directory preference:**
    ```bash
    project=$(basename "$(git rev-parse --show-toplevel)")
-   ls -d ~/.config/superpowers/worktrees/$project 2>/dev/null
+   path=~/.config/superpowers/worktrees/$project/$BRANCH_NAME
    ```
-   If found, use it (backward compatibility with legacy global path).
+   A global path requires no repository ignore edit.
 
-4. **If there is no other guidance available**, prefer `.worktrees/` only when
-   it is already ignored; otherwise use
-   `~/.config/superpowers/worktrees/$project/` without modifying the repository.
+4. **If there is no other guidance available**, use `.worktrees/` at the
+   project root. The project-local worktree choice includes authorization for
+   the minimal ignore setup below.
+
+After selection, set `LOCATION` to the exact worktree directory root before any
+safety check or path construction:
+
+```bash
+# Examples; use the path selected above.
+LOCATION=.worktrees
+# LOCATION=worktrees
+# LOCATION=.trees
+# LOCATION="$HOME/.config/superpowers/worktrees/$project"
+```
+
+Use this same value for ignore verification and the final worktree path. Do not
+re-derive a different default later.
 
 #### Safety Verification (project-local directories only)
 
 **MUST verify directory is ignored before creating worktree:**
 
 ```bash
-git check-ignore -q .worktrees 2>/dev/null || git check-ignore -q worktrees 2>/dev/null
+git check-ignore -q "$LOCATION" 2>/dev/null
 ```
 
-**If NOT ignored:** Do not edit or commit `.gitignore` under worktree consent.
-Use the global worktree directory instead. Editing `.gitignore` requires
-separate file-edit authorization, and committing it requires separate commit
-authorization.
+Check only the selected project-local directory. An ignored `worktrees/` does
+not make `.worktrees/` safe, and an explicit alternative must be checked by its
+actual path.
+
+**If NOT ignored:** Add exactly one rule for the selected project-local
+worktree directory to `.gitignore` (normally `.worktrees/`), preserving nearby
+style. Creating a project-local worktree authorizes this minimal setup edit.
+
+This does **not** authorize a commit. Without separate commit authorization,
+leave the `.gitignore` edit visible as setup-owned and report it. Do not add a
+duplicate equivalent rule. An explicit global-worktree preference skips this
+edit entirely.
+
+Before editing, require `.gitignore` to be a regular writable file or safely
+creatable in a writable repository root. After editing, rerun
+`git check-ignore -q "$LOCATION"`. If the edit cannot be made safely or the
+selected location is still not ignored, stop and report the error; do not create
+the worktree or switch locations silently.
 
 **Why critical:** Prevents accidentally committing worktree contents to repository.
 
@@ -114,17 +142,15 @@ Global directories (`~/.config/superpowers/worktrees/`) need no verification.
 ```bash
 project=$(basename "$(git rev-parse --show-toplevel)")
 
-# Determine path based on chosen location
-# For project-local: path="$LOCATION/$BRANCH_NAME"
-# For global: path="~/.config/superpowers/worktrees/$project/$BRANCH_NAME"
-
+path="$LOCATION/$BRANCH_NAME"
 git worktree add "$path" -b "$BRANCH_NAME"
 cd "$path"
 ```
 
 **Creation failure:** If worktree creation fails, stop and report the error.
 Ask whether to retry or change the Unified Execution Handoff to current
-workspace. Never silently convert explicit isolation consent into in-place work.
+workspace. Keep any setup-owned `.gitignore` edit visible; never silently revert
+it or convert explicit isolation consent into in-place work.
 
 ## Step 3: Project Setup
 
@@ -177,9 +203,9 @@ Ready to implement <feature-name>
 | `.worktrees/` exists | Use it (verify ignored) |
 | `worktrees/` exists | Use it (verify ignored) |
 | Both exist | Use `.worktrees/` |
-| Neither exists | Use `.worktrees/` only if ignored; otherwise use global path |
-| Global path exists | Use it (backward compat) |
-| Directory not ignored | Use global worktree path; repository edits need separate authorization |
+| Neither exists | Default to project-local `.worktrees/` |
+| Explicit global preference | Use global path; no repository edit |
+| Directory not ignored | Add one `.gitignore` rule; do not infer commit authorization |
 | Worktree creation fails | Stop and ask whether to retry or change handoff |
 | Tests fail during baseline | Report failures + ask |
 | No package.json/Cargo.toml | Skip dependency install |
@@ -201,10 +227,15 @@ Ready to implement <feature-name>
 - **Problem:** Worktree contents get tracked, pollute git status
 - **Fix:** Always use `git check-ignore` before creating project-local worktree
 
+### Treating setup edit as commit authorization
+
+- **Problem:** Commits `.gitignore` merely because project-local worktree was selected
+- **Fix:** Add the necessary rule, but commit it only under separate commit authorization
+
 ### Assuming directory location
 
 - **Problem:** Creates inconsistency, violates project conventions
-- **Fix:** Follow priority: existing > global legacy > instruction file > default
+- **Fix:** Follow priority: explicit preference > existing project-local directory > project-local default
 
 ### Proceeding with failing tests
 
@@ -218,13 +249,15 @@ Ready to implement <feature-name>
 - Use `git worktree add` when you have a native worktree tool (e.g., `EnterWorktree`). This is the #1 mistake — if you have it, use it.
 - Skip Step 1a by jumping straight to Step 1b's git commands
 - Create worktree without verifying it's ignored (project-local)
+- Commit the setup-owned `.gitignore` edit without separate authorization
 - Skip baseline test verification
 - Proceed with failing tests without asking
 
 **Always:**
 - Run Step 0 detection first
 - Prefer native tools over git fallback
-- Follow directory priority: existing > global legacy > instruction file > default
+- Follow directory priority: explicit preference > existing project-local directory > project-local default
 - Verify directory is ignored for project-local
+- Add at most one matching `.gitignore` rule when project-local consent requires it
 - Auto-detect and run project setup
 - Verify clean test baseline

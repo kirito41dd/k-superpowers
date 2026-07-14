@@ -117,10 +117,11 @@ STATUS: PASSED
 ## Behavior Test: compact-development-flow
 
 `tests/claude-code/test-compact-development-flow.sh` loads the current checkout
-with `--plugin-dir` and runs three representative scenarios: clear single-domain
-Compact routing, uncertain/irreversible Full escalation, and current-main Inline
-completion without a branch-finishing menu. It intentionally stays bounded
-unless a new failure class appears.
+with `--plugin-dir` and runs three representative flow scenarios plus one
+project-local worktree decision matrix. It covers Compact routing, Full
+escalation, current-main finish skipping, selected-location ignore checks,
+minimal setup edits, and failure handling. It expands only for a new failure
+class.
 
 ## Token Analysis Tool
 

@@ -49,4 +49,12 @@ output=$(run_claude "IMPORTANT: Make an actual completion-routing decision using
 assert_first_line "$output" "FINISH: SKIP" "Current-main Inline skips branch finish menu"
 assert_contains "$output" "remain.*current workspace\|current workspace.*remain\|保留.*当前" "Reports changes in place"
 
+output=$(run_claude "IMPORTANT: Apply the loaded using-git-worktrees skill to six cases. Use only these action tokens: NO_EDIT, ADD_ONCE_NO_COMMIT, ADD_AND_COMMIT, USE_GLOBAL_NO_EDIT, STOP_REPORT, STOP_KEEP_EDIT. Output exactly these lines before explanation: EXISTING_IGNORE: <action>; MISSING_IGNORE: <action>; EXPLICIT_GLOBAL: <action>; ALTERNATIVE_SELECTED: <action>; EDIT_FAILURE: <action>; CREATION_FAILURE: <action>. Cases: 1) project-local .worktrees/ is already ignored; 2) project-local has no equivalent rule and no commit authorization; 3) explicit global path; 4) explicit project-local alternative .trees/ is selected and not ignored, while only .worktrees/ is ignored; 5) .gitignore cannot be safely edited; 6) the setup-owned ignore edit succeeded but worktree creation then fails." 30 "" "$PLUGIN_ARG")
+assert_contains "$output" "^EXISTING_IGNORE: NO_EDIT" "Existing ignore is not duplicated"
+assert_contains "$output" "^MISSING_IGNORE: ADD_ONCE_NO_COMMIT" "Missing ignore gets one uncommitted setup edit"
+assert_contains "$output" "^EXPLICIT_GLOBAL: USE_GLOBAL_NO_EDIT" "Explicit global path does not edit repository"
+assert_contains "$output" "^ALTERNATIVE_SELECTED: ADD_ONCE_NO_COMMIT" "Ignore check uses the selected location only"
+assert_contains "$output" "^EDIT_FAILURE: STOP_REPORT" "Unsafe ignore edit stops creation"
+assert_contains "$output" "^CREATION_FAILURE: STOP_KEEP_EDIT" "Creation failure keeps setup edit visible"
+
 echo "=== All compact development flow tests passed ==="

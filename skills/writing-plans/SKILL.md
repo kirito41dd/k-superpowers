@@ -300,6 +300,11 @@ The selected option authorizes implementation and only the workspace/local
 commit actions it names. It never authorizes push, merge, PR creation, amend,
 force operations, or unrelated commits.
 
+For options 1 or 3, project-local worktree consent includes the minimal edit
+needed to add the selected worktree directory to `.gitignore` when missing. It
+does not authorize committing that setup edit. An explicit global-worktree
+preference avoids the repository edit.
+
 Use prior execution/worktree/commit preferences to preselect or shorten this
 handoff, not to infer implementation authorization. Skip confirmation only when
 the user previously authorized the complete combination and explicitly told you
