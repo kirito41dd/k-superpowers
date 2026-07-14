@@ -60,7 +60,8 @@ feedback loop; a persistent regression test is conditional, not automatic.
 
 ## Unified Execution Handoff
 
-After plan approval, offer exactly:
+After a faithful Compact plan passes self-review, or after the user explicitly
+approves a Full plan, offer exactly:
 
 1. SDD + create worktree + authorize this plan's local checkpoint commits
 2. SDD + current workspace + authorize this plan's local checkpoint commits

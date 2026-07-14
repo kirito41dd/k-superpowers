@@ -47,12 +47,13 @@ tasks are intentionally controller-owned.
 0. Before creating the SDD workspace or editing anything, invoke
    `k-superpowers:using-git-worktrees` with the Unified Execution Handoff's
    workspace decision. Complete setup and baseline verification.
-1. Read the plan once, note global constraints and task interfaces, and create
-   todos.
-2. Run `./scripts/sdd-workspace` and inspect `progress.md`. Do not redispatch a
-   task already recorded complete.
-3. Run the pre-flight review below.
-4. Consume checkpoint authorization from the Unified Execution Handoff. Ask
+1. Read the plan once and note global constraints and task interfaces.
+2. Run `./scripts/sdd-workspace`, then initialize or validate `progress.md` as
+   specified under Durable Progress.
+3. Create todos. Skip completed tasks only after the progress run matches the
+   current plan.
+4. Run the pre-flight review below.
+5. Consume checkpoint authorization from the Unified Execution Handoff. Ask
    once only when no prior handoff or explicit user authorization exists.
 
 ### Checkpoint Commit Authorization
@@ -265,8 +266,22 @@ bookkeeping.
 
 ## Durable Progress
 
-At startup, inspect `$(./scripts/sdd-workspace)/progress.md`. A completed entry
-is authoritative after context compaction. Use this format:
+Before task routing, `progress.md` begins with:
+
+```text
+Run YYYY-MM-DD <specific-plan-topic>
+```
+
+Use a distinguishing topic derived from the current plan. If the file is
+missing, create this header. If it exists, compare its `Run` topic with the
+current plan before reading completed tasks. Resume only on a clear match; when
+it is unrelated, missing, or ambiguous, preserve the artifacts and ask the user
+whether to resume, retain, or clean them. Do not infer a match from task numbers,
+dates, or directory location. Other informational header lines are not workflow
+state.
+
+After the run matches, a completed entry is authoritative after context
+compaction. Use this format:
 
 ```text
 Task N: complete (risk <level>, commits <base7>..<head7>, verification <summary>, review <controller-self-check|merged-clean>)

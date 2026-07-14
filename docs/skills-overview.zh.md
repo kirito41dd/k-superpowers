@@ -49,7 +49,8 @@ final whole-change review。
 Task brief、implementer report、review package、progress ledger 继续存放在
 `.superpowers/sdd/` 并通过路径交接。Merged reviewer 一次读取 artifact/diff，先
 Spec 后 Standards，输出两个独立阻断 verdict；修复后 fresh reviewer 完整复审
-两个轴。`task-snapshot` 确定性保护 pre-existing dirty changes 和 commit scope。
+两个轴。Progress ledger 用 `Run` topic 标识来源，恢复前必须明确匹配当前 plan；
+`task-snapshot` 确定性保护 pre-existing dirty changes 和 commit scope。
 
 ## Review 与质量
 

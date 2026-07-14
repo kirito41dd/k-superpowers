@@ -307,4 +307,16 @@ fi
 
 echo ""
 
+# Test 18: Progress run header is checked before task recovery
+echo "Test 18: Progress run header..."
+
+output=$(run_claude "IMPORTANT: Apply the loaded subagent-driven-development startup rules to four cases. Output exactly these lines before any explanation: NEW: <action>; MATCH: <action>; FOREIGN: <action>; UNKNOWN: <action>. Use only WRITE_RUN_BEFORE_TODOS, RESUME_COMPLETED, or STOP_ASK_PRESERVE. Cases: NEW has no progress.md; MATCH has Run 2026-07-14 llm-terminal-semantics and the current plan is llm-terminal-semantics; FOREIGN has that Run header but the current plan is billing-reconciliation; UNKNOWN has completed task records but no Run header." 30)
+
+assert_contains "$output" "^NEW: WRITE_RUN_BEFORE_TODOS" "New run writes topic before task routing"
+assert_contains "$output" "^MATCH: RESUME_COMPLETED" "Matching run resumes completed tasks"
+assert_contains "$output" "^FOREIGN: STOP_ASK_PRESERVE" "Foreign run is preserved for user decision"
+assert_contains "$output" "^UNKNOWN: STOP_ASK_PRESERVE" "Unknown run is not adopted"
+
+echo ""
+
 echo "=== All subagent-driven-development skill tests passed ==="
