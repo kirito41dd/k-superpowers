@@ -1,6 +1,6 @@
 #!/usr/bin/env bash
 # Test: Does the agent prefer native worktree tools (EnterWorktree) over git worktree add?
-# Framework: RED-GREEN-REFACTOR per testing-skills-with-subagents.md
+# Framework: before/after pressure scenarios per testing-skills-with-subagents.md
 #
 # RED:   Skill without Step 1a (no native tool preference). Agent should use git worktree add.
 # GREEN: Skill with Step 1a (explicit tool naming + consent bridge). Agent should use EnterWorktree.
@@ -35,7 +35,7 @@ echo "=== Worktree Native Preference Test ==="
 echo ""
 
 # Phase selection
-PHASE="${1:-red}"
+PHASE="${1:-green}"
 
 run_and_check() {
     local phase_name="$1"
@@ -65,11 +65,11 @@ run_and_check() {
         fi
 
         used_git_worktree_add=$(echo "$output" | grep -qi "git worktree add" && echo "yes" || echo "no")
-        mentioned_enter=$(echo "$output" | grep -qi "EnterWorktree" && echo "yes" || echo "no")
+        mentioned_enter=$(echo "$output" | grep -qiE "EnterWorktree|WorktreeCreate|native.*worktree|/worktree|--worktree" && echo "yes" || echo "no")
 
         if [ "$expect_native" = "true" ]; then
             # GREEN/PRESSURE: expect native tool, no git worktree add
-            if [ "$used_git_worktree_add" = "no" ]; then
+            if [ "$used_git_worktree_add" = "no" ] && [ "$mentioned_enter" = "yes" ]; then
                 pass=$((pass + 1))
                 [ "$RUNS" -gt 1 ] && echo "  Run $i: PASS (no git worktree add)"
             else
@@ -170,6 +170,13 @@ Report EXACTLY what tool/command you used to create the workspace.'
         echo "=== SOME PHASES FAILED ==="
         exit 1
     fi
+fi
+
+if [ "$PHASE" != "red" ]; then
+    ownership=$(run_claude 'Apply using-git-worktrees to two native-tool outcomes. Case A returns a native cleanup handle. Case B creates isolation but returns no cleanup handle/tool. Output exactly: A: platform-owned or unowned; B: platform-owned or unowned; B_CLEANUP: native or preserve.' 60)
+    assert_contains "$ownership" '^A: platform-owned' "Native handle records platform ownership"
+    assert_contains "$ownership" '^B: unowned' "Missing native handle becomes unowned"
+    assert_contains "$ownership" '^B_CLEANUP: preserve' "Unowned native workspace is preserved"
 fi
 
 echo ""

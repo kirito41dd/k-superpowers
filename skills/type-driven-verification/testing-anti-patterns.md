@@ -194,35 +194,32 @@ const mockResponse = {
 - **Tests pass but integration fails** - Mock incomplete, real API complete
 - **False confidence** - Test proves nothing about real behavior
 
-**The Iron Rule:** Mock the COMPLETE data structure as it exists in reality, not just fields your immediate test uses.
+**The rule:** A fixture must satisfy the real schema and the behavior under test.
+Prefer typed builders, contract fixtures, or parsed real samples; do not copy
+unrelated fields merely for completeness.
 
 **The fix:**
 ```typescript
-// ✅ GOOD: Mirror real API completeness
-const mockResponse = {
-  status: 'success',
-  data: { userId: '123', name: 'Alice' },
-  metadata: { requestId: 'req-789', timestamp: 1234567890 }
-  // All fields real API returns
-};
+// ✅ GOOD: Valid defaults come from a schema-aware builder.
+const mockResponse = responseBuilder({
+  data: { userId: '123', name: 'Alice' }
+});
 ```
 
 ### Gate Function
 
 ```
 BEFORE creating mock responses:
-  Check: "What fields does the real API response contain?"
+  Check: "What schema and behavior must this fixture satisfy?"
 
   Actions:
     1. Examine actual API response from docs/examples
-    2. Include ALL fields system might consume downstream
-    3. Verify mock matches real response schema completely
+    2. Use a typed builder, contract fixture, or parsed real sample
+    3. Override only fields relevant to this behavior
 
   Critical:
-    If you're creating a mock, you must understand the ENTIRE structure
-    Partial mocks fail silently when code depends on omitted fields
-
-  If uncertain: Include all documented fields
+    The fixture must remain schema-valid
+    Tests should not couple to unrelated response fields
 ```
 
 ## Anti-Pattern 5: Integration Tests as Afterthought
@@ -278,7 +275,7 @@ Verification cycle:
 | Assert on mock elements | Test real component or unmock it |
 | Test-only methods in production | Move to test utilities |
 | Mock without understanding | Understand dependencies first, mock minimally |
-| Incomplete mocks | Mirror real API completely |
+| Invalid or brittle fixtures | Use a schema-valid builder or contract fixture |
 | Tests as afterthought | Plan verification with implementation |
 | Over-complex mocks | Consider integration tests |
 

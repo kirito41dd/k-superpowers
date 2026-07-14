@@ -1,0 +1,35 @@
+#!/usr/bin/env bash
+# Mark and inspect only linked worktrees manually created by this workflow.
+set -euo pipefail
+
+[ "$#" -eq 2 ] || { echo "usage: worktree-provenance write|inspect WORKTREE_PATH" >&2; exit 2; }
+action=$1
+path=$2
+case "$action" in write|inspect) ;; *) echo "unknown action: $action" >&2; exit 2;; esac
+[ -d "$path" ] || { echo "not a directory: $path" >&2; exit 2; }
+canonical=$(cd "$path" && pwd -P)
+case "$canonical" in *$'\n'*) echo "newline in worktree path" >&2; exit 2;; esac
+[ "$(git -C "$canonical" rev-parse --is-bare-repository)" = false ] || { echo "bare repository" >&2; exit 2; }
+top=$(cd "$(git -C "$canonical" rev-parse --show-toplevel)" && pwd -P)
+[ "$top" = "$canonical" ] || { echo "path is not worktree top-level" >&2; exit 2; }
+git_dir=$(git -C "$canonical" rev-parse --path-format=absolute --git-dir)
+common_dir=$(git -C "$canonical" rev-parse --path-format=absolute --git-common-dir)
+[ "$git_dir" != "$common_dir" ] || { echo "main checkout is not owned" >&2; exit 2; }
+marker="$git_dir/k-superpowers-provenance-v1"
+expected=$(printf 'schema=k-superpowers-worktree-provenance/v1\nowner=k-superpowers\npath=%s' "$canonical")
+
+if [ "$action" = write ]; then
+  tmp="${marker}.tmp.$$"
+  trap 'rm -f "$tmp"' EXIT
+  printf '%s\n' "$expected" > "$tmp"
+  mv "$tmp" "$marker"
+  trap - EXIT
+  echo "manual-owned"
+  exit 0
+fi
+
+if [ ! -f "$marker" ]; then echo "unowned"; exit 1; fi
+actual=$(sed -n '1,4p' "$marker")
+[ "$actual" = "$expected" ] || { echo "invalid provenance marker" >&2; exit 2; }
+[ "$(wc -l < "$marker" | tr -d ' ')" -eq 3 ] || { echo "invalid provenance marker" >&2; exit 2; }
+echo "manual-owned"

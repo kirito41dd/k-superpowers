@@ -1,0 +1,124 @@
+#!/usr/bin/env bash
+# Capture and verify task boundaries without touching pre-existing user changes.
+set -euo pipefail
+
+usage() {
+  echo "usage: task-snapshot capture OUTDIR" >&2
+  echo "       task-snapshot check-scope SNAPSHOT SCOPE" >&2
+  echo "       task-snapshot verify SNAPSHOT BASE HEAD SCOPE AUTHORIZED_COMMITS" >&2
+  exit 2
+}
+hash_stream() {
+  if command -v sha256sum >/dev/null 2>&1; then sha256sum | cut -d' ' -f1
+  elif command -v shasum >/dev/null 2>&1; then shasum -a 256 | cut -d' ' -f1
+  else echo "no SHA-256 tool available" >&2; return 2; fi
+}
+hash_file() { hash_stream < "$1"; }
+root=$(git rev-parse --show-toplevel) || exit 2
+cd "$root"; export GIT_LITERAL_PATHSPECS=1
+
+write_untracked() {
+  while IFS= read -r -d '' path; do
+    printf '%s\0' "$path"
+    if [ -L "$path" ]; then printf 'symlink\0'; perl -e '$v=readlink($ARGV[0]); print $v' "$path" | hash_stream
+    elif [ -f "$path" ]; then printf 'regular\0'; wc -c < "$path" | tr -d ' '; printf '\0'; hash_file "$path"
+    else printf 'other\0-\n'; fi
+  done < <(git ls-files --others --exclude-standard -z)
+}
+write_dirty_paths() {
+  git diff --name-only -z
+  git diff --cached --name-only -z
+  git ls-files --others --exclude-standard -z
+}
+contains_path() {
+  local needle=$1 file=$2 path
+  while IFS= read -r -d '' path; do [ "$path" = "$needle" ] && return 0; done < "$file"
+  return 1
+}
+validate_scope() {
+  local file=$1 previous= path last
+  [ -f "$file" ] && [ -s "$file" ] || { echo "invalid empty scope" >&2; return 2; }
+  last=$(tail -c 1 "$file" | od -An -t u1 | tr -d ' ')
+  [ "$last" = 0 ] || { echo "scope must end with NUL" >&2; return 2; }
+  while IFS= read -r -d '' path; do
+    [ -n "$path" ] || { echo "empty scope entry" >&2; return 2; }
+    case "$path" in /*|..|../*|*/../*|*/..) echo "unsafe scope path" >&2; return 2;; esac
+    [ "$path" != "$previous" ] || { echo "duplicate scope path" >&2; return 2; }
+    if [ -n "$previous" ] && [[ "$path" < "$previous" ]]; then echo "scope not sorted" >&2; return 2; fi
+    previous=$path
+  done < "$file"
+}
+write_manifest() {
+  local dir=$1 file
+  : > "$dir/artifacts.sha256"
+  for file in head status unstaged.patch staged.patch dirty-paths untracked; do
+    printf '%s  %s\n' "$(hash_file "$dir/$file")" "$file" >> "$dir/artifacts.sha256"
+  done
+}
+validate_snapshot() {
+  local dir=$1 expected file actual count=0 seen='|'
+  [ -f "$dir/artifacts.sha256" ] || { echo "missing snapshot manifest" >&2; return 2; }
+  while read -r expected file extra; do
+    [ -n "$expected" ] && [ -n "$file" ] && [ -z "${extra:-}" ] || { echo "invalid snapshot manifest line" >&2; return 2; }
+    [ "${#expected}" -eq 64 ] || { echo "invalid snapshot hash" >&2; return 2; }
+    case "$expected" in *[!0-9a-fA-F]*) echo "invalid snapshot hash" >&2; return 2;; esac
+    case "$file" in head|status|unstaged.patch|staged.patch|dirty-paths|untracked) ;; *) echo "unexpected snapshot artifact: $file" >&2; return 2;; esac
+    case "$seen" in *"|$file|"*) echo "duplicate snapshot artifact: $file" >&2; return 2;; esac
+    seen="${seen}${file}|"; count=$((count + 1))
+    [ -f "$dir/$file" ] || { echo "missing snapshot artifact: $file" >&2; return 2; }
+    actual=$(hash_file "$dir/$file") || return 2
+    [ "$actual" = "$expected" ] || { echo "corrupt snapshot artifact: $file" >&2; return 2; }
+  done < "$dir/artifacts.sha256"
+  [ "$count" -eq 6 ] || { echo "incomplete snapshot manifest" >&2; return 2; }
+}
+
+cmd=${1:-}
+case "$cmd" in
+  capture)
+    [ "$#" -eq 2 ] || usage; out=$2
+    [ ! -e "$out" ] || { echo "snapshot exists" >&2; exit 2; }
+    mkdir -p "$out"
+    git rev-parse HEAD > "$out/head"
+    git status --porcelain=v1 -z > "$out/status"
+    git diff --binary > "$out/unstaged.patch"
+    git diff --cached --binary HEAD > "$out/staged.patch"
+    write_dirty_paths > "$out/dirty-paths"
+    write_untracked > "$out/untracked"
+    write_manifest "$out"
+    echo "captured $out"
+    ;;
+  check-scope)
+    [ "$#" -eq 3 ] || usage; snap=$2; scope=$3
+    validate_snapshot "$snap" || exit 2
+    validate_scope "$scope" || exit 2
+    overlap=0
+    while IFS= read -r -d '' path; do
+      if contains_path "$path" "$scope"; then echo "pre-existing dirty path overlaps scope: $path" >&2; overlap=1; fi
+    done < "$snap/dirty-paths"
+    [ "$overlap" -eq 0 ] || exit 1
+    ;;
+  verify)
+    [ "$#" -eq 6 ] || usage; snap=$2; base=$3; head=$4; scope=$5; authorized=$6
+    validate_snapshot "$snap" || exit 2
+    validate_scope "$scope" || exit 2
+    [ -f "$authorized" ] || { echo "bad authorized commit manifest" >&2; exit 2; }
+    [ "$(cat "$snap/head")" = "$(git rev-parse "$base")" ] || { echo "BASE differs from captured HEAD" >&2; exit 1; }
+    [ "$(git rev-parse HEAD)" = "$(git rev-parse "$head")" ] || { echo "HEAD is not task checkpoint" >&2; exit 1; }
+    git merge-base --is-ancestor "$base" "$head" || { echo "HEAD is not descendant of BASE" >&2; exit 1; }
+    actual=$(git rev-list --reverse "$base..$head")
+    expected=$(sed '/^[[:space:]]*$/d' "$authorized")
+    [ "$actual" = "$expected" ] || { echo "unauthorized commit in task range" >&2; exit 1; }
+    while IFS= read -r commit; do
+      while IFS= read -r -d '' path; do
+        contains_path "$path" "$scope" || { echo "commit $commit touches path outside scope: $path" >&2; exit 1; }
+      done < <(git diff-tree --root --no-commit-id --name-only -r -m -z "$commit")
+    done < <(git rev-list --reverse "$base..$head")
+    cmp -s "$snap/unstaged.patch" <(git diff --binary) || { echo "pre-existing unstaged patch changed" >&2; exit 1; }
+    cmp -s "$snap/staged.patch" <(git diff --cached --binary HEAD) || { echo "pre-existing staged patch changed" >&2; exit 1; }
+    current_untracked=$(mktemp); current_dirty=$(mktemp); trap 'rm -f "$current_untracked" "$current_dirty"' EXIT
+    write_untracked > "$current_untracked"; write_dirty_paths > "$current_dirty"
+    cmp -s "$snap/untracked" "$current_untracked" || { echo "pre-existing untracked state changed" >&2; exit 1; }
+    cmp -s "$snap/dirty-paths" "$current_dirty" || { echo "unexplained dirty state" >&2; exit 1; }
+    ;;
+  *) usage ;;
+esac

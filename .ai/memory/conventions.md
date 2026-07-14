@@ -2,8 +2,8 @@
 
 <!-- SUMMARY
 覆盖范围：项目特定的代码风格、命名规则、目录结构、流程约定
-条目数：11
-最近更新：2026-07-08
+条目数：12
+最近更新：2026-07-14
 高频标签：#skills #memory #eval #personalization #codex #claude-code #brainstorming #opencode #install #verification #type-driven #version #comments
 -->
 
@@ -24,6 +24,16 @@
 - **正例**：正确写法示范
 - **范围**：影响哪些模块 / 文件类型
 ```
+
+---
+
+## 2026-07-14 Rust 哲学只评价代码产出并按目标语言能力适配
+
+- **约定**：本 fork 所说的“吸收 Rust 哲学”，只评价 agent 使用 skills 完成用户需求时的领域建模、类型/API 设计、错误与资源 ownership、边界校验和测试选择，不把 workflow 是否像 Rust 类型系统作为验收证据。优先用目标语言现有能力排除非法状态：Rust 使用 enum/newtype/ownership/lifetime/穷尽匹配；TypeScript 使用 discriminated union 并在 JSON/API 边界做 runtime schema 校验；Go 使用明确 struct/constructor、小 interface 和显式 `error`；动态语言使用 validator、明确数据模型和窄 API。类型能力越弱，必要运行时验证越多。测试只保护静态系统无法证明的核心语义与高价值回归；不为类型已证明约束、机械 glue 或简单配置修复机械增加测试。
+- **理由**：用户长期经验是强类型约束加少量核心测试通常优于强制逐测试流程；skills 又服务多语言项目，因此应保留工程哲学而非 Rust 专属语法。Workflow 的显式状态、单一 owner、handoff 等属于独立流程工程原则。
+- **反例**：在 TypeScript 中把未经校验的 JSON 直接断言为静态类型；在 Go 中为模仿 Rust 引入低收益包装层；reviewer 仅因“没有新增测试”报 finding；用 skill 的 Compact/Full 状态机证明 Rust 哲学已保留。
+- **正例**：先通过类型/API/可见性排除非法状态，在不可信边界校验，只为剩余 runtime risk 写聚焦测试；reviewer 指出具体非法组合或未证明行为后才要求类型调整或测试。
+- **范围**：`skills/type-driven-verification`, `skills/writing-plans`, SDD brief/report/reviewer prompts, generic review, `docs/skills-overview.zh.md`, `README.md`。
 
 ---
 

@@ -48,9 +48,9 @@ echo ""
 # Test 2: Verify skill describes correct workflow order
 echo "Test 2: Workflow ordering..."
 
-output=$(run_claude "Within the merged task review in subagent-driven-development, what comes first: spec compliance or code quality? Be specific about the order and verdicts." 30)
+output=$(run_claude "Within the merged task review in subagent-driven-development, what comes first: Spec or Standards? Be specific about the order and verdicts." 30)
 
-if assert_order "$output" "spec.*compliance" "code.*quality" "Spec compliance before code quality"; then
+if assert_order "$output" "[Ss]pec" "[Ss]tandards" "Spec before Standards"; then
     : # pass
 else
     exit 1
@@ -215,7 +215,7 @@ else
     exit 1
 fi
 
-if assert_contains "$output" "spec.*quality\|quality.*spec" "Returns both review verdicts"; then
+if assert_contains "$output" "[Ss]pec.*[Ss]tandards\|[Ss]tandards.*[Ss]pec" "Returns both review verdicts"; then
     : # pass
 else
     exit 1

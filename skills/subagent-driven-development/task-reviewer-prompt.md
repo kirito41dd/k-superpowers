@@ -1,11 +1,11 @@
 # Task Reviewer Prompt Template
 
 Use this template for the single per-task review. The reviewer reads the diff
-once, checks spec first and quality second, and returns both verdicts.
+once, checks Spec first and Standards second, and returns both verdicts.
 
 ```
 Task tool (general-purpose):
-  description: "Review Task N (spec + quality)"
+  description: "Review Task N (Spec + Standards)"
   prompt: |
     You are reviewing one task's implementation. First decide whether it
     matches its requirements; then decide whether it is well-built. Both
@@ -46,7 +46,7 @@ Task tool (general-purpose):
     focused command only for a concrete unanswered doubt; otherwise recommend
     any heavier validation. Warnings or unexplained noise are findings.
 
-    ## Part 1: Spec Compliance
+    ## Part 1: Spec
 
     Check every task requirement and Global Constraint for:
 
@@ -60,15 +60,17 @@ Task tool (general-purpose):
     `Cannot verify from diff` with the smallest controller check needed. Do not
     broaden the review or assume it passed.
 
-    ## Part 2: Code Quality
+    ## Part 2: Standards
 
     Check:
 
     - correctness, edge cases, and error handling
-    - type safety, ownership, visibility, and API boundaries where applicable
+    - the brief's Implementation Design Contract: concrete invalid states,
+      boundary validation, error/resource ownership, and remaining runtime risk
     - DRY without premature abstraction and consistency with project patterns
     - verification of runtime risks through stable behavior entry points
     - focused tests that protect behavior rather than implementation details
+    - no test demand based only on "no tests added"; name the unproved behavior
     - clear file responsibilities and maintainable structure
     - useful explanations for core structures/functions/abstractions unless
       genuinely self-explanatory
@@ -83,35 +85,24 @@ Task tool (general-purpose):
     maintainability damage. Suggestions and optional polish are Minor.
 
     Every finding needs `file:line`, what is wrong, why it matters, and a fix
-    direction when not obvious. Acknowledge concrete strengths, but never let
-    praise replace either verdict.
+    direction when not obvious.
 
     ## Output Format
 
-    ### Spec Compliance
+    Output only nonempty findings ordered by severity:
 
-    - ✅ Spec compliant | ❌ Issues found: [specific findings with file:line]
-    - ⚠️ Cannot verify from diff: [requirement and smallest controller check]
+    [Critical|Important|Minor] [Spec|Standards] file:line
+    Issue: ...
+    Impact: ...
+    Required fix: ...
 
-    ### Strengths
+    End with exactly:
 
-    [Specific strengths with evidence]
+    Spec verdict: PASS | FAIL | CANNOT_VERIFY
+    Standards verdict: PASS | FAIL | CANNOT_VERIFY
 
-    ### Issues
-
-    #### Critical (Must Fix)
-    #### Important (Should Fix)
-    #### Minor (Nice to Have)
-
-    ### Assessment
-
-    **Task quality:** Approved | Needs fixes
-
-    **Reasoning:** [1-2 sentence technical assessment]
-
-    Approval requires both Spec compliant and Task quality Approved. A single
-    fix dispatch may address findings from both axes; the next review reruns
-    both axes over the updated package.
+    Missing, FAIL, or CANNOT_VERIFY on either axis blocks. A single fix dispatch
+    may address both axes; a fresh reviewer reruns both over the new package.
 ```
 
 **Placeholders:**
@@ -120,4 +111,4 @@ Task tool (general-purpose):
 - `[REPORT_FILE]` - implementer report for the same task
 - `[BASE_SHA]` - commit before the task
 - `[HEAD_SHA]` - current task checkpoint commit
-- `[DIFF_FILE]` - package from `scripts/review-package BASE HEAD`
+- `[DIFF_FILE]` - package from the public `requesting-code-review/scripts/review-package`

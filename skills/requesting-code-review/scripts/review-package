@@ -1,0 +1,106 @@
+#!/usr/bin/env bash
+# Build a stable, scoped review snapshot from commits or the current worktree.
+set -euo pipefail
+
+usage() { echo "usage: review-package committed BASE HEAD SCOPE OUT | review-package working-tree BASE SCOPE OUT" >&2; exit 2; }
+hash_stream() {
+  if command -v sha256sum >/dev/null 2>&1; then sha256sum | cut -d' ' -f1
+  elif command -v shasum >/dev/null 2>&1; then shasum -a 256 | cut -d' ' -f1
+  else echo "no SHA-256 tool available" >&2; return 2; fi
+}
+hash_file() { hash_stream < "$1"; }
+readlink_exact() { perl -e '$v = readlink($ARGV[0]); defined $v or exit 1; print $v' "$1"; }
+
+mode=${1:-}
+case "$mode" in
+  committed) [ "$#" -eq 5 ] || usage; base=$2; head=$3; scope_file=$4; out=$5 ;;
+  working-tree) [ "$#" -eq 4 ] || usage; base=$2; head=$(git rev-parse HEAD); scope_file=$3; out=$4 ;;
+  *) usage ;;
+esac
+root=$(git rev-parse --show-toplevel) || exit 2
+scope_file=$(cd "$(dirname "$scope_file")" && pwd -P)/$(basename "$scope_file")
+out_dir=$(cd "$(dirname "$out")" 2>/dev/null && pwd -P || true)
+[ -n "$out_dir" ] || { echo "output directory does not exist" >&2; exit 2; }
+out="$out_dir/$(basename "$out")"
+cd "$root"
+export GIT_LITERAL_PATHSPECS=1
+git rev-parse --verify --quiet "$base^{commit}" >/dev/null || { echo "bad BASE" >&2; exit 2; }
+git rev-parse --verify --quiet "$head^{commit}" >/dev/null || { echo "bad HEAD" >&2; exit 2; }
+[ -f "$scope_file" ] || { echo "missing scope" >&2; exit 2; }
+[ -s "$scope_file" ] || { echo "empty scope" >&2; exit 2; }
+last_byte=$(tail -c 1 "$scope_file" | od -An -t u1 | tr -d ' ')
+[ "$last_byte" = 0 ] || { echo "scope must end with NUL" >&2; exit 2; }
+
+scope=(); previous=
+while IFS= read -r -d '' path; do
+  [ -n "$path" ] || { echo "empty scope entry" >&2; exit 2; }
+  case "$path" in /*|..|../*|*/../*|*/..) echo "unsafe scope: $path" >&2; exit 2;; esac
+  [ "$path" != "$previous" ] || { echo "duplicate scope: $path" >&2; exit 2; }
+  if [ -n "$previous" ] && [[ "$path" < "$previous" ]]; then echo "scope not sorted" >&2; exit 2; fi
+  scope+=("$path"); previous=$path
+done < "$scope_file"
+[ "${#scope[@]}" -gt 0 ] || { echo "empty scope" >&2; exit 2; }
+scope_hash=$(hash_file "$scope_file") || exit 2
+
+tmp="${out}.tmp.$$"; before="${tmp}.before"; after="${tmp}.after"
+trap 'rm -f "$tmp" "$before" "$after"' EXIT
+fingerprint() {
+  {
+    git rev-parse HEAD
+    git diff --binary -- "${scope[@]}"
+    git diff --cached --binary HEAD -- "${scope[@]}"
+    while IFS= read -r -d '' path; do
+      printf '%s\0' "$path"
+      if [ -L "$root/$path" ]; then
+        printf 'symlink\n'; readlink_exact "$root/$path" | wc -c; readlink_exact "$root/$path" | hash_stream
+      elif [ -f "$root/$path" ]; then
+        printf 'regular\n'; wc -c < "$root/$path"; hash_file "$root/$path"
+      else printf 'non-regular\n'; fi
+    done < <(git ls-files --others --exclude-standard -z -- "${scope[@]}")
+  } | hash_stream
+}
+if [ "$mode" = working-tree ]; then
+  [ "$(git rev-parse "$base")" = "$head" ] || { echo "working-tree BASE must equal HEAD" >&2; exit 2; }
+  fingerprint > "$before" || exit 2
+fi
+
+{
+  echo "# k-superpowers-review-package/v1"; echo
+  echo "source: $mode"; echo "base: $(git rev-parse "$base")"; echo "head: $(git rev-parse "$head")"
+  echo "scope-sha256: $scope_hash"; echo; echo "## Scope"
+  for path in "${scope[@]}"; do printf -- '- `%q`\n' "$path"; done
+  echo; echo "## Status"; git status --short -- "${scope[@]}"
+  if [ "$mode" = committed ]; then
+    echo; echo "## Commits"; git log --oneline "$base..$head" -- "${scope[@]}"
+    echo; echo "## Stat"; git diff --stat "$base..$head" -- "${scope[@]}"
+    echo; echo "## Diff"; git diff --binary -U10 "$base..$head" -- "${scope[@]}"
+  else
+    echo; echo "## Unstaged"; git diff --binary -U10 -- "${scope[@]}"
+    echo; echo "## Staged"; git diff --cached --binary -U10 HEAD -- "${scope[@]}"
+    echo; echo "## Untracked"
+    while IFS= read -r -d '' path; do
+      printf '\n### `%q`\n\n' "$path"
+      if [ -L "$root/$path" ]; then
+        echo "type: symlink"; echo "size: $(readlink_exact "$root/$path" | wc -c | tr -d ' ')"
+        echo "target-sha256: $(readlink_exact "$root/$path" | hash_stream)"
+        echo "content: CANNOT_VERIFY"
+      elif [ -f "$root/$path" ]; then
+        echo "type: regular"; echo "size: $(wc -c < "$root/$path" | tr -d ' ')"; echo "sha256: $(hash_file "$root/$path")"
+        if [ ! -s "$root/$path" ] || LC_ALL=C grep -Iq . "$root/$path"; then
+          git diff --no-index -- /dev/null "$path" || [ "$?" -eq 1 ]
+        else
+          echo "content: CANNOT_VERIFY (binary)"
+        fi
+      else echo "type: non-regular"; echo "content: CANNOT_VERIFY"; fi
+    done < <(git ls-files --others --exclude-standard -z -- "${scope[@]}")
+  fi
+} > "$tmp"
+if [ "$mode" = working-tree ]; then
+  if [ -n "${K_SUPERPOWERS_TEST_PAUSE_BEFORE_FINAL_FINGERPRINT:-}" ]; then
+    sleep "$K_SUPERPOWERS_TEST_PAUSE_BEFORE_FINAL_FINGERPRINT"
+  fi
+  fingerprint > "$after" || exit 2
+  cmp -s "$before" "$after" || { echo "scope changed while packaging" >&2; exit 1; }
+fi
+mv "$tmp" "$out"; trap - EXIT; rm -f "$before" "$after"
+echo "wrote $out"

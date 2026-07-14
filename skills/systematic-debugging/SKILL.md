@@ -1,328 +1,68 @@
 ---
 name: systematic-debugging
-description: Use when encountering any bug, test failure, or unexpected behavior, before proposing fixes
+description: Use when encountering any bug, test failure, build failure, performance problem, or unexpected behavior before proposing fixes
 ---
 
 # Systematic Debugging
 
-## Overview
-
-Random fixes waste time and create new bugs. Quick patches mask underlying issues.
-
-**Core principle:** ALWAYS find root cause before attempting fixes. Symptom fixes are failure.
-
-**Violating the letter of this process is violating the spirit of debugging.**
-
-## The Iron Law
-
-```
-NO FIXES WITHOUT ROOT CAUSE INVESTIGATION FIRST
-```
-
-If you haven't completed Phase 1, you cannot propose fixes.
-
-## When to Use
-
-Use for ANY technical issue:
-- Test failures
-- Bugs in production
-- Unexpected behavior
-- Performance problems
-- Build failures
-- Integration issues
-
-**Use this ESPECIALLY when:**
-- Under time pressure (emergencies make guessing tempting)
-- "Just one quick fix" seems obvious
-- You've already tried multiple fixes
-- Previous fix didn't work
-- You don't fully understand the issue
-
-**Don't skip when:**
-- Issue seems simple (simple bugs have root causes too)
-- You're in a hurry (rushing guarantees rework)
-- Manager wants it fixed NOW (systematic is faster than thrashing)
-
-## The Four Phases
-
-You MUST complete each phase before proceeding to the next.
-
-### Phase 1: Root Cause Investigation
-
-**Phase 1 exit criterion: bug-specific feedback loop**
-
-Before proposing causes or fixes, produce one agent-runnable command or script
-that fails on the user's exact symptom and passes after the fix. It must be:
-
-- **specific**: asserts the reported symptom, not just "does not crash"
-- **red-capable**: fails while the bug exists
-- **fast**: narrow enough to run repeatedly
-- **deterministic**: stable verdict, or high reproduction rate for flaky bugs
-- **agent-runnable**: no unstructured human clicking
-
-If you cannot build this loop, stop and report what you tried. Ask for a
-captured artifact, reproducible environment, logs, HAR/trace, or permission for
-temporary instrumentation. Do not continue into hypotheses without the loop or
-an explicit blocker.
-
-**BEFORE attempting ANY fix:**
-
-1. **Read Error Messages Carefully**
-   - Don't skip past errors or warnings
-   - They often contain the exact solution
-   - Read stack traces completely
-   - Note line numbers, file paths, error codes
-
-2. **Reproduce Consistently**
-   - Can you trigger it reliably?
-   - What are the exact steps?
-   - Does it happen every time?
-   - If not reproducible → gather more data, don't guess
-
-3. **Check Recent Changes**
-   - What changed that could cause this?
-   - Git diff, recent commits
-   - New dependencies, config changes
-   - Environmental differences
-
-4. **Gather Evidence in Multi-Component Systems**
-
-   **WHEN system has multiple components (CI → build → signing, API → service → database):**
-
-   **BEFORE proposing fixes, add diagnostic instrumentation:**
-   ```
-   For EACH component boundary:
-     - Log what data enters component
-     - Log what data exits component
-     - Verify environment/config propagation
-     - Check state at each layer
-
-   Run once to gather evidence showing WHERE it breaks
-   THEN analyze evidence to identify failing component
-   THEN investigate that specific component
-   ```
-
-   **Example (multi-layer system):**
-   ```bash
-   # Layer 1: Workflow
-   echo "=== Secrets available in workflow: ==="
-   echo "IDENTITY: ${IDENTITY:+SET}${IDENTITY:-UNSET}"
-
-   # Layer 2: Build script
-   echo "=== Env vars in build script: ==="
-   env | grep IDENTITY || echo "IDENTITY not in environment"
-
-   # Layer 3: Signing script
-   echo "=== Keychain state: ==="
-   security list-keychains
-   security find-identity -v
-
-   # Layer 4: Actual signing
-   codesign --sign "$IDENTITY" --verbose=4 "$APP"
-   ```
-
-   **This reveals:** Which layer fails (secrets → workflow ✓, workflow → build ✗)
-
-5. **Trace Data Flow**
-
-   **WHEN error is deep in call stack:**
-
-   See `root-cause-tracing.md` in this directory for the complete backward tracing technique.
-
-   **Quick version:**
-   - Where does bad value originate?
-   - What called this with bad value?
-   - Keep tracing up until you find the source
-   - Fix at source, not at symptom
-
-### Phase 2: Pattern Analysis
-
-**Find the pattern before fixing:**
-
-1. **Find Working Examples**
-   - Locate similar working code in same codebase
-   - What works that's similar to what's broken?
-
-2. **Compare Against References**
-   - If implementing pattern, read reference implementation COMPLETELY
-   - Don't skim - read every line
-   - Understand the pattern fully before applying
-
-3. **Identify Differences**
-   - What's different between working and broken?
-   - List every difference, however small
-   - Don't assume "that can't matter"
-
-4. **Understand Dependencies**
-   - What other components does this need?
-   - What settings, config, environment?
-   - What assumptions does it make?
-
-### Phase 3: Hypothesis and Testing
-
-**Scientific method:**
-
-1. **Form Single Hypothesis**
-   - State clearly: "I think X is the root cause because Y"
-   - Write it down
-   - Be specific, not vague
-
-2. **Test Minimally**
-   - Make the SMALLEST possible change to test hypothesis
-   - One variable at a time
-   - Don't fix multiple things at once
-
-3. **Verify Before Continuing**
-   - Did it work? Yes → Phase 4
-   - Didn't work? Form NEW hypothesis
-   - DON'T add more fixes on top
-
-4. **When You Don't Know**
-   - Say "I don't understand X"
-   - Don't pretend to know
-   - Ask for help
-   - Research more
-
-### Phase 4: Implementation
-
-**Fix the root cause, not the symptom:**
-
-1. **Choose Verification Before Fixing**
-   - Simplest possible reproduction
-   - Regression test for core or recurring bugs
-   - Type-level invariant when the bug is invalid state
-   - One-off test script or command when no test framework exists
-   - Use `k-superpowers:type-driven-verification` for type-first verification guidance
-
-1.5. **Decide what happens to the feedback loop**
-   - Keep as regression test when the bug affects core behavior, public APIs,
-     parsers, serializers, protocols, state machines, permissions, billing, or
-     any path where recurrence is costly.
-   - Delete temporary harnesses, one-off scripts, debug logs, trace replays, and
-     local fixtures when they were only used for diagnosis and the long-term
-     risk is covered by types, existing tests, or a better verification path.
-   - Do not commit loops that depend on production/private data, external
-     environments, manual steps, or unstable resources. Report the verification
-     and why it was not retained.
-
-   Before declaring the bug fixed, state the loop disposition:
-   `kept as regression test`, `deleted as temporary harness`, or
-   `not committed with rationale`.
-
-2. **Implement Single Fix**
-   - Address the root cause identified
-   - ONE change at a time
-   - No "while I'm here" improvements
-   - No bundled refactoring
-
-3. **Verify Fix**
-   - Test passes now?
-   - No other tests broken?
-   - Issue actually resolved?
-
-4. **If Fix Doesn't Work**
-   - STOP
-   - Count: How many fixes have you tried?
-   - If < 3: Return to Phase 1, re-analyze with new information
-   - **If ≥ 3: STOP and question the architecture (step 5 below)**
-   - DON'T attempt Fix #4 without architectural discussion
-
-5. **If 3+ Fixes Failed: Question Architecture**
-
-   **Pattern indicating architectural problem:**
-   - Each fix reveals new shared state/coupling/problem in different place
-   - Fixes require "massive refactoring" to implement
-   - Each fix creates new symptoms elsewhere
-
-   **STOP and question fundamentals:**
-   - Is this pattern fundamentally sound?
-   - Are we "sticking with it through sheer inertia"?
-   - Should we refactor architecture vs. continue fixing symptoms?
-
-   **Discuss with your human partner before attempting more fixes**
-
-   This is NOT a failed hypothesis - this is a wrong architecture.
-
-## Red Flags - STOP and Follow Process
-
-If you catch yourself thinking:
-- "Quick fix for now, investigate later"
-- "Just try changing X and see if it works"
-- "Add multiple changes, run tests"
-- "Skip the test, I'll manually verify"
-- "It's probably X, let me fix that"
-- "I don't fully understand but this might work"
-- "Pattern says X but I'll adapt it differently"
-- "Here are the main problems: [lists fixes without investigation]"
-- Proposing causes or fixes before you have a bug-specific feedback loop
-- Proposing solutions before tracing data flow
-- **"One more fix attempt" (when already tried 2+)**
-- **Each fix reveals new problem in different place**
-
-**ALL of these mean: STOP. Return to Phase 1.**
-
-**If 3+ fixes failed:** Question the architecture (see Phase 4.5)
-
-## your human partner's Signals You're Doing It Wrong
-
-**Watch for these redirections:**
-- "Is that not happening?" - You assumed without verifying
-- "Will it show us...?" - You should have added evidence gathering
-- "Stop guessing" - You're proposing fixes without understanding
-- "Ultrathink this" - Question fundamentals, not just symptoms
-- "We're stuck?" (frustrated) - Your approach isn't working
-
-**When you see these:** STOP. Return to Phase 1.
-
-## Common Rationalizations
-
-| Excuse | Reality |
-|--------|---------|
-| "Issue is simple, don't need process" | Simple issues have root causes too. Process is fast for simple bugs. |
-| "Emergency, no time for process" | Systematic debugging is FASTER than guess-and-check thrashing. |
-| "Just try this first, then investigate" | First fix sets the pattern. Do it right from the start. |
-| "I'll verify after guessing a fix" | Unverified fixes don't stick. Choose verification before changing behavior. |
-| "Multiple fixes at once saves time" | Can't isolate what worked. Causes new bugs. |
-| "Reference too long, I'll adapt the pattern" | Partial understanding guarantees bugs. Read it completely. |
-| "I see the problem, let me fix it" | Seeing symptoms ≠ understanding root cause. |
-| "One more fix attempt" (after 2+ failures) | 3+ failures = architectural problem. Question pattern, don't fix again. |
-
-## Quick Reference
-
-| Phase | Key Activities | Success Criteria |
-|-------|---------------|------------------|
-| **1. Root Cause** | Read errors, reproduce, check changes, gather evidence | Understand WHAT and WHY |
-| **2. Pattern** | Find working examples, compare | Identify differences |
-| **3. Hypothesis** | Form theory, test minimally | Confirmed or new hypothesis |
-| **4. Implementation** | Choose verification, fix, verify | Bug resolved, relevant checks pass |
-
-## When Process Reveals "No Root Cause"
-
-If systematic investigation reveals issue is truly environmental, timing-dependent, or external:
-
-1. You've completed the process
-2. Document what you investigated
-3. Implement appropriate handling (retry, timeout, error message)
-4. Add monitoring/logging for future investigation
-
-**But:** 95% of "no root cause" cases are incomplete investigation.
-
-## Supporting Techniques
-
-These techniques are part of systematic debugging and available in this directory:
-
-- **`root-cause-tracing.md`** - Trace bugs backward through call stack to find original trigger
-- **`defense-in-depth.md`** - Add validation at multiple layers after finding root cause
-- **`condition-based-waiting.md`** - Replace arbitrary timeouts with condition polling
-
-**Related skills:**
-- **k-superpowers:type-driven-verification** - For type-first verification guidance (Phase 4, Step 1)
-- **k-superpowers:verification-before-completion** - Verify fix worked before claiming success
-
-## Real-World Impact
-
-From debugging sessions:
-- Systematic approach: 15-30 minutes to fix
-- Random fixes approach: 2-3 hours of thrashing
-- First-time fix rate: 95% vs 40%
-- New bugs introduced: Near zero vs common
+<IRON-LAW>
+Do not propose a cause, hypothesis, or fix, and do not implement a fix, before gathering evidence
+and establishing an agent-runnable feedback loop for the concrete symptom. The
+loop must fail on the bug and pass after the fix. Prefer deterministic
+reproduction; for inherently flaky failures, require a measured, sufficiently
+high reproduction rate that can distinguish before/after behavior. If no such
+loop can be built, state the blocker and obtain missing evidence; do not guess.
+</IRON-LAW>
+
+## Phase 1: Evidence And Feedback Loop
+
+1. Read complete errors, stack traces, logs, and surrounding output.
+2. Reproduce the user's exact symptom with the smallest deterministic command,
+   or a measured high-rate loop for an inherently flaky symptom.
+3. Inspect recent relevant changes and configuration/environment differences.
+4. At component boundaries, record the value/state entering and leaving each
+   layer. Trace bad data backward to its source.
+5. Keep temporary instrumentation bounded and avoid secrets.
+
+For async/timing failures load `condition-based-waiting.md`; for backward data
+tracing load `root-cause-tracing.md`. Do not broaden investigation without a
+specific unanswered question.
+
+## Phase 2: Compare
+
+Find one working example or authoritative implementation. Read it completely,
+list every relevant difference, and verify dependency/API assumptions. Do not
+dismiss small differences before testing them.
+
+## Phase 3: One Hypothesis
+
+Write one falsifiable statement: "X causes Y because Z evidence." Change one
+variable or add one observation, then run the feedback loop. If disproved,
+return to evidence and form a new hypothesis; do not stack speculative fixes.
+
+## Phase 4: Root-Cause Fix
+
+Choose durable verification using `k-superpowers:type-driven-verification`:
+strengthen a missing type/API invariant, add a focused regression test for core
+recurring runtime behavior, or retain the minimal reproducer for simple wiring/
+configuration. Implement one minimal root-cause fix, run the feedback loop and
+relevant project verification, then report the loop's disposition:
+
+- retain as a stable self-contained regression check when it protects core risk;
+- remove temporary harness/instrumentation after verification; or
+- do not commit it, with rationale, when it depends on production/private data,
+  external/manual environment, or unstable resources.
+
+## Three-Failure Escalation
+
+After three failed fix attempts, stop editing. Reassess whether the architecture,
+boundary ownership, or state model is wrong and discuss that evidence with the
+user. A fourth patch without architectural review is not allowed.
+
+## Stop Conditions
+
+Stop and ask for context when reproduction is unavailable, evidence conflicts,
+required dependencies/data are missing, or the proposed fix requires an
+unapproved architecture/scope change. Never treat symptom suppression, increased
+timeouts, retries, broad exception handling, or multiple simultaneous changes as
+root-cause proof.

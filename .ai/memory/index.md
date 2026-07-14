@@ -18,6 +18,7 @@
 ## 快速索引（按模块）
 
 - Skills 总览 → `docs/skills-overview.zh.md`
+- Skills 瘦身、语言自适应 Rust 工程哲学与 SDD/review 保留范围 → `decisions.md#2026-07-14-研发流程-skills-瘦身并保留语言自适应-rust-工程哲学`, `conventions.md#2026-07-14-rust-哲学只评价代码产出并按目标语言能力适配`
 - Compact/Full 主流程、faithful spec/plan 与 Unified Execution Handoff → `decisions.md#2026-07-10-主开发流程增加自动-compactfull-分流与统一-handoff`
 - SDD 风险自适应执行、merged reviewer 与 checkpoint commit gate → `decisions.md#2026-07-10-sdd-改为风险自适应执行并合并-task-reviewer`
 - Skill 验证命令与代码注释 source-of-truth → `conventions.md#2026-07-08-skill-验证命令与代码注释-source-of-truth`
@@ -61,6 +62,7 @@
 
 ## 最近热点
 
+- 2026-07-14 研发流程 Skills 瘦身并保留语言自适应 Rust 工程哲学 → `decisions.md`, `conventions.md`
 - 2026-07-10 主开发流程增加自动 Compact/Full 分流与统一 Handoff → `decisions.md`
 - 2026-07-10 SDD 改为风险自适应执行并合并 Task Reviewer → `decisions.md`
 - 2026-07-08 Skill 验证命令与代码注释 source-of-truth → `conventions.md`

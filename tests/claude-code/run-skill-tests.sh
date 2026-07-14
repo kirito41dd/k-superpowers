@@ -3,6 +3,15 @@
 # Tests skills by invoking Claude Code CLI and verifying behavior
 set -euo pipefail
 
+run_with_timeout() {
+    local seconds="$1"
+    shift
+    if command -v timeout >/dev/null 2>&1; then timeout "$seconds" "$@"
+    elif command -v gtimeout >/dev/null 2>&1; then gtimeout "$seconds" "$@"
+    else perl -e '$t=shift; alarm $t; exec @ARGV' "$seconds" "$@"
+    fi
+}
+
 SCRIPT_DIR="$(cd "$(dirname "$0")" && pwd)"
 cd "$SCRIPT_DIR"
 
@@ -74,14 +83,20 @@ done
 
 # List of skill tests to run (fast unit tests)
 tests=(
-    "test-subagent-driven-development.sh"
-    "test-compact-development-flow.sh"
+    "test-review-package.sh"
+    "test-worktree-provenance.sh"
+    "test-task-snapshot.sh"
 )
 
 # Integration tests (slow, full execution)
 integration_tests=(
+    "test-subagent-driven-development.sh"
+    "test-compact-development-flow.sh"
     "test-subagent-driven-development-integration.sh"
     "test-requesting-code-review.sh"
+    "test-type-driven-behavior.sh"
+    "test-worktree-native-preference.sh"
+    "test-receiving-code-review.sh"
 )
 
 # Add integration tests if requested
@@ -114,14 +129,16 @@ for test in "${tests[@]}"; do
     fi
 
     if [ ! -x "$test_path" ]; then
-        echo "  Making $test executable..."
-        chmod +x "$test_path"
+        echo "  [FAIL] Test is not executable: $test_path"
+        failed=$((failed + 1))
+        echo ""
+        continue
     fi
 
     start_time=$(date +%s)
 
     if [ "$VERBOSE" = true ]; then
-        if timeout "$TIMEOUT" bash "$test_path"; then
+        if run_with_timeout "$TIMEOUT" bash "$test_path"; then
             end_time=$(date +%s)
             duration=$((end_time - start_time))
             echo ""
@@ -141,7 +158,7 @@ for test in "${tests[@]}"; do
         fi
     else
         # Capture output for non-verbose mode
-        if output=$(timeout "$TIMEOUT" bash "$test_path" 2>&1); then
+        if output=$(run_with_timeout "$TIMEOUT" bash "$test_path" 2>&1); then
             end_time=$(date +%s)
             duration=$((end_time - start_time))
             echo "  [PASS] (${duration}s)"

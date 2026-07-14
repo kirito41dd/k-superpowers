@@ -7,7 +7,7 @@ description: Use when executing implementation plans with independent tasks in t
 
 Execute a plan with review strength matched to each task's behavioral risk.
 The controller handles low-risk work directly; medium/high tasks get a fresh
-implementer and one task reviewer that returns separate spec and quality
+implementer and one task reviewer that returns separate Spec and Standards
 verdicts. High or cross-task risk adds an independent whole-change review.
 
 **Core principle:** Pay review cost where risk justifies it, without weakening
@@ -93,26 +93,12 @@ downgrade the approved plan.
 
 ## Task Boundary Ownership
 
-Before routing every task, record `TASK_BASE=$(git rev-parse HEAD)`, the current
-`git status --short`, staged and unstaged binary patches for every pre-existing
-tracked dirty path, and a content hash for every pre-existing untracked file.
-Pre-existing changes may belong to the human or a different workflow; never
-stage or commit them as part of the task.
-
-After generating the task brief but before editing, compare its file list with
-the pre-existing dirty paths. Any overlap stops the task for human resolution;
-the fact that a brief names a path does not prove ownership of existing hunks.
-
-Before review or ledger completion, verify:
-
-- the checkpoint is current `HEAD` and descends from the original `TASK_BASE`
-- committed paths match the task brief and any explicit Controller Notes
-- every pre-existing dirty path remains outside the checkpoint and retains its
-  exact recorded patch or content hash, not merely the same status letter
-- no unexplained working-tree or index change appeared during the task
-
-If ownership cannot be proven, stop before review. Do not manufacture a clean
-range by stashing, reverting, or absorbing unrelated changes.
+Before every task, run `scripts/task-snapshot capture SNAPSHOT_DIR`, set
+`TASK_BASE` from its captured HEAD, and build the exact NUL-delimited task scope.
+Run `task-snapshot check-scope` before edits; any overlap stops for the user.
+Before review/ledger completion, write the executor-reported commit SHAs to the
+authorized manifest and run `task-snapshot verify`. Any nonzero result stops.
+Never stash, revert, absorb, or manufacture ownership of pre-existing changes.
 
 ## Risk Routing
 
@@ -169,7 +155,8 @@ For each medium/high task:
 4. Dispatch a fresh implementer with `./implementer-prompt.md`.
 5. Require a local checkpoint commit; verify the reported commit is current
    `HEAD` and passes task-boundary ownership checks before review.
-6. Run `./scripts/review-package TASK_BASE HEAD`.
+6. Build the exact task scope and run the public
+   `../requesting-code-review/scripts/review-package committed TASK_BASE HEAD SCOPE_FILE OUTFILE`.
 7. Dispatch one task reviewer with `./task-reviewer-prompt.md`.
 8. Resolve every `Cannot verify from diff` item.
 9. If either verdict fails, send all actionable findings in one fix dispatch,
@@ -177,9 +164,9 @@ For each medium/high task:
    package, and rerun the complete merged review.
 10. When both verdicts pass, record completion in todo and the ledger.
 
-The task reviewer checks spec first and quality second, but one fresh reviewer
-does both in one context and one diff read. Spec compliance and task quality are
-independently blocking verdicts.
+The task reviewer checks Spec first and Standards second, but one fresh reviewer
+does both in one context and one diff read. Both verdicts are independently
+blocking.
 
 ## Brief Readiness
 
@@ -222,21 +209,11 @@ Never force an unchanged retry after an escalation.
 
 ## Merged Review Contract
 
-The task reviewer receives the same brief, report, `BASE`, `HEAD`, and review
-package. It must return:
-
-1. **Spec Compliance:** compliant/noncompliant plus any `Cannot verify from
-   diff` items.
-2. **Task Quality:** approved/needs fixes with Critical, Important, and Minor
-   findings.
-
-Either failed verdict blocks the task. The controller resolves every warning by
-checking the smallest concrete artifact needed and records the result. A real
-gap becomes a failed spec verdict.
-
-Batch Spec and Quality findings into one fix dispatch. Re-review both axes after
-every fix; a quality fix can alter spec compliance, and one merged pass is
-cheaper and less error-prone than routing between separate reviewers.
+The task reviewer receives brief, report, commit range, and package paths, then
+uses the public `requesting-code-review` finding/verdict contract. `FAIL`,
+`CANNOT_VERIFY`, or a missing Spec/Standards verdict blocks. Batch findings into
+one fix dispatch and send the regenerated package to a fresh merged reviewer,
+which reruns both axes.
 
 ## Reviewer Prompt Hygiene
 
@@ -257,7 +234,8 @@ cheaper and less error-prone than routing between separate reviewers.
 Run final review only when any task is high risk or cross-task integration risk
 was identified or discovered.
 
-1. Run `./scripts/review-package MERGE_BASE HEAD`, where `MERGE_BASE` is the
+1. Run the public `../requesting-code-review/scripts/review-package committed
+   MERGE_BASE HEAD SCOPE_FILE OUTFILE`, where `MERGE_BASE` is the
    commit the branch started from.
 2. Dispatch the most capable available reviewer using
    `k-superpowers:requesting-code-review`.
@@ -310,7 +288,7 @@ in place and do not show a branch-finishing menu.
 ## Prompt Templates
 
 - `./implementer-prompt.md` - delegated medium/high implementation
-- `./task-reviewer-prompt.md` - merged Spec + Quality task review
+- `./task-reviewer-prompt.md` - merged Spec + Standards task review
 - `../requesting-code-review/code-reviewer.md` - conditional final review
 
 ## Red Flags
@@ -324,7 +302,7 @@ Never:
 - dispatch implementer/reviewer agents for a genuinely low task
 - continue direct low-risk work after runtime/public-contract scope appears
 - accept a merged review missing either verdict
-- proceed with an open Spec or Quality issue
+- proceed with an open Spec or Standards issue
 - split findings across multiple fix agents
 - skip final review for high or cross-task risk
 - use commitless snapshots to imitate checkpoint ranges

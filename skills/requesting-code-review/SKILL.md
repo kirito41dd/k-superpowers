@@ -1,105 +1,55 @@
 ---
 name: requesting-code-review
-description: Use when completing tasks, implementing major features, or before merging to verify work meets requirements
+description: Use when consequential tasks, major features, or pre-merge work need independent requirements and quality review
 ---
 
 # Requesting Code Review
 
-Dispatch a code reviewer subagent to catch issues before they cascade. The reviewer gets precisely crafted context for evaluation — never your session's history. This keeps the reviewer focused on the work product, not your thought process, and preserves your own context for continued work.
+## Contract
 
-**Core principle:** Review early, review often.
+One reviewer evaluates two independently blocking axes: **Spec** checks required,
+missing, wrong, or extra behavior; **Standards** checks correctness, project
+conventions, maintainability, boundaries, errors, and verification quality.
 
-## When to Request Review
+Every request contains requirements/plan, change description, exact scope,
+verification evidence, and:
 
-**Mandatory:**
-- For medium/high tasks in subagent-driven development, through its merged task reviewer
-- For high or cross-task SDD changes, through final whole-change review
-- After completing major feature
-- Before merge to main
-
-**Optional but valuable:**
-- When stuck (fresh perspective)
-- Before refactoring (baseline check)
-- After fixing complex bug
-
-## How to Request
-
-**1. Get git SHAs:**
-```bash
-BASE_SHA=$(git rev-parse HEAD~1)  # or origin/main
-HEAD_SHA=$(git rev-parse HEAD)
+```text
+source = committed-range(BASE_SHA, HEAD_SHA) | working-tree(BASE_SHA = HEAD)
+snapshot = live | package-v1(PACKAGE_PATH)
 ```
 
-**2. Dispatch code reviewer subagent:**
+Use committed range for stable checkpoints. Inline uncommitted work uses a
+working-tree package; never request a commit merely to create a review range.
+Live review is allowed only in the same controller context while scope is frozen.
 
-Use Task tool with `general-purpose` type, fill template at `code-reviewer.md`
+## Package
 
-**Placeholders:**
-- `{DESCRIPTION}` - Brief summary of what you built
-- `{PLAN_OR_REQUIREMENTS}` - What it should do
-- `{BASE_SHA}` - Starting commit
-- `{HEAD_SHA}` - Ending commit
+Create a sorted, unique, NUL-delimited repo-relative scope file, then run:
 
-**3. Act on feedback:**
-- Fix Critical issues immediately
-- Fix Important issues before proceeding
-- Note Minor issues for later
-- Push back if reviewer is wrong (with reasoning)
-
-## Example
-
-```
-[Just completed Task 2: Add verification function]
-
-You: Let me request code review before proceeding.
-
-BASE_SHA=$(git log --oneline | grep "Task 1" | head -1 | awk '{print $1}')
-HEAD_SHA=$(git rev-parse HEAD)
-
-[Dispatch code reviewer subagent]
-  DESCRIPTION: Added verifyIndex() and repairIndex() with 4 issue types
-  PLAN_OR_REQUIREMENTS: Task 2 from docs/superpowers/plans/deployment-plan.md
-  BASE_SHA: a7981ec
-  HEAD_SHA: 3df7661
-
-[Subagent returns]:
-  Strengths: Clean architecture, real tests
-  Issues:
-    Important: Missing progress indicators
-    Minor: Magic number (100) for reporting interval
-  Assessment: Ready to proceed
-
-You: [Fix progress indicators]
-[Continue to Task 3]
+```text
+scripts/review-package committed BASE HEAD SCOPE_FILE OUTFILE
+scripts/review-package working-tree BASE SCOPE_FILE OUTFILE
 ```
 
-## Integration with Workflows
+Request and package must carry the same scope SHA-256. Regenerate after material
+changes. Reviewers read the package instead of rerunning Git commands.
 
-**Subagent-Driven Development:**
-- Low-risk tasks do not dispatch a reviewer
-- Medium/high tasks use one merged reviewer with separate Spec and Quality verdicts
-- High or cross-task integration risk requires final whole-change review
-- Fix Critical/Important findings before proceeding; record Minor findings for final triage when final review is required
+## Findings And Verdicts
 
-**Executing Plans:**
-- Review after each task or at natural checkpoints
-- Get feedback, apply, continue
+```text
+severity = Critical | Important | Minor
+axis = Spec | Standards
+file/line, issue, impact, required fix
 
-**Ad-Hoc Development:**
-- Review before merge
-- Review when stuck
+Spec verdict = PASS | FAIL | CANNOT_VERIFY
+Standards verdict = PASS | FAIL | CANNOT_VERIFY
+```
 
-## Red Flags
+Only output nonempty findings ordered by severity. A missing, `FAIL`, or
+`CANNOT_VERIFY` verdict blocks progress. Fix findings coherently, regenerate the
+package, and re-run both axes. Push back on incorrect findings with evidence.
 
-**Never:**
-- Skip a risk-required review by calling the task "simple"; use the plan's explicit risk classification
-- Ignore Critical issues
-- Proceed with unfixed Important issues
-- Argue with valid technical feedback
-
-**If reviewer wrong:**
-- Push back with technical reasoning
-- Show code/tests that prove it works
-- Request clarification
-
-See template at: requesting-code-review/code-reviewer.md
+SDD owns risk-required review timing; Inline owns its checkpoints. This skill
+owns request/package/verdict shape, not task risk or completion. Use
+`code-reviewer.md` as the reviewer prompt.

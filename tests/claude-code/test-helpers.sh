@@ -41,6 +41,19 @@ run_claude() {
     fi
 }
 
+# Run an arbitrary command with a timeout on GNU and macOS environments.
+run_with_timeout() {
+    local seconds="$1"
+    shift
+    if command -v timeout >/dev/null 2>&1; then
+        timeout "$seconds" "$@"
+    elif command -v gtimeout >/dev/null 2>&1; then
+        gtimeout "$seconds" "$@"
+    else
+        perl -e '$t=shift; alarm $t; exec @ARGV' "$seconds" "$@"
+    fi
+}
+
 # Check if output contains a pattern
 # Usage: assert_contains "output" "pattern" "test name"
 assert_contains() {
@@ -206,6 +219,7 @@ EOF
 
 # Export functions for use in tests
 export -f run_claude
+export -f run_with_timeout
 export -f assert_contains
 export -f assert_not_contains
 export -f assert_count

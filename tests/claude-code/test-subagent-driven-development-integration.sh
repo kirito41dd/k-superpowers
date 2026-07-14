@@ -14,7 +14,7 @@ echo "This test executes a real plan using the skill and verifies:"
 echo "  1. Plan is read once (not per task)"
 echo "  2. Task briefs are handed to subagents by file"
 echo "  3. Subagents perform self-review"
-echo "  4. One task reviewer returns Spec then Quality verdicts"
+echo "  4. One task reviewer returns Spec then Standards verdicts"
 echo "  5. Review loops when issues found"
 echo "  6. Merged task reviewer reads code independently"
 echo ""
@@ -133,7 +133,7 @@ IMPORTANT: Follow the skill exactly. I will be verifying that you:
 1. Read the plan once at the beginning
 2. Provide each task through a generated task brief file
 3. Ensure subagents do self-review before reporting
-4. Use one task reviewer that returns Spec Compliance before Code Quality
+4. Use one task reviewer that returns Spec before Standards
 5. Use review loops when issues are found
 
 You are explicitly authorized to create local checkpoint commits for this test.
@@ -148,7 +148,7 @@ IMPORTANT: Follow the skill exactly. I will be verifying that you:
 1. Read the plan once at the beginning
 2. Provide each task through a generated task brief file
 3. Ensure subagents do self-review before reporting
-4. Use one task reviewer that returns Spec Compliance before Code Quality
+4. Use one task reviewer that returns Spec before Standards
 5. Use review loops when issues are found
 
 You are explicitly authorized to create local checkpoint commits for this test.
@@ -161,7 +161,7 @@ PLUGIN_DIR=$(cd "$SCRIPT_DIR/../.." && pwd)
 # other concurrent claude sessions.
 echo "Running Claude (plugin-dir: $PLUGIN_DIR, cwd: $TEST_PROJECT)..."
 echo "================================================================================"
-cd "$TEST_PROJECT" && timeout 1800 claude -p "$PROMPT" --plugin-dir "$PLUGIN_DIR" --allowed-tools=all --permission-mode bypassPermissions 2>&1 | tee "$OUTPUT_FILE" || {
+cd "$TEST_PROJECT" && run_with_timeout 1800 claude -p "$PROMPT" --plugin-dir "$PLUGIN_DIR" --allowed-tools=all --permission-mode bypassPermissions 2>&1 | tee "$OUTPUT_FILE" || {
     echo ""
     echo "================================================================================"
     echo "EXECUTION FAILED (exit code: $?)"
@@ -249,9 +249,8 @@ for (const line of fs.readFileSync(sessionFile, 'utf8').split('\n')) {
 
   const taskMatch = prompt.match(/task-(\d+)-brief/i);
   const text = resultText(result);
-  const specSection = text.match(/^### Spec Compliance\s*$([\s\S]*?)(?=^### |(?![\s\S]))/m)?.[1] ?? '';
-  const specPassed = /^-\s*✅\s+Spec compliant\s*$/m.test(specSection);
-  const qualityPassed = /^\*\*Task quality:\*\*\s*Approved\s*$/m.test(text);
+  const specPassed = /^Spec verdict:\s*PASS\s*$/m.test(text);
+  const qualityPassed = /^Standards verdict:\s*PASS\s*$/m.test(text);
 
   if (taskMatch && specPassed && qualityPassed) approvedTasks.add(taskMatch[1]);
 }

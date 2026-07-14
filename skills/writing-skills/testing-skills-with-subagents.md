@@ -1,5 +1,8 @@
 # Testing Skills With Subagents
 
+This is the on-demand method reference for high-risk behavior scenarios.
+`SKILL.md` owns mode/risk/routing; do not copy this full method into other skills.
+
 **Load this reference when:** making high-risk skill changes (new behavior-shaping skills, trigger conditions, discipline rules, subagent flows), before deployment, to verify they work under pressure and resist rationalization. Risk tiers are defined in SKILL.md (The Iron Law).
 
 ## Overview

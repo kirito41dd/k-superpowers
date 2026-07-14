@@ -123,8 +123,9 @@ Task tool (general-purpose):
 
     **Testing:**
     - Do tests actually verify behavior (not just mock behavior)?
-    - Did I use type-first verification where required?
-    - Are tests comprehensive?
+    - Did I implement the brief's Implementation Design Contract where present?
+    - Are invalid states excluded by practical types/API boundaries?
+    - Do tests cover important runtime risks those guarantees cannot prove?
     - Did I keep verification scope aligned with the brief and project source
       of truth?
     - Is the verification output clean (no stray warnings or noise)?
@@ -146,6 +147,10 @@ Task tool (general-purpose):
 
     Write your full report to [REPORT_FILE]:
     - What you implemented (or what you attempted, if blocked)
+    - When the brief contains an Implementation Design Contract, report each
+      field separately: domain invariants; invalid states excluded by types/APIs;
+      untrusted input boundaries; error/resource ownership; runtime risks the
+      compiler cannot prove; focused verification for those risks
     - What you tested or verified and the results
     - Files changed
     - Checkpoint commits created (short SHA + subject)

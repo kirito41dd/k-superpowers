@@ -5,152 +5,81 @@ description: Use when implementing behavior that needs explicit verification, es
 
 # Type-Driven Verification
 
-## Overview
+## Core Principle
 
-Prefer type-driven design and compiler-enforced invariants. Write tests where behavior cannot be proven by types, or where regressions would be costly.
+Use the target language's types and API boundaries to exclude invalid states,
+then test only important behavior those guarantees cannot prove. Tests protect
+semantics and regressions; they are not an implementation ritual.
 
-**Core principle:** Make invalid states unrepresentable first. Test core behavior and risks the type system cannot prove.
+## Implementation Design Contract
 
-## When to Use
+For domain logic, public interfaces, parsers, protocols, state machines,
+resource lifecycles, or significant error boundaries, define:
 
-Use explicit verification for:
-- Core business logic
-- Public API behavior
-- Bug regressions
-- Algorithms, parsers, serializers, protocols
-- State machines and edge-heavy logic
-- High-risk refactors
-- Logic where types cannot express the invariant
-
-Tests are optional for:
-- Simple glue code
-- Mechanical changes
-- Documentation and config changes
-- Code whose correctness is enforced by types
-- Private helpers covered through public behavior
-- Exploratory API/type design
-
-## The Priority Order
-
-```dot
-digraph verification_flow {
-    "Behavior to implement" [shape=doublecircle];
-    "Run relevant verification" [shape=doublecircle];
-
-    "Can types encode the invariant?" [shape=diamond];
-    "Behavior still needs runtime proof?" [shape=diamond];
-
-    "Design types/interfaces first" [shape=box];
-    "Compiler verifies constraint" [shape=box];
-    "Add focused tests" [shape=box];
-    "Use lighter verification" [shape=box];
-
-    "Behavior to implement" -> "Can types encode the invariant?";
-    "Can types encode the invariant?" -> "Design types/interfaces first" [label="yes"];
-    "Design types/interfaces first" -> "Compiler verifies constraint";
-    "Compiler verifies constraint" -> "Behavior still needs runtime proof?";
-    "Can types encode the invariant?" -> "Behavior still needs runtime proof?" [label="no"];
-    "Behavior still needs runtime proof?" -> "Add focused tests" [label="yes"];
-    "Behavior still needs runtime proof?" -> "Use lighter verification" [label="no"];
-    "Add focused tests" -> "Run relevant verification";
-    "Use lighter verification" -> "Run relevant verification";
-}
+```text
+Domain invariants
+Invalid states excluded by types or APIs
+Untrusted input and validation boundaries
+Error and resource-ownership model
+Runtime risks the compiler cannot prove
+Focused verification for those remaining risks
 ```
 
-## Type-First Design
+Planning, implementation reports, and review use the same contract. Skip it for
+docs, formatting, mechanical renames, simple glue, and changes with no relevant
+runtime or domain risk; do not generate empty fields or mandatory test steps.
 
-Before tests, ask:
-- Can this invalid state be impossible to construct?
-- Should this be a newtype instead of a primitive?
-- Is this a state machine enum instead of booleans?
-- Can ownership, lifetimes, visibility, or trait bounds enforce the rule?
-- Can the public API make misuse hard?
+## Language Capability Gradient
 
-Examples of type-level protection:
-- `ValidatedEmail` instead of `String`
-- `NonEmptyVec<T>` instead of `Vec<T>` when empty is invalid
-- `enum ConnectionState { Disconnected, Connecting, Connected(Session) }` instead of flags
-- Private fields with checked constructors
-- Trait bounds that encode required capabilities
+Use the strongest practical guarantees the project language supports:
 
-## When to Write Tests
+- **Rust:** enums over conflicting flags, newtypes/private fields with checked
+  constructors, boundary parsing, ownership/lifetimes, narrow traits and
+  visibility, exhaustive matching. Use typestate only when its safety benefit
+  justifies the complexity.
+- **TypeScript:** discriminated unions, strict null handling, narrow module
+  APIs, and runtime schema validation for untrusted values. Static types do not
+  validate JSON, network, or storage input.
+- **Go:** explicit structs and constructors, small interfaces, validated
+  boundaries, and explicit `error` propagation.
+- **Dynamic languages:** boundary validators, explicit data models, narrow
+  APIs, and proportionally more focused runtime checks.
 
-Write tests when they protect meaningful behavior:
-- Regression test for a bug that can recur
-- Unit tests for core pure logic
-- Integration tests for public flows
-- Property tests for parsers, serializers, protocols, and algorithms
-- Snapshot/golden tests when output stability matters
+Do not imitate Rust with low-value wrappers or generic machinery. Move
+enforceable invariants into the language and API; do not copy syntax.
 
-Good tests should:
-- Prefer the entry point real callers use: public API, CLI command, HTTP
-  handler, parser entrypoint, state transition, or other stable boundary
-- Cover private helpers through public behavior by default
-- Exercise public behavior where possible
-- Cover edge cases that matter
-- Be stable in CI
-- Fail when core semantics are changed incorrectly
-- Avoid testing mocks instead of real behavior
+## Choosing Verification
 
-Avoid tests that:
-- Only mirror implementation details
-- Lock down private helper structure
-- Reach into private helpers when the same behavior can be verified through a
-  real caller entry point
-- Require excessive mocking
-- Make simple refactors expensive without protecting behavior
-- Exist only to satisfy a blanket coverage rule
+1. State the behavior and invariants.
+2. Encode practical guarantees in types, visibility, ownership, and interfaces.
+3. Identify remaining runtime risks.
+4. Add focused tests only where semantics or recurrence risk justify them.
+5. Run the smallest project-defined command that proves the intended claim.
 
-Private helpers usually should not get separate tests. Test them through public
-behavior unless the helper carries complex algorithms, high-risk logic, or an
-expensive regression that cannot be observed clearly through the caller entry
-point.
+Prefer stable caller entry points: public API, CLI, HTTP handler, parser
+entrypoint, or state transition. Test private helpers separately only when they
+carry complex logic that callers cannot expose clearly.
 
-## Bug Fixes
+### Bugs
 
-For bugs, first use `k-superpowers:systematic-debugging` to find root cause.
+Use `k-superpowers:systematic-debugging` first and establish a feedback loop for
+the concrete symptom. Then choose durable protection:
 
-Then choose the verification level:
-- Core or recurring bug: add a regression test before or alongside the fix.
-- Type-level bug: encode the missing invariant in types, then compile and run relevant tests.
-- Simple wiring/config bug: run the smallest command that reproduces and verifies the fix.
+- recurring/core runtime bug: focused regression test;
+- missing type/API invariant: strengthen the boundary, compile, and run relevant
+  behavior checks;
+- simple wiring/configuration bug: use the smallest reproducer and verification
+  command; a new test is optional.
 
-Do not ship bug fixes based only on confidence. Some fresh verification must demonstrate the symptom is gone.
+Every fix needs fresh evidence that the symptom is gone. It does not always need
+a new persistent test, and it does not require a fixed test-before-code order.
 
-## Implementation Pattern
+## Review Rules
 
-1. Clarify the behavior or invariant.
-2. Encode what you can in types, interfaces, visibility, and ownership.
-3. When defining core types/APIs/functions/abstractions, add explanatory comments/docs unless they are genuinely self-explanatory. Explain what the abstraction represents, how callers should use it, and important invariants, lifecycle rules, protocol boundaries, or state transitions. Follow the target project's comment language and documentation style.
-4. Identify what the compiler cannot prove.
-5. Add focused tests only for those behavioral risks.
-6. Implement the minimal change.
-7. Run the relevant verification: compiler, linter, unit tests, integration tests, or reproduction command.
+A reviewer must name the concrete invalid combination, boundary failure, or
+unproved runtime behavior before requesting redesign or tests. "No tests added"
+alone is not a finding. Also reject tests that mirror implementation details or
+mocks, duplicate trusted-boundary validation, or treat compilation as proof of
+runtime semantics.
 
-## Verification Checklist
-
-Before marking work complete:
-- [ ] Invalid states are prevented by types where practical
-- [ ] Public API boundaries are clear
-- [ ] Core structures, functions, and abstractions have useful explanatory comments/docs unless genuinely self-explanatory
-- [ ] Core behavior has tests when regressions would be costly
-- [ ] Bug fixes have regression coverage or a clear reproduction verification
-- [ ] Relevant verification commands were run freshly
-- [ ] Tests are stable and protect behavior, not incidental implementation
-
-## Common Mistakes
-
-| Mistake | Fix |
-|---------|-----|
-| Testing everything by default | Test core behavior and risks |
-| Relying only on tests | Move invariants into types where possible |
-| Relying only on types | Test runtime behavior types cannot prove |
-| Testing private helpers by default | Test through the real caller entry point; isolate only complex or high-risk helper logic |
-| Mock-heavy tests | Prefer real behavior or simpler boundaries |
-| No regression check for core bug | Add focused regression test or reproduction command |
-
-## Bottom Line
-
-Tests are valuable when they protect important behavior. They are not a ritual.
-
-Prefer types first. Test what types cannot prove. Verify before claiming success.
+Load `testing-anti-patterns.md` when changing tests or mocks.

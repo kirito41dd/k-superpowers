@@ -1,5 +1,9 @@
 # Skill authoring best practices
 
+> **Non-normative upstream reference.** Where this snapshot differs from
+> `writing-skills/SKILL.md` or project instructions, local rules win. In this
+> fork, skill descriptions contain trigger conditions only.
+
 > Learn how to write effective Skills that Claude can discover and use successfully.
 
 Good Skills are concise, well-structured, and tested with real usage. This guide provides practical authoring decisions to help you write Skills that Claude can discover and use effectively.

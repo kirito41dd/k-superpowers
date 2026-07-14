@@ -2,8 +2,8 @@
 
 <!-- SUMMARY
 覆盖范围：架构决策、技术选型、废弃方案（ADR 风格）
-条目数：15
-最近更新：2026-07-10
+条目数：16
+最近更新：2026-07-14
 高频标签：#memory #fork #personalization #codex #opencode #claude-code #install #verification #type-driven #skills #sdd
 -->
 
@@ -19,6 +19,17 @@
 - **影响**：影响的模块 / 文件
 - **状态**：已实施 / 试验中 / [DEPRECATED 原因]
 ```
+
+---
+
+## 2026-07-14 研发流程 Skills 瘦身并保留语言自适应 Rust 工程哲学
+
+- **背景**：随着模型能力增强，14 个 `SKILL.md` 合计约 19,771 词，大量纪律同时以 Overview、流程图、Checklist、Red Flags、rationalization、示例和总结重复表达，增加注入成本并造成 owner 漂移。用户同时明确：fork 吸收 Rust 思想，是为了指导 agent 使用 skills 完成需求时如何设计和实现代码，不是让 skill workflow 模仿 Rust；实际项目不限 Rust，核心经验是“强类型约束 + 少量核心测试优于强制逐测试流程”。
+- **选项**：只修 review/worktree 实质问题；按原预估压缩到 10k-12k 词；按语义校验和和行为 owner 激进瘦身，并将 Full-only 细节下沉支撑文件。
+- **决策**：选择第三项。主 `SKILL.md` 压缩到约 5,882 词，词数只作观察指标。`type-driven-verification` 单一拥有语言自适应 Implementation Design Contract：领域不变量、类型/API 排除的非法状态、不可信输入边界、错误与资源 ownership、静态系统无法证明的 runtime risk、对应聚焦验证；Rust 使用 enum/newtype/ownership 等强保证，TypeScript/Go/动态语言按能力梯度增加运行时边界校验，不机械复制 Rust。测试只保护核心语义和有价值回归，允许类型约束、机械 glue、简单配置修复零新增测试。Review 统一为 committed/working-tree source × live/package snapshot，并使用 Spec/Standards 双轴 verdict；新增 review-package、worktree-provenance、task-snapshot helper。SDD 保留 `.superpowers/sdd/` 文件交接、progress ledger、low/medium/high 路由、单 merged reviewer、修复后双轴完整复审和 high/cross-task final review。Compact/Full、显式 Git 授权、local merge 的 `git pull` 和 bounded completion verification 保持。
+- **理由**：把约束写成类型、接口、owner 和失败状态，比重复说服文本更适合当前模型，也更符合用户的工程经验；复杂 Git ownership 下沉脚本能提高确定性。按语言能力适配可将 Rust 哲学推广到非 Rust 项目，而不会引入低收益 wrapper/typestate。
+- **影响**：`skills/*`, `tests/claude-code/*`, `docs/skills-overview.zh.md`, `README.md`, plugin manifests, `package.json`, `.ai/memory/*`。插件版本更新为 `5.2.0`。
+- **状态**：已实施。Shell/JSON/version/残留/whitespace 检查通过；确定性 helper suite 3/3 通过；whole-change review 为 Spec PASS / Standards PASS。Claude CLI integration 因本机认证阻塞未验证，后续真实使用中继续评估行为效果，发现具体 gate 退化时只补回最小必要约束。
 
 ---
 
