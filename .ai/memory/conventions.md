@@ -2,8 +2,8 @@
 
 <!-- SUMMARY
 覆盖范围：项目特定的代码风格、命名规则、目录结构、流程约定
-条目数：12
-最近更新：2026-07-14
+条目数：13
+最近更新：2026-07-15
 高频标签：#skills #memory #eval #personalization #codex #claude-code #brainstorming #opencode #install #verification #type-driven #version #comments
 -->
 
@@ -24,6 +24,16 @@
 - **正例**：正确写法示范
 - **范围**：影响哪些模块 / 文件类型
 ```
+
+---
+
+## 2026-07-15 核心代码说明由 type-driven-verification 单一拥有
+
+- **约定**：核心结构、函数和抽象的解释性注释/文档原则由 `skills/type-driven-verification/SKILL.md` 完整拥有；`writing-plans` 和 generic code reviewer 只引用该 owner，避免在高频 skill 中复制整套规则。SDD implementer/reviewer prompt 因子 Agent 上下文独立，可保留直接且自包含的要求。完整内容原则继续以 `#2026-07-07-skill-写代码时的注释原则` 为准。
+- **理由**：注释是所有实现路径的核心代码产出质量，不能只覆盖 SDD/Full；同时单一 owner 能补齐 Compact/Inline 覆盖而不让 skill 再次膨胀。
+- **反例**：只在 SDD prompt 保留规则，导致 Compact/Inline 无直接约束；或在每个 execution/review skill 中重复完整注释清单。
+- **正例**：`type-driven-verification` 定义“非自解释的核心代码需要说明、解释哪些非显然契约、避免哪些噪音”，plan 和 generic review 各用一句引用传播要求。
+- **范围**：`skills/type-driven-verification/SKILL.md`, `skills/writing-plans/SKILL.md`, `skills/requesting-code-review/code-reviewer.md`, `skills/subagent-driven-development/*`, `docs/skills-overview.zh.md`。
 
 ---
 

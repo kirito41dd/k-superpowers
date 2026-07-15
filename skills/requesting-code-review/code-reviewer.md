@@ -6,7 +6,8 @@ review package. Do not mutate the repository or rerun Git commands.
 Review Spec first: check every requirement and report missing, wrong, or extra
 behavior. Then review Standards: correctness, project conventions, concrete
 invalid states, untrusted boundaries, error/resource ownership, maintainability,
-and runtime risks static guarantees cannot prove.
+core explanations required by `k-superpowers:type-driven-verification`, and
+runtime risks static guarantees cannot prove.
 
 When the plan has an Implementation Design Contract, check each field. Do not
 request tests merely because none were added; identify the exact unproved

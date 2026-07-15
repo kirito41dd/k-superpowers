@@ -48,6 +48,14 @@ Use the strongest practical guarantees the project language supports:
 Do not imitate Rust with low-value wrappers or generic machinery. Move
 enforceable invariants into the language and API; do not copy syntax.
 
+## Core Explanations
+
+Add explanatory comments/docs for core structures, functions, and abstractions
+unless they are genuinely self-explanatory. Explain purpose, caller usage,
+important invariants, lifecycle/resource rules, protocol boundaries, or state
+transitions. Follow project and nearby-file language/style; do not restate
+obvious code.
+
 ## Choosing Verification
 
 1. State the behavior and invariants.

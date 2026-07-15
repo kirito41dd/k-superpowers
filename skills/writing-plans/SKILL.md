@@ -22,6 +22,9 @@ Constraints. Prefer independently verifiable vertical slices. Every task names:
 - `Risk: low | medium | high` with effect-based rationale;
 - focused project-defined verification command and expected result.
 
+For non-self-explanatory core structures, functions, or abstractions, plan the
+necessary explanations defined by `k-superpowers:type-driven-verification`.
+
 Risk is `low` only for nonbehavioral docs/comments/format/mechanical config or
 rename; `medium` for bounded local runtime behavior; `high` for public API,
 persisted format, security, concurrency, protocol, state machine, cross-module

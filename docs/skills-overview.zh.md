@@ -7,6 +7,7 @@
 Rust 哲学只约束 agent 如何分析领域、设计接口、实现错误/资源边界和选择验证，
 不要求 workflow 模仿 Rust。优先使用目标语言可用的类型与窄 API 排除非法状态，
 在不可信边界做运行时校验，只为静态系统无法证明的核心语义保留少量测试。
+核心结构、函数和抽象在并非自解释时补充必要说明，并避免复述代码的噪音注释。
 
 - Rust：enum/newtype、受控构造、ownership/lifetime、穷尽匹配。
 - TypeScript：discriminated union；JSON/API 必须 runtime schema 校验。
