@@ -1,90 +1,56 @@
 ---
 name: writing-plans
-description: Use when approved requirements or a spec need a multi-step implementation plan before code changes
+description: Use when approved requirements or a spec need a persistent multi-step implementation plan before code changes
 ---
 
 # Writing Plans
 
-Write plans for a skilled engineer with little project context. Read
-`Flow: Compact | Full` from the approved spec; missing flow is a blocker unless
-an explicit brainstorming handoff supplies it.
+Write a persistent plan only when it improves cross-session continuity,
+delegation, review, or execution of a genuinely multi-step change. Direct and
+simple Compact work may use an internal todo and skip this skill.
 
-Honor an exact bounded response schema without preamble or code fences.
+Save useful plans to `docs/superpowers/plans/YYYY-MM-DD-<topic>.md`. Write for a
+skilled engineer with little project context, but include only information that
+changes implementation decisions.
 
-Save to `docs/superpowers/plans/YYYY-MM-DD-<topic>.md`. Follow conversation
-language for prose and project conventions for code/comments.
+## Plan Content
 
-## Shared Contract
+Capture, as applicable:
 
-Start every plan with Goal, Architecture, Tech Stack, and exact Global
-Constraints. Prefer independently verifiable vertical slices. Every task names:
+- goal and approved behavior;
+- exact boundaries or files when known;
+- important interfaces and task dependencies;
+- invariants, untrusted inputs, error/resource ownership, and core explanation
+  needs for consequential domain logic;
+- material execution/review risk;
+- focused verification that supports the intended claims.
 
-- exact files and observable/agent behavior;
-- dependencies and `Consumes`/`Produces` interfaces when relevant;
-- `Risk: low | medium | high` with effect-based rationale;
-- focused project-defined verification command and expected result.
+Prefer independently deliverable vertical slices. Do not create empty contract
+fields, invent tests, or expand project verification. Risk labels are useful
+only when they affect delegation, review, permissions, or evidence. Obvious
+docs/mechanical work does not block because a `low` label is absent.
 
-For non-self-explanatory core structures, functions, or abstractions, plan the
-necessary explanations defined by `k-superpowers:type-driven-verification`.
+`k-superpowers:type-driven-verification` owns implementation design guidance;
+reference its applicable questions rather than copying a mandatory form.
 
-Risk is `low` only for nonbehavioral docs/comments/format/mechanical config or
-rename; `medium` for bounded local runtime behavior. Migration is `high`, as are
-public API, persisted format, security, concurrency, protocol, state machine,
-and cross-module contract changes. Missing risk never defaults low.
+## Handoff
 
-Any `high` task requires final whole-change review. Multiple medium tasks require
-it only when they truly share an interface or shared state, regardless of whether
-tasks can modify that state, or their composition creates behavior that no task
-verifies independently.
-
-## Implementation Design Contract
-
-For domain logic, public interfaces, parsers, protocols, state machines,
-resources, or significant error boundaries, add:
+After the user approves the plan or has already asked to implement it, use the
+safe default unless a different route has material value:
 
 ```text
-Domain invariants
-Invalid states excluded by types/APIs
-Untrusted input boundaries
-Error and resource-ownership model
-Runtime risks the compiler cannot prove
-Focused verification for remaining risks
+Inline + current workspace + no implementation commit
 ```
 
-Use target-language capabilities, not Rust syntax by imitation. Omit the block
-for docs, formatting, mechanical changes, and simple glue. Tests are not a fixed
-step: require them only for named runtime/recurrence risks. Bugs need a concrete
-feedback loop; a persistent regression test is conditional, not automatic.
+Ask a concise choice only when worktree isolation, SDD, or checkpoint commits
+would materially improve safety, recovery, or latency. SDD additionally requires
+independent tasks, current-session delegation support, and explicit checkpoint
+commit authorization.
 
-## Flow Detail
+No plan approval authorizes push, merge, PR, amend, force, destructive cleanup,
+unrelated work, or a separate documentation commit. Ask separately for those
+actions.
 
-- **Compact:** retain shared contract, necessary signatures/data shapes, and
-  implementation approach. Do not force 2-5 minute steps, routine full code, or
-  a second approval. A faithful self-reviewed plan proceeds to handoff; material
-  deltas return for approval.
-- **Full:** load `full-plan-guide.md`, use its detailed task template, self-review,
-  then offer: (1) approve and explicitly commit only the plan document,
-  (2) request changes, or (3) approve without commit. Only option 1 authorizes
-  that documentation commit; plan approval never authorizes implementation.
-
-## Unified Execution Handoff
-
-After a faithful Compact plan passes self-review, or after the user explicitly
-approves a Full plan, offer exactly the five alternatives below. "Unified" means
-one decision combines controller, workspace, and checkpoint authorization; it
-does not mean the menu has only one alternative.
-
-1. SDD + create worktree + authorize this plan's local checkpoint commits
-2. SDD + current workspace + authorize this plan's local checkpoint commits
-3. Inline + create worktree + no implementation commits
-4. Inline + current workspace + no implementation commits
-5. Revise design/plan
-
-Selections 1-4 authorize implementation and only the named workspace/local
-checkpoints. Selection 5 authorizes only design/plan revision; it authorizes no
-implementation, workspace change, or checkpoint. No option authorizes push,
-merge, PR, amend, force, unrelated commits, or separate spec/plan document commits.
-Approved implementation tasks that edit docs/comments remain normal
-task scope and may checkpoint under SDD options 1-2. Without checkpoint
-authorization, do not start SDD; use an Inline option. Then invoke
-`subagent-driven-development` for 1-2 or `executing-plans` for 3-4.
+For unusually detailed Full plans, use `full-plan-guide.md` as guidance, not a
+required template. Self-review once for coverage, contradictions, material gaps,
+and executable verification; then proceed or request only the missing decision.

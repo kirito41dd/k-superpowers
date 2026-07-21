@@ -1,7 +1,6 @@
 #!/usr/bin/env bash
-# Extract one task's full text from an implementation plan into a file the
-# implementer reads in one call, so task text does not stay resident in the
-# controller's context.
+# Extract one task's relevant plan text into a durable implementer handoff so
+# the controller need not duplicate the full plan in every dispatch.
 #
 # Usage: task-brief PLAN_FILE TASK_NUMBER [OUTFILE]
 # Default OUTFILE: <repo-root>/.superpowers/sdd/task-<N>-brief.md

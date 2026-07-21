@@ -2,109 +2,118 @@
 
 本文用于维护个人 fork；执行时以各 skill 正文为准。
 
+## 总体哲学
+
+Skills 面向能够理解上下文、权衡风险并持续进化的智能 agent。规则固定目标、owner、
+授权、安全边界、material decision 和完成证据，不把自然语言 agent 模拟成解析器或死板
+状态机。除真实外部协议外，不冻结 prompt 字节、tool-call 顺序、输出行数或局部实现路径。
+
+交付速度、用户等待时间和模型调用成本是一等产品指标。默认选择可逆、低权限、低
+ceremony 的路径；plan、worktree、delegation、review 和更宽验证只有在能降低实际风险
+或总延迟时才加入。
+
 ## 代码产出哲学
 
-Rust 哲学只约束 agent 如何分析领域、设计接口、实现错误/资源边界和选择验证，
-不要求 workflow 模仿 Rust。优先使用目标语言可用的类型与窄 API 排除非法状态，
-在不可信边界做运行时校验，只为静态系统无法证明的核心语义保留少量测试。
-`type-driven-verification` 单一拥有核心代码说明规则：核心结构、函数和抽象在并非
-自解释时补充必要说明，注释语言跟随项目与邻近文件，并避免复述代码的噪音注释。
+Rust-inspired 哲学只约束 agent 如何设计代码，不要求 workflow 模仿 Rust。优先使用
+目标语言的类型、窄 API、可见性和资源模型排除非法状态，并在不可信边界做运行时校验。
+测试只保护静态系统无法证明的核心语义与高价值回归。
 
-- Rust：enum/newtype、受控构造、ownership/lifetime、穷尽匹配。
-- TypeScript：discriminated union；JSON/API 必须 runtime schema 校验。
-- Go：明确 struct/constructor、小 interface、显式 `error`。
-- 动态语言：边界 validator、明确数据模型、窄 API 和更多聚焦运行时检查。
-
-`Implementation Design Contract` 在 plan、task brief、implementer report 和 review
-间传播领域不变量、非法状态、输入边界、错误/资源模型、剩余 runtime risk 与验证。
+`type-driven-verification` 提供按需思考问题：领域不变量、非法状态、输入边界、错误/
+资源 ownership、剩余 runtime risk 和相称证据。这不是必填表单。非自解释的核心结构、
+函数和抽象继续说明 purpose、caller use、不变量、生命周期/资源和协议/状态转换；注释
+语言与风格服从项目及邻近文件。
 
 ## 主流程
 
 ```text
-using-superpowers
-  |-- ordinary question -> direct answer (`no task skill`)
-  |-- preparation/read-only -> requested read/search work -> stop
-  |-- explicit skill/current owner -> selected owner
-  |-- bug/failure -> systematic-debugging
-  |       |-- diagnosis only -> report -> stop
-  |       `-- behavior change required -> brainstorming (Compact | Full)
-  |-- approved spec -> writing-plans
-  `-- behavior change -> brainstorming (Compact | Full)
+ordinary question -> direct answer (no task skill)
+preparation/read-only -> requested non-mutating work -> stop
+bug/unexpected behavior -> systematic-debugging
 
-approved design -> writing-plans -> Unified Execution Handoff
-  -> subagent-driven-development | executing-plans
-  -> verification-before-completion
-  -> finishing-a-development-branch (仅真实集成/cleanup 决策)
+clear approved bounded change
+  -> Direct
+  -> current workspace + Inline + no commit
+  -> focused verification
+
+multi-step tightly coupled change
+  -> concise design/plan when useful
+  -> executing-plans
+
+independent tasks with material delegation benefit
+  -> subagent-driven-development
 ```
 
-- `using-superpowers`：普通问答能由当前知识直接回答时不加载任务 skill，也不增加
-  workflow ceremony；`no task skill` 不排斥平台预注入的入口 router。其余请求区分
-  preparation-only、read-only、bug 与 change；bug 先 debugging，纯诊断在报告根因后
-  停止，只有需要行为修改时才进入设计批准。
-- `brainstorming`：Compact 处理清晰单域需求；Full 处理不确定、不可逆、安全、协议
-  或重大兼容性决策。设计批准前禁止实现。
-- `writing-plans`：定义 risk、interfaces、实现合同和验证；统一选择 execution、
-  workspace 与 checkpoint commit 授权。
-- `using-git-worktrees`：cleanup ownership 只能是 manual marker、native handle 或
-  unowned，不能按目录名猜测。
-- `executing-plans`：Inline 不重新推销 SDD；未提交 review 使用 working-tree package。
-- `finishing-a-development-branch`：保留 `git pull`；按 MERGE/PR/KEEP/DISCARD 语义
-  action 执行，cleanup 必须证明 ownership。
+- `using-superpowers` 只选择当前最小 owner；未来可能相关不是 trigger。
+- `brainstorming` 按 Direct/Compact/Full 调整设计深度。只有真实取舍才展示多个方案；
+  Full 保护不可逆、安全、协议、迁移和重大兼容性决定，不做逐章节 ceremony。
+- `writing-plans` 只在跨会话、delegation 或复杂执行需要稳定交接时写持久 plan。安全
+  默认无需五选一 handoff；额外 isolation、SDD 或 checkpoint 权限才询问。
+- `executing-plans` 由一个 agent 连续执行批准范围，适应证据和依赖调整局部顺序；
+  independent review 不是默认 checkpoint。
 
-路由只加载当前阶段的最小充分集合：一个当前 process owner，加上当前动作确实需要的
-domain owner。未来可能相关不是触发条件，后续阶段和 SDD/Inline 这类互斥路径不会
-预加载。Frontmatter description 仍只描述触发条件；本轮只调整已有场景证明存在
-误触发或漏触发的项，不做无证据的全量改写。
+## SDD
 
-## SDD 特色
+SDD 只用于真正独立、当前会话可委派且收益明确的任务，并继续要求用户显式授权本计划
+local checkpoint commits。该授权不覆盖 push、merge、PR、amend、force、无关工作或
+单独 spec/plan commit。
 
-`subagent-driven-development` 保留风险自适应路由：low 由 controller 执行，
-medium/high 使用 implementer + 一个 fresh merged reviewer；high 或真实的 cross-task
-共享接口、共享状态、未验证组合风险追加 final whole-change review。`writing-plans`
-拥有初始 risk 与 Unified Handoff；SDD
-只消费这些决定，runtime evidence 只能升级 risk，不能静默降级或重新定义分级。
+风险与执行按实际效果判断：
 
-Unified Handoff 明确拒绝 checkpoint commits 时，SDD 在 dispatch 前显式转入
-`executing-plans`；授权缺失或含糊时阻断，不能模拟 commitless SDD。SDD 被选定后，
-plan 必须已批准、任务可独立委派、当前会话支持 multi-agent，且 handoff 必须明确授权
-本计划的 local checkpoints；这些已选路径的前置条件若缺失或冲突，SDD 即阻断。平台
-不支持 multi-agent 时也阻断，不伪造委派或静默 fallback。Checkpoint 授权只覆盖已批准的实现
-任务及 review fixes，包括计划内 docs/comments task；不覆盖独立 spec/plan 文档、无关
-提交、push、merge、PR、amend 或 force 操作。
+- low：controller 直接实现、验证和自审；
+- medium：implementer 执行，controller 检查 report、实际 diff 和证据；
+- high：implementer + independent reviewer；
+- final review：仅真实跨任务共享接口、共享状态或未验证组合风险。
 
-Task brief、implementer report、review package、progress ledger 继续存放在
-`.superpowers/sdd/` 并通过路径交接。Merged reviewer 一次读取 artifact/diff，先
-Spec 后 Standards，输出两个独立阻断 verdict；修复后 fresh reviewer 完整复审
-两个轴。Progress ledger 用 `Run` topic 标识来源，恢复前必须明确匹配当前 plan；
-`task-snapshot` 确定性保护 pre-existing dirty changes 和 commit scope。
-`requesting-code-review` 拥有 package、source/base/head/scope binding、finding 与
-verdict 形状，`verification-before-completion` 拥有最终完成证据；SDD controller
-只维护运行时状态与失败转移。
+单个 high task 已完成 task review 后不重复 whole-change review。Task snapshot 和
+checkpoint ownership 继续保护用户已有修改与提交边界。Delegated prompts 传播 goal、
+inputs、权限、material blockers、质量/验证期望和结果信息，但 controller 可根据平台和
+任务调整措辞、读取顺序与工具使用。
 
-## Review 与质量
+## Review
 
-- `requesting-code-review`：拥有 committed/working-tree source、live/package
-  snapshot 和公共 Spec/Standards verdict contract，不为 review 强迫 commit。
-- `receiving-code-review`：按 independent、dependent/conflicting、shared-root-cause
-  分组；不清楚项只阻断相关工作。
-- `systematic-debugging`：先建立会失败/通过的 symptom loop，再提出假设和修复；
-  三次失败后停止并检查架构。
-- `type-driven-verification`：类型/API 优先，测试只保护剩余 runtime risk，并拥有
-  非自解释核心代码的 purpose、caller usage、不变量、生命周期/资源、协议/状态转换
-  与项目/邻近文件注释语言合同。`writing-plans` 按引用传播；Inline 在适用时于首次
-  代码编辑前消费；SDD low task 由 controller 带入 brief，若发现 runtime/domain
-  behavior 则停止直接编辑并先加载 owner。Fresh implementer/reviewer prompt 保持
-  自包含，不依赖继承的会话上下文。
-- `verification-before-completion`：fresh evidence 支持精确 claim；完整运行已选命令
-  不等于自动扩大 workspace/matrix。
+`requesting-code-review` 使用有界生命周期：
 
-## 元流程
+```text
+Discovery -> frozen finding ledger -> one fix batch -> Closure
+          -> PASS | PASS_WITH_FOLLOWUPS | STOPPED_BLOCKED
+```
 
-- `dispatching-parallel-agents`：仅并行无共享状态和顺序依赖的问题域。
-- `writing-skills`：以真实使用中的 failure、friction 或明确需求作为输入，做一个最小
-  coherent change 后尽快返回实际使用。不创建持久化测试、fixture、snapshot、eval
-  matrix、ablation record 或模型 golden output；除非用户明确要求并接受成本，否则不
-  调用模型验证。单次随机输出只作 observation，review 发现的非阻断改进进入后续迭代。
+Stable ID、severity、Spec/Standards、issue、impact 和 required fix 保留；不要求精确
+行数、首字符或纯文本编码。Minor 与无因果关系的新观察进入 follow-up。Closure 优先
+由同一逻辑 reviewer 完成，失败后交还用户，不自动继续 review/fix。
 
-所有 description 只描述触发条件，不摘要 workflow。Git commit、push、merge、PR、
-amend、force 始终按各自显式授权执行；验证或 review 本身不扩大授权。
+冻结的是 change goal、修改 scope 和 evidence snapshot，不是 reviewer 的只读能力。
+Reviewer 可为具体问题读取调用方、邻近实现、项目规范和直接依赖，但不得修改工作区、
+扩大 change request 或把无关观察升级为 blocker。Package 只用于跨 context 或需要冻结
+snapshot 的场景；scope 使用显式 paths 与 source/base/head，不使用 scope hash。
+
+## Debugging 与 Completion
+
+- `systematic-debugging` 优先建立最小 feedback loop；无法本地复现时，可从 logs、traces、
+  dumps 和环境差异提出带置信度的诊断。没有验证不能声称 fixed。连续尝试不再产生信息、
+  scope 扩大或证据指向架构决定时停止，不使用固定失败次数。
+- `verification-before-completion` 让 claim 与 evidence 对齐。证据可以是命令、编译器/
+  类型保证、行为检查、diff inspection、review record 或可靠 artifact；未变化的代码不因
+  bookkeeping 或 delegation 机械重跑相同验证。
+
+## 并行与 Skill 迭代
+
+- `dispatching-parallel-agents` 允许共享只读文件和上下文；只禁止冲突写入、顺序依赖、
+  一个任务使另一个失效或整合成本高于收益的并行。
+- `writing-skills` 小改动只明确目标和可能回归的不变量；完整合同只用于 routing、权限、
+  delegation、review 等高影响行为，并且只记录适用项。
+- Skill 修改以真实使用反馈驱动，一次 coherent edit、一次 self-review。仓库不维护持久
+  skill tests/evals，也不默认调用模型验证；新非阻断建议进入下一轮。
+
+## 保留的硬边界
+
+- commit、push、merge、PR、amend、force 和外部写需要明确授权；
+- destructive discard 需要确认；
+- 不覆盖、吸收或清理用户已有修改；
+- worktree cleanup 必须证明 ownership；
+- material architecture/scope/dependency/public contract/compatibility 交给用户；
+- completion claim 必须有相称证据；
+- 核心注释、类型/API 优先和有界 review closure 保持。
+
+`finishing-a-development-branch` 仅处理真实 merge/PR/retain/discard/cleanup 决策；
+`using-git-worktrees` 继续单一拥有 workspace placement 与 cleanup ownership。

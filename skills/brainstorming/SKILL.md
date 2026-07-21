@@ -5,53 +5,49 @@ description: Use when designing a requested feature, component, functionality, c
 
 # Brainstorming
 
-<HARD-GATE>
-Do not implement, scaffold, or invoke an implementation skill before the user
-approves a design. The only terminal transition is `k-superpowers:writing-plans`.
-</HARD-GATE>
+Do not edit behavior before the user understands and approves the intended
+change. Make the design proportional to the decision, not to a template.
 
-Trigger only when the current request asks to create or modify behavior, or when
-debugging has established a behavior edit. Read-only familiarization, analysis,
-review, status, and preparation-only requests are not triggers; perform the
-requested read-only work, then stop. Do not infer design work from a possible
-future change.
+Read-only familiarization, analysis, review, status, and preparation requests
+are not design work. Perform them and stop.
 
-## Flow Selection
+## Choose Depth
 
-Choose `Flow: Compact` only when all are proven:
+### Direct
 
-- one problem domain;
-- goal/success criteria are clear after at most one blocking question;
-- no unresolved long-term architecture choice;
-- no irreversible migration, security/permission boundary, protocol, or major
-  compatibility decision;
-- the user can evaluate the trade-offs directly.
+Use when the goal is clear, the change is reversible and single-domain, and no
+material architecture, scope, dependency, public contract, compatibility,
+security, migration, or permission choice is unresolved.
 
-Otherwise use `Flow: Full`. New uncertainty upgrades Compact to Full; never
-downgrade merely for speed.
+Inspect relevant context, present the recommended behavior and important
+trade-off concisely, and obtain one approval. Present alternatives only when
+there is a real choice. After the user approves or says to implement, proceed in
+the current workspace with no commit by default. Do not create a spec or plan
+artifact unless it has real handoff value or the user requests it.
 
-## Compact
+### Compact
 
-1. Explore project context and ask at most one blocking question.
-2. In one message present 2-3 approaches, recommendation, and complete design
-   proportional to the change: boundaries, flow, failures, and verification.
-3. Obtain one design approval.
-4. Write and self-review the equivalent spec. Approval covers a faithful written
-   spec; any new architecture, scope, dependency, public contract, or risk
-   decision is a material delta requiring approval.
-5. Do not commit the spec without explicit authorization. Invoke writing-plans.
+Use for bounded multi-step or tightly coupled work that benefits from a concise
+shared design. Ask only questions whose answers materially affect the result.
+Present the coherent design once: goal, affected boundaries, behavior, material
+failure paths, and verification. After approval, either implement Inline or
+write a persistent plan when cross-session/executor handoff makes it useful.
 
-## Full
+### Full
 
-Read `full-flow.md` and follow it. Full retains one-question-at-a-time
-clarification, approach comparison, sectional design approval, written-spec
-review, and explicit spec commit authorization.
+Use for cross-domain, irreversible, security/permission, protocol, migration,
+or major public compatibility work. Read `full-flow.md`. Full makes material
+decisions explicit and normally records a durable spec, but it does not require
+ceremonial alternatives or approval after every prose section.
 
-## Self-Review
+## Approval Boundary
 
-Before planning, remove placeholders, contradictions, ambiguous requirements,
-and scope that should be decomposed. User-facing text/specs follow the
-conversation language; code identifiers retain their natural language.
+Approval covers the presented design. A later material architecture, scope,
+dependency, public-contract, compatibility, or risk decision returns to the
+user. Approval plus an explicit implementation request authorizes in-scope
+edits, but never Git publication, commits, destructive actions, or unrelated
+changes.
 
-For genuinely visual questions, offer the optional companion once and load
-`visual-companion.md` only after consent.
+Before handoff, remove placeholders, contradictions, and ambiguous material
+decisions. Follow the conversation language for user-facing documents and the
+project's conventions for code identifiers and comments.

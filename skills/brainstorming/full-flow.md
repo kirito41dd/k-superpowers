@@ -1,22 +1,23 @@
 # Full Brainstorming Flow
 
-Use when requirements span domains, need multiple blocking clarifications,
-contain material architecture alternatives, or involve irreversible/security/
-protocol/public compatibility risk.
+Use Full when the work contains several coupled decisions or material
+irreversibility, security, permission, protocol, migration, or compatibility
+risk.
 
-1. Explore existing project context and identify whether the work needs
-   decomposition into independently deliverable specs.
-2. Ask one requirement question per message; prefer concise choices where useful.
-3. Present 2-3 viable approaches with trade-offs and a recommendation.
-4. Present the design in coherent sections proportional to complexity. Cover
-   architecture, boundaries, data/control flow, failures, and verification;
-   obtain approval after each section.
-5. Write `docs/superpowers/specs/YYYY-MM-DD-<topic>-design.md` and self-review
-   placeholders, consistency, scope, and ambiguity.
-6. Ask the user to approve with or without a documentation-only commit, or
-   request changes. Only explicit commit selection authorizes that commit.
-7. Invoke `k-superpowers:writing-plans`; design approval never authorizes
-   implementation.
+1. Inspect existing constraints and separate independently deliverable scopes
+   when that reduces risk or waiting time.
+2. Ask only blocking questions. Batch related questions when the user can answer
+   them together; use choices when they clarify a real trade-off.
+3. Present viable alternatives only where more than one approach is genuinely
+   reasonable. Recommend one and explain the consequential trade-offs.
+4. Present one coherent design covering architecture, boundaries, data/control
+   flow, failure behavior, authorization, and verification. Obtain approval for
+   the material decisions; do not require approval after every section.
+5. Record `docs/superpowers/specs/YYYY-MM-DD-<topic>-design.md` when the durable
+   artifact will support cross-session implementation, review, or future
+   decisions. Self-review it once for consistency and missing decisions.
+6. Ask separately before committing the document. Design approval can authorize
+   implementation edits when the user explicitly asks to proceed, but it never
+   authorizes a commit or external action.
 
-Follow existing project patterns and improve only boundaries touched by the
-request. Keep units focused and interfaces explicit; avoid unrelated refactors.
+Follow existing project patterns and avoid unrelated improvement work.

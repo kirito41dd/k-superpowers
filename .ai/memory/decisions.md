@@ -2,9 +2,9 @@
 
 <!-- SUMMARY
 覆盖范围：架构决策、技术选型、废弃方案（ADR 风格）
-条目数：18
+条目数：19
 最近更新：2026-07-21
-高频标签：#memory #fork #personalization #codex #opencode #claude-code #install #verification #type-driven #skills #sdd #routing #prompt #iteration
+高频标签：#memory #fork #personalization #codex #opencode #claude-code #install #verification #type-driven #skills #sdd #routing #prompt #iteration #judgment-first #review
 -->
 
 ## 写入格式（ADR 风格）
@@ -22,6 +22,17 @@
 
 ---
 
+## 2026-07-21 Skills 工作流采用 Judgment-First 与有界 Review
+
+- **背景**：GPT-5.6 Skill 优化曾持续超过 24 小时，Claude 测试消耗约 200 美元，并陷入 review、fix、重新发现问题、再 review 的无终止循环。根因是把持续变强的 Agent 当成确定性程序，用精确 prompt、固定工具顺序、强制流程和随机模型验证冻结局部判断。
+- **选项**：A）保留现有协议，只减少测试轮数；B）局部删除高成本 gate；C）整体改为 Judgment-First，只固定真实边界和成功标准，并让流程成本与实际风险相称。
+- **决策**：选择 C。Skill 定义目标、owner、授权边界、material decision、失败边界和完成证据，不冻结无外部协议依据的措辞、思考路径、工具顺序或输出编码。清晰变更默认 current workspace + Inline + no commit；持久 plan、worktree、SDD、delegation、独立 Review 和更宽验证只在有实际收益时使用。Review 生命周期固定为一次 Discovery、一个 finding ledger、一次批量修复和一次 Closure；同一逻辑 reviewer 继承历史，Closure 只处理原 finding、修复直接回归和原目标证据，未关闭则停止交还用户。删除 scope SHA-256，保留工作区内容指纹、Git 权限、用户修改 ownership、类型/API 约束和核心注释契约。
+- **理由**：Agent 的推理能力和上下文会持续变化，过度规定局部执行会增加 token、延迟、漂移和过拟合。真实使用反馈、最小充分约束和有退出条件的审查更接近产品价值，同时明确授权与破坏性操作仍能保护不可逆风险。
+- **影响**：`AGENTS.md`, `skills/*`, `README.md`, `docs/skills-overview.zh.md`, `docs/superpowers/specs/2026-07-21-*.md`, plugin manifests。版本更新为 `5.4.0`。
+- **状态**：已实施。本决策取代 2026-07-21 GPT-5.6 决策中的 Role Prompt Fidelity、精确 review/tool/output 协议，以及 2026-07-10 决策中的强制 Compact/Full、Unified Handoff、SDD checkpoint/reviewer 默认机制；其中 No Task Skill、Git 授权、用户修改保护、类型优先和注释契约继续有效。
+
+---
+
 ## 2026-07-21 Skills 不维护持久测试并停止默认模型验证
 
 - **背景**：GPT-5.6 优化实现超过 24 小时，反复出现 review、模型测试、fix、再 review 的随机反馈循环，仅 Claude 测试即消耗约 200 美元。该仓库的主要产物是给持续变强的 agent 使用的自然语言 skills，不是需要把随机模型输出冻结为确定行为的传统程序。
@@ -35,7 +46,7 @@
 
 ## 2026-07-21 以最小 Skill 路由和行为 Eval 落地 GPT-5.6 Prompt 优化
 
-> [DEPRECATED 2026-07-21] 其中行为 eval、固定 harness、ablation 和 live campaign 要求已被「Skills 不维护持久测试并停止默认模型验证」取代；No Task Skill、最小 owner、Git 边界、review 可靠性和注释契约继续有效。
+> [DEPRECATED 2026-07-21] 行为 eval、固定 harness、ablation 和 live campaign 已由「Skills 不维护持久测试并停止默认模型验证」取代；Role Prompt Fidelity、精确 review/tool/output 协议已由「Skills 工作流采用 Judgment-First 与有界 Review」取代。No Task Skill、最小 owner、Git 边界和注释契约继续有效。
 
 - **背景**：GPT-5.6 prompting guidance 建议从已工作的 prompt 出发逐组删减、避免重复约束、集中授权边界，并用同场景 eval 保护行为。本 fork 已完成一次大幅瘦身，但入口仍可能对普通问答加载 task skill，SDD/controller/reviewer 还存在 owner 重复、长 prompt 压缩和证据绑定不严的问题。完整需求见 `requirements.md#2026-07-21-gpt-56-prompt-优化须保留既有行为`。
 - **选项**：A）在现有 owner 上继续收敛并逐组验证；B）把 workflow 全面重写成统一状态机；C）维护 GPT-5.6 专用 prompt 分支。

@@ -6,91 +6,79 @@ description: Use when creating, editing, reviewing, or verifying skills and thei
 # Writing Skills
 
 Skill text guides an intelligent agent; it is not deterministic application
-code. Preserve useful behavior, change only the target contract, and optimize
-for fast feedback from real use rather than fixed model outputs.
+code. Define useful goals, boundaries, and success conditions, then leave local
+reasoning, wording, and tool choice to the agent unless a real external protocol
+requires exactness.
 
-## Mode
+## Modes
 
-| Mode | Scope |
-|------|-------|
-| Create | A reusable technique/pattern/reference has no suitable owner |
-| Edit | Change an existing trigger, workflow, contract, example, or reference |
-| Verify | Inspect supplied real-use evidence without editing |
-| Review only | Report findings and risks; do not edit |
+- **Create:** no current owner fits a reusable capability.
+- **Edit:** change an existing trigger, workflow, contract, or reference.
+- **Verify:** inspect supplied real-use evidence without editing.
+- **Review:** report findings and risks without editing.
 
-Do not create a new skill merely to avoid fixing the existing owner.
-`Verify` and `Review only` do not authorize Git, publishing, or external writes.
+Do not create a new skill merely to avoid improving its existing owner.
 
-## Required Change Contract
+## Change Intent
 
-Before edits, record:
+For a small edit, state the intended behavior and the few invariants that could
+regress. Use a fuller contract only for consequential routing, authorization,
+delegation, review, state transitions, or cross-skill ownership, considering the
+applicable items:
 
 ```text
-Triggers
-Valid states
-Forbidden states
-Owner responsibilities
-Authorization boundaries
-Failure transitions
-Verification obligations
+triggers and terminal states
+owner responsibilities
+authorization boundaries
+material failure transitions
+evidence needed for claims
 ```
 
-Read target and direct support files. State the behavior change, affected
-surfaces, and failure mode. After edits, mark every field `preserved` or approved
-`changed`, with evidence.
+This is a thinking aid, not a form. Do not create empty fields or require a
+preserved/changed ledger for obvious local edits.
 
-## Iteration Model
+## Iteration
 
-Use a user-observed failure, friction point, or requested behavior as the normal
-input. Make the smallest coherent change, inspect the resulting contract, and
+Use a user-observed failure, friction point, or requested behavior as input.
+Make the smallest coherent change, inspect its active references once, and
 return it to real use quickly.
 
 - Do not create persistent tests, fixtures, snapshots, eval matrices, ablation
-  records, or model-specific golden outputs for Skill behavior.
-- Do not call Claude, OpenCode, Codex, or another model for verification unless
-  the user explicitly requests that run and accepts its cost.
-- Do not freeze prose, tool-call order, or exact responses unless they are an
-  actual external protocol required by the user or platform.
-- Treat a single stochastic model response as an observation, not a regression.
-  Change the Skill only when the issue is reproducible or the text has a clear
-  contract defect.
-- New nonblocking improvements discovered during review go to a later
-  iteration; they do not reopen the current change.
+  records, or model-specific golden outputs for skill behavior.
+- Do not call another model for verification unless the user explicitly requests
+  it and accepts the cost.
+- Do not freeze prose, tool-call order, or exact responses without a real user/
+  platform protocol.
+- Treat one stochastic response as an observation, not a regression, unless the
+  skill text has a clear contract defect.
+- New nonblocking improvements go to a later iteration and do not reopen the
+  current change.
 
-Complete one behavior contract before unrelated Skill work. Prefer one edit and
-one self-review pass; avoid review/fix loops without a new blocking defect.
+Prefer one edit and one self-review pass. Do not manufacture synthetic failures
+or use review activity as a proxy for quality.
 
-## Authoring Rules
+## Authoring
 
-- Frontmatter requires `name` and `description`; description begins `Use when`,
-  contains trigger conditions only, and does not summarize workflow.
-- Keep frequently loaded skills small. Move Full-only methods, reusable tools,
-  and heavy references into support files.
-- One invariant has one complete owner. Callers state trigger/input/result and
-  reference the owner instead of copying its process.
-- Use flowcharts only for non-obvious branches/loops; lists for linear steps.
-- One representative example is enough. Delete session stories, duplicate
-  summaries, persuasion text, and repeated rationalizations unless evidence
-  shows they are required.
-- Project/user instructions override generic authoring guidance.
+- Frontmatter has `name` and a trigger-focused `description` beginning with
+  `Use when`.
+- Keep frequently loaded skills small; move genuinely optional detail into
+  support files.
+- One invariant has one owner. Callers reference its outcome and boundaries
+  instead of copying the process.
+- Use examples only when they resolve a measured ambiguity.
+- Preserve project/user instructions over generic guidance.
+- Keep permissions, destructive actions, user-owned changes, material decisions,
+  and completion evidence explicit; simplify ceremony around them.
 
-## Review
+## Review And Deployment
 
-Read the edited Skill and direct active references once. Check that triggers,
-states, ownership, authorization, failure transitions, and user-requested
-behavior remain coherent. Search for active contradictory text. For modified
-executable support files, syntax or JSON parsing is sufficient unless the user
-asks for more.
+Read the edited skill and direct active references once. Check trigger accuracy,
+owner coherence, permissions, material failure paths, and requested behavior.
+Search for contradictory active text. Syntax or JSON parsing is sufficient for
+modified executable support unless the user asks for more.
 
-Do not manufacture synthetic failures to justify more work. If real-use
-evidence is incomplete, state the uncertainty and hand the change back for use.
+State uncertainty when real-use evidence is incomplete and hand the change back
+for use. Git, publishing, or external writes always need their normal authority.
 
-## Deployment Checklist
-
-Track only applicable items: mode and change contract; smallest targeted edit;
-active docs/manifests synchronization; one self-review and conflicting-text
-search; cheap syntax/parse checks for edited executable files; and only
-explicitly authorized Git or publishing actions.
-
-`anthropic-best-practices.md` is a non-normative snapshot. This skill and project
+`anthropic-best-practices.md` is non-normative; this skill and project
 instructions are the local source of truth.

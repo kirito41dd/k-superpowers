@@ -4,7 +4,7 @@
 覆盖范围：非显而易见的 bug、易犯错误、隐藏依赖
 条目数：3
 最近更新：2026-07-21
-高频标签：#upstream-pr #skills #eval #sdd #prompt
+高频标签：#upstream-pr #skills #eval #sdd #prompt #judgment-first
 -->
 
 ## 写入格式
@@ -23,7 +23,7 @@
 
 ## 2026-07-21 Live reviewer 单次零读取不等于 Prompt 结构缺陷
 
-> [DEPRECATED 2026-07-21] 本仓库不再运行或维护 live reviewer campaign。保留此条仅用于说明历史成本来源；现行规则见 `conventions.md#2026-07-21-skill-修改采用一次编辑一次自审`。
+> [DEPRECATED 2026-07-21] 本仓库不再运行或维护 live reviewer campaign，也不再保留 Role Prompt Fidelity 或 scope-hash gate。保留此条仅用于说明历史成本来源；现行规则见 `decisions.md#2026-07-21-skills-工作流采用-judgment-first-与有界-review`。
 
 - **现象**：SDD live integration 中，一个 task reviewer 在 Inputs、文件和 binding 都完整时仍以 0 次工具调用直接返回双 `CANNOT_VERIFY`，触发 fresh re-review，导致典型 happy path 的 exact `2N` 断言失败；相同 prompt 随后的 reviewer 完成 4 次 Read 并双轴通过。
 - **原因**：首次 reviewer 错误选择了“Inputs absent/malformed”的 fail-fast 分支。首、次 dispatch prompt 字节完全一致，路径存在，header 匹配，声明占位符无残留，nested transcript 也没有工具错误，证据更符合一次模型 instruction-following 波动，而不是模板或 controller 缺陷。
@@ -35,7 +35,7 @@
 
 ## 2026-07-21 Role Prompt 保真不能只查关键字或无边界占位符
 
-> [DEPRECATED 2026-07-21] 对应测试资产已经删除，不再维护该 harness。产品侧“role prompt 必须完整、有序实例化”的约束仍有效。
+> [DEPRECATED 2026-07-21] 对应测试资产和产品侧 Role Prompt Fidelity 均已删除。Delegated brief 只需语义完整，不再冻结模板字序、占位符实例化方式或工具顺序；现行规则见 `decisions.md#2026-07-21-skills-工作流采用-judgment-first-与有界-review`。
 
 - **现象**：SDD integration 把只含少量 sentinel 的截断 prompt 误判为完整；改成 `.+?` 加反向引用后，特制的重复 `[BRIEF_FILE]` 值仍可吞入两次出现之间的固定正文并产生假阳性。真实 dispatch 还暴露 controller 只替换 Inputs 中的动态路径、遗漏正文内同名 placeholder，reviewer 因而反复返回 `CANNOT_VERIFY`。
 - **原因**：无序关键字只证明片段存在，不证明模板完整或顺序正确；无类型边界的 regex capture 可以跨越后续 literal，反向引用也无法保证逻辑上的占位符值一致。动态值在模板多处重复则扩大了 partial substitution 面。

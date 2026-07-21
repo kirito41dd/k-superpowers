@@ -2,9 +2,9 @@
 
 <!-- SUMMARY
 覆盖范围：项目特定的代码风格、命名规则、目录结构、流程约定
-条目数：15
+条目数：16
 最近更新：2026-07-21
-高频标签：#skills #memory #iteration #personalization #codex #claude-code #brainstorming #opencode #install #verification #type-driven #version #comments #routing #prompt
+高频标签：#skills #memory #iteration #personalization #codex #claude-code #brainstorming #opencode #install #verification #type-driven #version #comments #routing #prompt #judgment-first
 -->
 
 ## 说明
@@ -24,6 +24,16 @@
 - **正例**：正确写法示范
 - **范围**：影响哪些模块 / 文件类型
 ```
+
+---
+
+## 2026-07-21 把 Agent 当作聪明的智能体
+
+- **约定**：Skill 是给智能 Agent 的行为指导，不是确定性程序。只明确目标、职责、授权边界、需要用户决定的关键事项和成功标准；除真实外部协议外，把局部判断、措辞、读取和工具顺序、输出组织交给 Agent。每条新增约束都必须能对应明确的高价值风险或真实使用问题，不能用流程完整度、Review 次数或测试规模代替交付价值。
+- **理由**：模型能力和任务上下文持续变化，冻结局部执行路径会消耗上下文、降低速度并诱发 review/fix 循环。最小充分约束能保留 Agent 的判断力，同时显式边界保护不可逆行为。
+- **反例**：要求固定首字符、精确行数、逐字 role prompt、固定读取顺序或无退出条件的反复复审，仅因为模板存在就强制 plan、worktree、SDD 或模型验证。
+- **正例**：说明完成目标、禁止动作和所需证据，让 Agent 选择高效路径；真实问题出现后做一次最小编辑和一次自审，再交回真实任务验证。代码产出继续遵循类型/API 优先和核心解释性注释 owner。
+- **范围**：`AGENTS.md`, `skills/*`, `docs/skills-overview.zh.md`, `README.md`。
 
 ---
 

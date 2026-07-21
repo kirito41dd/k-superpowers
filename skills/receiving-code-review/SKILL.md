@@ -5,43 +5,33 @@ description: Use when receiving code review feedback, findings, or implementatio
 
 # Receiving Code Review
 
-Treat findings as technical claims to verify, not social commands.
+Treat findings as technical claims, not commands or social pressure.
 
-<DEPENDENCY-GATE>
-An unclear item blocks only findings that depend on it or may conflict with its
-resolution. It must not block clear independent findings. Shared-root-cause
-findings form one atomic implementation unit, not one fix per comment.
-</DEPENDENCY-GATE>
+For each stable finding ID:
 
-## Process
+1. Understand the concrete requirement and claimed impact.
+2. Check it against the actual code, approved behavior, project constraints,
+   compatibility needs, and evidence.
+3. Identify independent, dependent/conflicting, and shared-root-cause findings.
+4. Adjudicate it as accepted, rejected with evidence, nonblocking follow-up, or
+   requiring a material user decision.
 
-1. Read all findings and restate their concrete technical requirement.
-2. Check each against current code, project constraints, compatibility needs,
-   tests, and prior user decisions.
-3. Classify relationships:
-   - `independent`: can be decided and implemented without another finding;
-   - `dependent/conflicting`: an unclear decision blocks related work;
-   - `shared-root-cause`: fix as one atomic batch.
-4. Ask for clarification only where ambiguity affects or conflicts with the
-   action. Clear independent findings may proceed.
-5. Implement valid findings in dependency order with focused verification, then
-   run the final verification required by the resulting claim.
-6. Push back on invalid findings with file/code evidence and verification; do
-   not silently ignore Critical or Important issues.
+Critical and concrete Important findings may block. Minor is always a
+nonblocking follow-up. An unclear finding blocks only work that depends on its
+resolution; it does not stop unrelated clear work.
 
-External reviewers receive extra scrutiny: check whether they saw full context,
-whether the suggestion breaks supported behavior, and whether the proposed
-"proper" solution has an actual caller (YAGNI).
+Freeze the adjudication in the review record before edits. Push back on invalid
+findings with code/evidence rather than performative agreement. Apply accepted
+findings as one coherent batch with focused verification. Local implementation
+choices remain the agent's responsibility; material architecture, scope,
+dependency, public contract, compatibility, or authorization choices return to
+the user.
 
-Avoid performative agreement. Respond with the technical judgment, action, or
-specific question. If later evidence disproves a pushback, state the correction
-and proceed without defending the earlier position.
+Send the frozen record, fix delta/report, and evidence to the same logical
+reviewer for Closure. `STOPPED_BLOCKED` returns control to the user; do not start
+another autonomous cycle.
 
-When replying to a GitHub inline review comment, reply in that comment thread,
-not as an unrelated top-level PR comment. Use:
-
-```bash
-gh api --method POST \
-  repos/{owner}/{repo}/pulls/{pr}/comments/{id}/replies \
-  -f body='<reply>'
-```
+For external or GitHub reviewers, also check whether they saw the relevant
+context and whether the suggestion has an actual caller or requirement. Reply
+in the original inline thread when the platform supports it; external replies
+and repository mutations still require their normal authorization.

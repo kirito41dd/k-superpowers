@@ -1,69 +1,91 @@
 ---
 name: requesting-code-review
-description: Use when consequential tasks, major features, or pre-merge work need independent requirements and quality review
+description: Use when consequential or high-risk work needs an independent requirements and quality judgment
 ---
 
 # Requesting Code Review
 
-## Contract
+Request independent review only when its expected risk reduction justifies the
+latency and context cost. Review is not a universal completion ritual.
 
-One reviewer evaluates two independently blocking axes: **Spec** checks required,
-missing, wrong, or extra behavior; **Standards** checks correctness, project
-conventions, maintainability, boundaries, errors, and verification quality.
+One logical reviewer evaluates two axes:
 
-Every request contains requirements/plan, change description, exact scope,
-verification evidence, `EXPECTED_SCOPE_SHA256`, and exactly one resolved source
-and snapshot declaration:
+- **Spec:** required, missing, wrong, extra, or incompatible behavior;
+- **Standards:** correctness, project conventions, boundaries, errors/resources,
+  maintainability, core explanations, and verification quality.
 
-```text
-source = committed-range(BASE_SHA, HEAD_SHA) | working-tree(BASE_SHA = HEAD_SHA)
-snapshot = live | package-v1(PACKAGE_PATH)
-```
+## Evidence
 
-`BASE_SHA` and `HEAD_SHA` are concrete full commit SHAs. A working-tree source
-uses the same resolved commit for both values.
+Every review receives the approved requirements/plan, change goal, intended
+scope, implementation diff or snapshot, and verification evidence.
 
-Use committed range for stable checkpoints. Inline uncommitted work uses a
-working-tree package; never request a commit merely to create a review range.
-Live review is allowed only with a working-tree source in the same controller
-context while scope is frozen. Its request supplies the complete exact-scope
-status/diff plus resolved `source`, `base`, `head`, and `scope-sha256` metadata;
-reviewers bind those values directly instead of reading a package header.
-
-## Package
-
-Create a sorted, unique, NUL-delimited repo-relative scope file, then run:
+For same-controller Inline work, the reviewer may use the current requirements,
+diff, relevant repository context, and evidence directly. Use a frozen package
+when review crosses agent/context boundaries, the working tree may move, or a
+committed range needs durable handoff:
 
 ```text
 scripts/review-package committed BASE HEAD SCOPE_FILE OUTFILE
 scripts/review-package working-tree BASE SCOPE_FILE OUTFILE
 ```
 
-Map request `committed-range(...)` to package `source: committed`, and request
-`working-tree(...)` to package `source: working-tree`. Request and package must
-then carry the same mapped source mode, base SHA, head SHA, and scope SHA-256.
-Regenerate after material changes. Reviewers read the package instead of
-rerunning Git commands.
+Package requests bind source mode, concrete base/head commits, and an explicit
+sorted repo-relative scope path list. Do not add a scope hash handshake: it
+cannot detect a controller that selected the wrong paths.
 
-## Findings And Verdicts
+Scope limits the change under review, not useful read-only context. A reviewer
+may inspect callers, nearby implementations, project instructions, and direct
+dependencies to answer a concrete review question. It must not modify files,
+expand the requested change, or turn unrelated observations into blockers.
+
+## Bounded Lifecycle
 
 ```text
-severity = Critical | Important | Minor
-axis = Spec | Standards
-file/line, issue, impact, required fix
-
-Spec verdict = PASS | FAIL | CANNOT_VERIFY
-Standards verdict = PASS | FAIL | CANNOT_VERIFY
+Discovery -> frozen finding ledger -> one coherent fix batch -> Closure
+          -> PASS | PASS_WITH_FOLLOWUPS | STOPPED_BLOCKED
 ```
 
-Only output nonempty findings ordered by severity. A missing, `FAIL`, or
-`CANNOT_VERIFY` verdict blocks progress. Fix findings coherently, regenerate the
-package, and re-run both axes. A two-line `CANNOT_VERIFY` response is the
-pre-binding failure sentinel: revalidate the request's source/base/head/scope
-and package or live metadata before a fresh complete review. After binding, a
-`CANNOT_VERIFY` finding names the smallest missing evidence to obtain. Push back
-on incorrect findings with evidence.
+### Discovery
 
-SDD owns risk-required review timing; Inline owns its checkpoints. This skill
-owns request/package/verdict shape, not task risk or completion. Use
-`code-reviewer.md` as the reviewer prompt.
+Run once. Each finding has a stable ID, severity (`Critical | Important |
+Minor`), axis, location when applicable, issue, impact, and required fix.
+Critical and concrete Important findings block. Minor is a nonblocking
+follow-up and cannot fail an axis.
+
+The controller uses `k-superpowers:receiving-code-review` to adjudicate findings
+as accepted, rejected with evidence, follow-up, or requiring a user decision.
+Freeze the goal, evidence snapshot, findings, verdicts, adjudication, and
+deferred observations before editing.
+
+### Closure
+
+After at most one coherent fix batch, give the same logical reviewer the frozen
+record, final diff/snapshot, fix delta, and evidence. Prefer resuming the same
+reviewer; a replacement must receive the complete record.
+
+Closure checks only:
+
+1. accepted blockers are closed;
+2. the fix did not directly introduce a Critical/Important regression;
+3. final evidence still supports the original goal.
+
+Do not restart Discovery or introduce new preferences. Unresolved original
+blockers, fix-induced Critical/Important regressions, severe security/data-loss/
+authorization defects, or a material scope/architecture/dependency/public
+contract decision block Closure. Other new observations become follow-ups.
+
+## Results
+
+- `PASS`: safe to proceed with no deferred issue;
+- `PASS_WITH_FOLLOWUPS`: safe to proceed with named nonblocking observations;
+- `FIX_REQUIRED`: Discovery has accepted blockers;
+- `CANNOT_VERIFY`: Discovery names the smallest missing evidence;
+- `STOPPED_BLOCKED`: Closure cannot safely finish or needs a user decision.
+
+A binding/evidence mistake may be corrected once before Discovery completes.
+Closure failure returns control to the user and never starts another autonomous
+fix/review cycle.
+
+Use `code-reviewer.md` as adaptable reviewer guidance. Stable IDs and required
+information matter; exact line counts, first characters, wording, and tool-call
+shape do not.

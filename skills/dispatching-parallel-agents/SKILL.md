@@ -1,21 +1,26 @@
 ---
 name: dispatching-parallel-agents
-description: Use when two or more independent problem domains can proceed without shared state or sequential dependencies
+description: Use when two or more workstreams can proceed concurrently with meaningful latency benefit and manageable integration risk
 ---
 
 # Dispatching Parallel Agents
 
-Parallelize only when every task can be understood and completed independently:
+Parallelize when expected latency or context benefit exceeds delegation and
+integration cost. Shared read-only files and context are allowed.
 
-- no shared files, mutable state, resources, or environment;
-- no task consumes another task's result;
-- one fix cannot invalidate another investigation.
+Keep work sequential when:
 
-Otherwise keep work sequential. Do not depend on inherited conversation context;
-give each agent a self-contained brief with exact scope, goal, constraints,
-available evidence, and required output. One agent owns one problem domain.
+- agents would write overlapping files/state or compete for one external
+  resource;
+- one task needs another task's unfinished result;
+- one task's decision may invalidate another's work; or
+- reconciling results costs more than the expected speedup.
 
-After results return, inspect each report and actual changes, check conflicts and
-assumptions, then run the combined verification. Agent success messages are not
-evidence. Parallel investigation does not authorize parallel edits to shared
-state.
+Give each agent a clear problem, boundaries, relevant context/evidence,
+authorized actions, and useful result expectations. Agents may inspect shared
+read-only context independently. For edits, assign nonconflicting ownership or
+serialize the mutation phase.
+
+The controller inspects reports and actual changes, reconciles assumptions, and
+obtains combined evidence. Agent success messages are not proof, and delegation
+does not expand mutation or external-action authority.

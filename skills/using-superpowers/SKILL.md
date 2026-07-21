@@ -6,108 +6,58 @@ description: Use when starting any conversation
 # Using Skills
 
 <SUBAGENT-STOP>
-Dispatched subagents executing a focused brief skip this entry skill.
+Dispatched agents executing a focused brief skip this entry skill.
 </SUBAGENT-STOP>
 
-Classify current intent before responding or acting. Select the minimal
-sufficient set: one current process owner plus only domain owners needed now.
-`no task skill` is valid. Plausible future relevance is not a trigger; never
-preload later phases or mutually exclusive paths.
+Choose the smallest useful capability for the user's current intent. Skills
+guide an intelligent agent; they are not a mandatory ceremony or a substitute
+for judgment. User and project instructions override skills.
 
-User and project instructions override skills; skills override default agent
-behavior.
+`no task skill` is a valid route. Do not load a skill because it may become
+useful later, and do not load mutually exclusive execution paths together.
 
-## Exact Output Gate
+## Intent
 
-When a request supplies an exact bounded response schema, keep reasoning
-internal. All visible assistant text on a task-skill route is limited to:
+| Intent | Route |
+|---|---|
+| Ordinary question answerable from current knowledge | Answer directly |
+| Familiarize, inspect, explain, review, or report status | Perform only the requested non-mutating work, then stop |
+| Bug or unexpected behavior | `k-superpowers:systematic-debugging` |
+| Behavior change without approved design | `k-superpowers:brainstorming` |
+| Approved clear, bounded change with an implementation request | Direct implementation in the current workspace, no commit |
+| Approved persistent plan | `k-superpowers:executing-plans`, or SDD only when explicitly selected and beneficial |
+| Explicitly named skill | Use it unless it conflicts with a higher-priority instruction or is unavailable |
 
-- `Using k-superpowers:<skill-name>.` in the same decision or message as that
-  exact skill call; and
-- the requested terminal schema after every selected skill result.
+Preparation/read-only work may use any operation the agent can establish is
+non-mutating. It does not enter design or implementation merely because a
+related skill exists.
 
-Add no rationale, generic "required skill" wording, sequencing promise, or
-other preamble. This gate adds no ceremony to a no-task route.
+## Direct Implementation
 
-<EXACT-OUTPUT-HARD-GATE>
-A skill announcement is a literal protocol frame. Before the tool call, the
-entire visible text block is exactly `Using k-superpowers:<skill-name>.` Add no
-prefix, suffix, promise, rationale, companion text, or wording such as “I’ll
-announce”, “I’ll invoke”, or “I’ll use”.
+Use Direct when the approved change is clear, reversible, confined to one
+problem domain, and has no unresolved architecture, scope, dependency, public
+contract, compatibility, security, or permission decision.
 
-On a no-task or read-only route with an exact bounded response schema, keep
-permitted reads and reasoning silent; the terminal schema is the only visible
-text. A preparation/read-only request without such a schema may use concise
-progress text.
-</EXACT-OUTPUT-HARD-GATE>
+The safe default is:
 
-A mandatory platform or session notice is outside task-skill ceremony and takes
-priority over this gate. Emit that notice exactly once where the platform
-requires it, including before an otherwise exact or no-task first reply; then
-apply the requested response schema to the task output. It is the only permitted
-extra visible text unless the user explicitly requests more.
+```text
+current workspace + Inline + no commit
+```
 
-## Unified Handoff Gate
+Before editing, inspect relevant project instructions and detect overlap with
+pre-existing user changes. Stop only for a real conflict or material decision.
+Load a domain skill such as `type-driven-verification` only when the actual code
+change needs its contract. Implement, perform bounded verification, and hand the
+result back for real use.
 
-The handoff message already supplies the controller and workspace route. Execute
-it as two result-gated assistant decisions, never one batched selection:
+An implementation request authorizes in-scope file edits, not commit, push,
+merge, PR, amend, force, destructive cleanup, or unrelated work. Ask only when
+an action needs additional authority or a choice would materially change the
+result.
 
-1. In the first decision, announce and invoke only the selected controller:
-   `k-superpowers:subagent-driven-development` or
-   `k-superpowers:executing-plans`. Do not announce, select, or invoke another
-   skill. Wait for the controller skill's completed result.
-2. Only after that result, begin a new assistant decision and announce and invoke
-   `k-superpowers:using-git-worktrees` with the handoff's workspace choice. Wait
-   for its completed result.
+## Skill Use
 
-Before both return, do not read the plan, inspect the workspace, or take another
-non-skill action. Never invoke the alternative controller or reconfirm the
-handoff. If the user defines this as a bounded handoff checkpoint and says to
-stop after both skill results, emit its terminal schema before any workspace
-tool. Loading the workspace owner does not itself authorize an inspection in
-that checkpoint.
-
-## Intent Gate
-
-| User intent                                                                             | Route                                                                                                                                          |
-| --------------------------------------------------------------------------------------- | ---------------------------------------------------------------------------------------------------------------------------------------------- |
-| Ordinary question answerable from current knowledge                                     | Answer directly in the user's requested response shape; no task skill or workflow ceremony                                                     |
-| Familiarize, inspect, explain, review, report status, or wait without changing behavior | Perform only the requested read-only work, then stop; no design or implementation skill                                                        |
-| Bug, failing test, or unexpected behavior                                               | `k-superpowers:systematic-debugging` first; do not preload design. After root cause, obtain Compact/Full design approval before behavior edits |
-| Feature, behavior, component, or configuration change                                   | `k-superpowers:brainstorming`; do not preload planning or execution                                                                            |
-| Approved design/spec whose requested next step is a plan                                | `k-superpowers:writing-plans` only                                                                                                             |
-| Explicitly named skill or another specialized task                                      | Invoke the requested/current owner; add a prerequisite or domain owner only when the current action requires it                                |
-
-Preparation-only and read-only routes use only platform-recognized read/search
-tools. Never use `Edit`, `Write`, `NotebookEdit`, or another write tool. If the
-platform cannot safely classify a shell call or other tool as read-only, do not
-run it.
-
-For a no-task answer, obey explicit output constraints literally. "Only the
-result" excludes restating the expression or adding an explanation.
-
-Preparation-only examples include “先熟悉模块”“先看规范”“等我给需求”. Do not ask
-design questions or create specs/plans for them. A read-only route ends after the
-answer or report unless the user separately requests a change.
-
-When uncertainty about a behavior change would alter the route, ask one blocking
-question; otherwise proceed with the selected state.
-
-## Invocation
-
-After the Intent Gate selects a task skill, invoke it and wait for its result
-before any non-skill tool or other task action, including reading or searching.
-The selected owner decides which context to inspect next. For approved-spec
-planning, the user's stated approval and requested next step are sufficient
-routing evidence; do not inspect the spec merely to reconfirm the route.
-`k-superpowers:writing-plans` reads the spec and its Flow after loading.
-
-Load selected task skills through the platform skill tool, never by reading their
-files. Use the platform mapping reference when tool names differ. Invoke the
-process owner before implementation/domain skills. Track only applicable
-checklist items. If the platform requires a task-skill announcement, use the
-Exact Output Gate's call-bound form. A no-task answer has no skill ceremony.
-Remembering a skill is not invoking it.
-
-Before platform plan mode for change work, design must already be approved via
-`k-superpowers:brainstorming`.
+When a task skill is needed, use the current owner before actions governed by
+it. Communicate skill use concisely when the platform requires disclosure; do
+not impose a fixed announcement phrase or tool-call sequence. Preserve exact
+output formats only when the user or a real external protocol requires them.

@@ -1,6 +1,6 @@
 ---
 name: using-git-worktrees
-description: Use when starting feature work that needs workspace isolation or when an approved execution handoff requires a worktree
+description: Use when approved work materially benefits from workspace isolation or the user explicitly requests a worktree
 ---
 
 # Using Git Worktrees
@@ -17,10 +17,11 @@ git branch --show-current
 ```
 
 A linked worktree has different git/common dirs and no superproject. Never nest
-one. Consume the Unified Execution Handoff exactly once:
+one. Follow the approved/user-selected workspace choice:
 
-- `current workspace`: report location/branch and return. Do not run new-
-  worktree setup or baseline installation.
+- `current workspace`: report location/branch and return when this skill was
+  explicitly invoked; Direct/Inline may use the current workspace without
+  loading this skill. Do not run new-worktree setup or baseline installation.
 - `create worktree`: prefer a platform native worktree tool; use manual Git only
   when no native tool exists.
 

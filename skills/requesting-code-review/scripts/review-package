@@ -40,7 +40,6 @@ while IFS= read -r -d '' path; do
   scope+=("$path"); previous=$path
 done < "$scope_file"
 [ "${#scope[@]}" -gt 0 ] || { echo "empty scope" >&2; exit 2; }
-scope_hash=$(hash_file "$scope_file") || exit 2
 
 tmp="${out}.tmp.$$"; before="${tmp}.before"; after="${tmp}.after"
 trap 'rm -f "$tmp" "$before" "$after"' EXIT
@@ -67,7 +66,7 @@ fi
 {
   echo "# k-superpowers-review-package/v1"; echo
   echo "source: $mode"; echo "base: $(git rev-parse "$base")"; echo "head: $(git rev-parse "$head")"
-  echo "scope-sha256: $scope_hash"; echo; echo "## Scope"
+  echo; echo "## Scope"
   for path in "${scope[@]}"; do printf -- '- `%q`\n' "$path"; done
   echo; echo "## Status"; git status --short -- "${scope[@]}"
   if [ "$mode" = committed ]; then

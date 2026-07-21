@@ -1,27 +1,20 @@
 # Full Plan Guide
 
-Each task is one independently verifiable vertical slice worth its review gate.
-Fold setup/config/docs into the deliverable that needs them. Horizontal tasks
-are allowed only for necessary type/API prerequisites, prefactors, or mechanical
-migrations with their own verification.
+A Full plan should let another skilled agent continue without rediscovering
+material decisions. Organize it around independently deliverable behavior, not
+horizontal layers or fixed step counts.
 
-Use checkbox steps, normally:
+For each meaningful slice, include the files/boundary, approved behavior,
+interfaces or dependencies, consequential design constraints, and the smallest
+verification that supports completion. Add signatures or data shapes where
+prose would leave a material choice. Tests are required only for named runtime
+or recurrence risks that static guarantees cannot prove.
 
-1. Define the type/API boundary and Implementation Design Contract when needed.
-2. Implement the minimal behavior, including useful explanations for core
-   abstractions when code is not self-explanatory.
-3. Add focused tests only for named runtime risks static guarantees cannot prove.
-4. Run the exact project verification and record expected output.
-5. Create a checkpoint only when the execution handoff authorizes it.
+Checkpoint commits appear only when the execution route explicitly authorizes
+them. Routine code, mechanical steps, and low-value boilerplate do not need to
+be spelled out. Avoid placeholders and undefined APIs, but trust the executor to
+make local choices from project patterns.
 
-Every step contains exact paths, signatures/data shapes, commands, and real
-implementation detail where prose leaves a meaningful choice. Never use TBD,
-TODO, “similar to”, generic validation/error instructions, undefined APIs, or
-unbounded “write tests”.
-
-## Self-Review
-
-Check spec coverage, placeholders, type/signature consistency, Global Constraint
-propagation, cross-task interfaces, core explanation quality, task sizing, risk,
-and verification scope. Fix gaps inline. Plan approval remains separate from
-implementation and commit authorization.
+Self-review the plan once for requirement coverage, conflicting decisions,
+cross-slice dependencies, user-change ownership, verification scope, and any
+material choice that still needs approval.

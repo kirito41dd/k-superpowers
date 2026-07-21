@@ -1,95 +1,63 @@
 ---
 name: type-driven-verification
-description: Use when implementing behavior that needs explicit verification, especially core logic, bug fixes, public APIs, algorithms, parsers, protocols, state machines, or high-risk changes
+description: Use when implementing consequential domain behavior, core logic, bug fixes, public APIs, parsers, protocols, state machines, resources, or other changes needing explicit design and evidence
 ---
 
 # Type-Driven Verification
 
-## Core Principle
-
 Use the target language's types and API boundaries to exclude invalid states,
-then test only important behavior those guarantees cannot prove. Tests protect
+then verify important behavior those guarantees cannot prove. Tests protect
 semantics and regressions; they are not an implementation ritual.
 
-## Implementation Design Contract
+## Design Questions
 
-For domain logic, public interfaces, parsers, protocols, state machines,
-resource lifecycles, or significant error boundaries, define:
+For consequential domain logic, interfaces, untrusted inputs, protocols, state,
+resources, or significant error boundaries, consider the applicable questions:
 
-```text
-Domain invariants
-Invalid states excluded by types or APIs
-Untrusted input and validation boundaries
-Error and resource-ownership model
-Runtime risks the compiler cannot prove
-Focused verification for those remaining risks
-```
+- What domain invariants matter?
+- Which invalid states can types, visibility, constructors, or APIs exclude?
+- Where does untrusted input enter and get validated?
+- Who owns errors, cleanup, and resource lifecycles?
+- What runtime risk remains after static guarantees?
+- What smallest evidence proves that remaining behavior?
 
-Planning, implementation reports, and review use the same contract. Skip it for
-docs, formatting, mechanical renames, simple glue, and changes with no relevant
-runtime or domain risk; do not generate empty fields or mandatory test steps.
+These are thinking dimensions, not a mandatory report form. Skip irrelevant
+questions for docs, formatting, mechanical changes, and simple glue.
 
-## Language Capability Gradient
+## Language Capability
 
-Use the strongest practical guarantees the project language supports:
+- **Rust:** enums/newtypes, private validated construction, ownership/lifetimes,
+  narrow traits/visibility, and exhaustive matching. Use typestate only when its
+  safety benefit justifies complexity.
+- **TypeScript:** discriminated unions, strict null handling, narrow APIs, and
+  runtime schema validation for JSON/network/storage input.
+- **Go:** explicit structs/constructors, small interfaces, validated boundaries,
+  and explicit error propagation.
+- **Dynamic languages:** boundary validators, explicit data models, narrow APIs,
+  and proportionate runtime checks.
 
-- **Rust:** enums over conflicting flags, newtypes/private fields with checked
-  constructors, boundary parsing, ownership/lifetimes, narrow traits and
-  visibility, exhaustive matching. Use typestate only when its safety benefit
-  justifies the complexity.
-- **TypeScript:** discriminated unions, strict null handling, narrow module
-  APIs, and runtime schema validation for untrusted values. Static types do not
-  validate JSON, network, or storage input.
-- **Go:** explicit structs and constructors, small interfaces, validated
-  boundaries, and explicit `error` propagation.
-- **Dynamic languages:** boundary validators, explicit data models, narrow
-  APIs, and proportionally more focused runtime checks.
-
-Do not imitate Rust with low-value wrappers or generic machinery. Move
-enforceable invariants into the language and API; do not copy syntax.
+Do not imitate Rust with low-value wrappers. Use the strongest practical
+guarantees of the project language.
 
 ## Core Explanations
 
-Add explanatory comments/docs for core structures, functions, and abstractions
-unless they are genuinely self-explanatory. Explain each applicable dimension:
-purpose, how callers obtain and use it, important invariants,
-lifecycle/resource rules, and protocol boundaries or state transitions. When a
-factory or construction boundary is how callers obtain the abstraction, treat
-it as part of the same explanation instead of a separate comment obligation.
-Follow project and nearby-file language/style; do not restate obvious code.
+Explain non-self-explanatory core structures, functions, and abstractions. Cover
+the applicable purpose, caller use, important invariants, lifecycle/resource
+rules, and protocol boundaries or state transitions. Treat a factory as part of
+the abstraction callers obtain. Follow project and nearby-file comment language
+and style; do not restate obvious code.
 
-## Choosing Verification
+## Evidence
 
-1. State the behavior and invariants.
-2. Encode practical guarantees in types, visibility, ownership, and interfaces.
-3. Identify remaining runtime risks.
-4. Add focused tests only where semantics or recurrence risk justify them.
-5. Run the smallest project-defined command that proves the intended claim.
+Choose evidence from the actual remaining risk: compiler/type checks, focused
+tests, a stable public entry point, a parser/state transition, a minimal
+reproducer, diff inspection, or another reliable artifact. Prefer caller-visible
+behavior over private mocks unless the interaction itself is the risk.
 
-Prefer stable caller entry points: public API, CLI, HTTP handler, parser
-entrypoint, or state transition. Test private helpers separately only when they
-carry complex logic that callers cannot expose clearly.
+For bugs, use `systematic-debugging` first. Every fix needs evidence that the
+symptom or reliable proxy changed, but not necessarily a new persistent test or
+fixed test-before-code order.
 
-### Bugs
-
-Use `k-superpowers:systematic-debugging` first and establish a feedback loop for
-the concrete symptom. Then choose durable protection:
-
-- recurring/core runtime bug: focused regression test;
-- missing type/API invariant: strengthen the boundary, compile, and run relevant
-  behavior checks;
-- simple wiring/configuration bug: use the smallest reproducer and verification
-  command; a new test is optional.
-
-Every fix needs fresh evidence that the symptom is gone. It does not always need
-a new persistent test, and it does not require a fixed test-before-code order.
-
-## Review Rules
-
-A reviewer must name the concrete invalid combination, boundary failure, or
-unproved runtime behavior before requesting redesign or tests. "No tests added"
-alone is not a finding. Also reject tests that mirror implementation details or
-mocks, duplicate trusted-boundary validation, or treat compilation as proof of
-runtime semantics.
-
-Load `testing-anti-patterns.md` when changing tests or mocks.
+A reviewer requesting redesign or tests must name the concrete invalid state,
+boundary failure, or unproved runtime behavior. “No tests added” alone is not a
+finding.
