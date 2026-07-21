@@ -1,345 +1,240 @@
 ---
 name: subagent-driven-development
-description: Use when executing implementation plans with independent tasks in the current session
+description: Use when an approved implementation plan has independent tasks, execution stays in the current session, and local checkpoint commits are explicitly authorized
 ---
 
 # Subagent-Driven Development
 
-Execute a plan with review strength matched to each task's behavioral risk.
-The controller handles low-risk work directly; medium/high tasks get a fresh
-implementer and one task reviewer that returns separate Spec and Standards
-verdicts. High or cross-task risk adds an independent whole-change review.
+Run the approved plan with one controller, fresh task agents where required, and
+durable evidence. Honor an exact bounded response schema without preamble or
+code fences.
 
-**Core principle:** Pay review cost where risk justifies it, without weakening
-the gates that protect consequential changes.
+## Entry Preconditions
 
-**Context discipline:** Keep task briefs, implementer reports, review packages,
-and the progress ledger in `.superpowers/sdd/` via `./scripts/`. Pass file paths
-to subagents instead of pasting bulky artifacts into prompts. After a successful
-run, remove the workspace with `./scripts/sdd-cleanup`.
+Enter SDD only when all four conditions are already true:
 
-**Continuous execution:** Do not pause between tasks. Stop only for an
-unresolved blocker, a real ambiguity, a plan/source-of-truth conflict, or when
-all tasks are complete.
+- the implementation plan is approved;
+- its tasks are sufficiently independent for delegated execution;
+- execution remains in this current session; and
+- the Unified Execution Handoff explicitly authorizes this plan's local
+  checkpoint commits.
 
-## When to Use
+Missing approval, independence, current-session execution, or authorization
+blocks SDD; do not infer it. If the handoff explicitly refuses local checkpoint
+authorization, invoke `k-superpowers:executing-plans` and exit SDD before task
+dispatch. Otherwise consume the handoff's exact workspace choice without
+renegotiating it. If current-session multi-agent execution is unavailable or
+unsupported, stop and report that SDD is not applicable. Do not simulate
+delegation or silently switch to Inline execution.
 
-Use this skill when an approved implementation plan has mostly independent
-tasks and execution will remain in the current session. Use
-`k-superpowers:executing-plans` for tightly coupled tasks, a separate execution
-session, or when local checkpoint commits are not authorized.
-
-## Invocation Budget
-
-Excluding finding-driven fix loops:
-
-| Plan shape | Subagent invocations |
-|------------|----------------------|
-| All low | `0` |
-| `N` delegated medium/high tasks without integration risk | `2N` |
-| Delegated tasks requiring final review | `2N+1` |
-
-Do not dispatch a subagent merely to preserve the appearance of SDD. Low-risk
-tasks are intentionally controller-owned.
+Checkpoint authorization covers only approved implementation tasks and review
+fixes in this run, including approved docs/comments tasks. It excludes separate
+spec/plan document commits, unrelated commits, push, merge, PR, amend, and force
+operations.
 
 ## Startup
 
-0. Before creating the SDD workspace or editing anything, invoke
-   `k-superpowers:using-git-worktrees` with the Unified Execution Handoff's
-   workspace decision. Complete setup and baseline verification.
-1. Read the plan once and note global constraints and task interfaces.
-2. Run `./scripts/sdd-workspace`, then initialize or validate `progress.md` as
-   specified under Durable Progress.
-3. Create todos. Skip completed tasks only after the progress run matches the
-   current plan.
-4. Run the pre-flight review below.
-5. Consume checkpoint authorization from the Unified Execution Handoff. Ask
-   once only when no prior handoff or explicit user authorization exists.
+1. Before reading the plan or touching the workspace, invoke
+   `k-superpowers:using-git-worktrees` with the handoff's exact current-workspace
+   or create-worktree choice. Complete its setup and baseline check.
+2. Read the plan once. Extract Global Constraints, task interfaces, each task's
+   risk and rationale, focused verification, and the plan's final-review
+   condition. `k-superpowers:writing-plans` owns initial risk classification.
+   Missing/invalid risk metadata or rationale stops the run; never infer `low`.
+3. Check the plan for contradictions, impossible ordering, unapproved scope,
+   pre-existing source-of-truth conflicts, and real cross-task integration risk.
+   Confirm each verification command stays within the existing bounded
+   target/suite/matrix. On any conflict, stop the run, preserve artifacts, and
+   present the exact conflicting texts in the same batched human question. Do
+   not silently downgrade risk; runtime evidence may only escalate it.
+4. Run `./scripts/sdd-workspace`, initialize or validate the progress ledger,
+   and create todos. Resume completed work only after the run identity matches.
 
-### Checkpoint Commit Authorization
+## Runtime State
 
-The authorization covers only local commits for tasks and review fixes in the
-current SDD run. It does not authorize push, merge, PR creation, amend, force
-operations, or unrelated changes.
-
-Unified Execution Handoff options 1-2 explicitly authorize these local
-checkpoint commits. Choosing SDD without that explicit handoff, approving a
-spec, or approving a plan is not commit authorization.
-If authorization is declined, route to `k-superpowers:executing-plans` and stop
-SDD. Do not simulate commitless SDD with working-tree diffs, stash entries,
-temporary patches, or undocumented snapshots. Stable `BASE..HEAD` ranges are
-required for task isolation, review packages, and recovery.
-
-## Pre-Flight Plan Review
-
-Before Task 1, scan the plan once for:
-
-- a missing or invalid `Risk: low | medium | high` or missing risk rationale
-- classification by diff size rather than behavioral effect
-- tasks that contradict each other or `Global Constraints`
-- shared interfaces, shared mutable state, or composed behavior that requires
-  final whole-change review
-- plan requirements that conflict with project source of truth or reviewer
-  discipline
-- verification commands that broaden target, suite, or matrix scope without
-  authorization
-- task ordering or interface assumptions that make later tasks impossible
-
-Missing risk metadata stops pre-flight; never infer `low`. Present all genuine
-conflicts to the human in one batched question, showing both conflicting texts.
-If the scan is clean, proceed without comment.
-
-The controller may escalate risk when new evidence appears. It may not silently
-downgrade the approved plan.
-
-## Task Boundary Ownership
-
-Before every task, run `scripts/task-snapshot capture SNAPSHOT_DIR`, set
-`TASK_BASE` from its captured HEAD, and build the exact NUL-delimited task scope.
-Run `task-snapshot check-scope` before edits; any overlap stops for the user.
-Before review/ledger completion, write the executor-reported commit SHAs to the
-authorized manifest and run `task-snapshot verify`. Any nonzero result stops.
-Never stash, revert, absorb, or manufacture ownership of pre-existing changes.
-
-## Risk Routing
-
-### Low
-
-Low means documentation, comments, formatting, mechanical configuration, or a
-local rename with no runtime behavior or public contract change.
-
-The controller:
-
-1. Uses the `TASK_BASE` recorded before risk routing.
-2. Generates and reads the task brief.
-3. Implements the task directly.
-4. Runs the exact task verification.
-5. Self-checks the diff line by line against the brief.
-6. Creates a local checkpoint commit and verifies task-boundary ownership.
-7. Records the task in the progress ledger with `risk low`, the commit range,
-   and the verification summary.
-
-If direct work reveals runtime behavior, a public contract change, ambiguous
-requirements, or broader scope, stop direct implementation and escalate to
-medium. Dispatch a fresh implementer with the current state and new evidence,
-and retain the original `TASK_BASE`; do not reset the review base after the
-controller's partial work.
-
-### Medium
-
-Medium means bounded local runtime behavior with stable interfaces and a
-focused verification entry point.
-
-Use the delegated task flow: fresh implementer, checkpoint commit, one merged
-task reviewer, and a combined fix/re-review loop when needed.
-
-### High
-
-High includes public APIs, persisted formats, security boundaries, concurrency,
-protocols, state machines, cross-module contracts, and high-risk migrations.
-
-Use the same delegated task flow as medium, then require an independent final
-whole-change review after all tasks.
-
-Multiple medium tasks also require final review when they share an interface or
-mutable state, or when their composition creates behavior that no task verifies
-independently. If implementation or a fix reveals a high-risk condition, record
-the escalation in the ledger and require final review.
-
-## Delegated Task Flow
-
-For each medium/high task:
-
-1. Use the `TASK_BASE` and pre-existing status recorded before risk routing.
-2. Run `./scripts/task-brief PLAN_FILE N`.
-3. Read the generated brief for readiness.
-4. Dispatch a fresh implementer with `./implementer-prompt.md`.
-5. Require a local checkpoint commit; verify the reported commit is current
-   `HEAD` and passes task-boundary ownership checks before review.
-6. Build the exact task scope and run the public
-   `../requesting-code-review/scripts/review-package committed TASK_BASE HEAD SCOPE_FILE OUTFILE`.
-7. Dispatch one task reviewer with `./task-reviewer-prompt.md`.
-8. Resolve every `Cannot verify from diff` item.
-9. If either verdict fails, send all actionable findings in one fix dispatch,
-   require focused verification and a checkpoint commit, regenerate the review
-   package, and rerun the complete merged review.
-10. When both verdicts pass, record completion in todo and the ledger.
-
-The task reviewer checks Spec first and Standards second, but one fresh reviewer
-does both in one context and one diff read. Both verdicts are independently
-blocking.
-
-## Brief Readiness
-
-The generated brief is the single source of task requirements. Before dispatch,
-confirm it contains:
-
-- `Global Constraints` and the full task text
-- exact files and required manifest, docs, or version updates
-- `Risk` and `Risk rationale`
-- dependency and API/interface constraints
-- verification commands with expected results and bounded scope
-
-If required detail can be copied from the plan, append `Controller Notes`. If it
-cannot be derived, stop and ask the human or revise the plan. Do not make the
-implementer infer missing requirements.
-
-## Model Selection
-
-Use the least powerful model that can complete each role in one pass:
-
-- complete mechanical edits in one or two files: fast/cheap model
-- multi-file integration or pattern matching: standard model
-- architecture, concurrency, security, public contracts, or final review: most
-  capable model
-
-Choose reviewer models by diff complexity and risk. When the platform supports
-explicit model selection, specify it in every dispatch. Turn count beats token
-price: a cheap model that needs repeated clarification is not cheaper.
-
-## Implementer Status
-
-- **DONE:** verify checkpoint SHA/HEAD, generate the review package, and review.
-- **DONE_WITH_CONCERNS:** read concerns first; resolve correctness/scope doubts
-  before review and record nonblocking observations.
-- **NEEDS_CONTEXT:** provide missing context and redispatch the same task.
-- **BLOCKED:** fix the context, use a stronger model, split an oversized task,
-  or escalate a wrong plan to the human.
-
-Never force an unchanged retry after an escalation.
-
-## Merged Review Contract
-
-The task reviewer receives brief, report, commit range, and package paths, then
-uses the public `requesting-code-review` finding/verdict contract. `FAIL`,
-`CANNOT_VERIFY`, or a missing Spec/Standards verdict blocks. Batch findings into
-one fix dispatch and send the regenerated package to a fresh merged reviewer,
-which reruns both axes.
-
-## Reviewer Prompt Hygiene
-
-- Do not add open-ended review directives without a named task-specific risk.
-- Do not ask reviewers to rerun verification already recorded for the exact
-  code. They may run one focused command for a concrete unanswered doubt.
-- Do not tell a reviewer what not to flag or pre-rate severity.
-- Do not paste accumulated prior-task history into later dispatches.
-- Pass the task brief, report, and review package paths.
-- Record Minor findings in the ledger. Point a required final reviewer at them
-  for triage.
-- A finding that conflicts with the plan or project source of truth is the
-  human's decision. Present both texts; do not silently dismiss or fix against
-  the approved plan.
-
-## Final Whole-Change Review
-
-Run final review only when any task is high risk or cross-task integration risk
-was identified or discovered.
-
-1. Run the public `../requesting-code-review/scripts/review-package committed
-   MERGE_BASE HEAD SCOPE_FILE OUTFILE`, where `MERGE_BASE` is the
-   commit the branch started from.
-2. Dispatch the most capable available reviewer using
-   `k-superpowers:requesting-code-review`.
-3. Include the package path, plan/spec, global constraints, and recorded Minor
-   findings.
-4. If findings return, send the complete list to one fixer. Require covering
-   verification and a local checkpoint commit, regenerate the package, and
-   re-review.
-
-Do not create one fixer per finding.
-
-## Verification Ownership
-
-- The executor runs and records focused task verification for the exact
-  checkpoint.
-- The controller inspects the report, diff, checkpoint range, and required
-  verdicts before advancing.
-- Reviewers inspect code and evidence; they do not repeat broad suites without
-  a concrete doubt.
-- Before claiming the whole implementation complete, the controller runs fresh
-  whole-change verification appropriate to the plan.
-
-An implementer message alone is not evidence. An inspected, unchanged,
-verified checkpoint does not require the controller to rerun the identical
-command solely because the next action is reviewer delegation or task
-bookkeeping.
-
-## Durable Progress
-
-Before task routing, `progress.md` begins with:
+The run moves only through:
 
 ```text
-Run YYYY-MM-DD <specific-plan-topic>
+entry -> workspace_ready -> plan_validated -> task_active
+  task_active -> low_self_check -> task_complete
+  task_active -> delegated_checkpoint -> task_review -> task_complete
+task_complete -> final_review_required | final_review_not_required
+final_review_required -> completion_verified
+final_review_not_required -> completion_verified
+completion_verified -> cleanup
 ```
 
-Use a distinguishing topic derived from the current plan. If the file is
-missing, create this header. If it exists, compare its `Run` topic with the
-current plan before reading completed tasks. Resume only on a clear match; when
-it is unrelated, missing, or ambiguous, preserve the artifacts and ask the user
-whether to resume, retain, or clean them. Do not infer a match from task numbers,
-dates, or directory location. Other informational header lines are not workflow
-state.
-
-After the run matches, a completed entry is authoritative after context
-compaction. Use this format:
+Keep briefs, reports, packages, snapshots, and `progress.md` in
+`.superpowers/sdd/`. The ledger begins with `Run YYYY-MM-DD <specific-plan-topic>`.
+If an existing topic is missing, unrelated, or ambiguous, preserve every
+artifact and ask whether to resume, retain, or clean it. A completed entry is:
 
 ```text
 Task N: complete (risk <level>, commits <base7>..<head7>, verification <summary>, review <controller-self-check|merged-clean>)
 ```
 
-For low tasks use `controller-self-check`; for medium/high use `merged-clean`.
-Do not redispatch completed tasks. Keep `.superpowers/sdd/` while blocked,
-interrupted, or mid-review. After all required reviews and fresh whole-change
-verification succeed, run `./scripts/sdd-cleanup`.
+Before completing the entry, record every unresolved Minor observation or its
+durable artifact path in the ledger so resume and final review can recover it.
 
-## Completion Routing
+Before each task, run `scripts/task-snapshot capture SNAPSHOT_DIR`; its captured
+HEAD is the original `TASK_BASE`. Build the exact sorted, unique, NUL-delimited
+scope and run `task-snapshot check-scope` before edits. Any overlap with
+pre-existing changes stops the run. Before review or ledger completion, write
+only executor-reported checkpoint SHAs to the authorized manifest and run
+`task-snapshot verify`. Ownership, authorization, plan, risk, verdict, or
+verification failure stops the entire run, prevents dispatch of the next task,
+and keeps artifacts for recovery. Never stash, revert, absorb, or manufacture
+ownership of pre-existing changes.
 
-After cleanup, use `k-superpowers:finishing-a-development-branch` only when the
-run is on a feature branch or linked worktree, the user requested Git
-integration/cleanup, or a real merge/PR/retain/discard decision remains. For an
-explicit current-main run with no integration request, report verified changes
-in place and do not show a branch-finishing menu.
+## Risk Routing
 
-## Prompt Templates
+Consume the plan's risk and rationale; do not redefine the tiers in this skill.
 
-- `./implementer-prompt.md` - delegated medium/high implementation
-- `./task-reviewer-prompt.md` - merged Spec + Standards task review
-- `../requesting-code-review/code-reviewer.md` - conditional final review
+For a genuine low docs/comments/mechanical task, the controller generates and
+reads its task brief, carries forward applicable core-explanation requirements
+from `k-superpowers:type-driven-verification`, edits directly, runs the exact
+verification, checks the diff line by line, creates the authorized checkpoint,
+verifies ownership, and records `controller-self-check`. Do not dispatch agents
+merely to make low work look delegated.
 
-## Red Flags
+If low work reveals runtime/domain behavior, a public contract, or broader
+scope, stop direct edits. Preserve the original `TASK_BASE`, load
+`k-superpowers:type-driven-verification` before any further code edit, record
+the escalation, and give the current state plus new evidence to a fresh
+implementer. Never reset the review base after partial controller work.
 
-Never:
+Medium and high tasks use the delegated flow below. Mark final review required
+when any task is high. Also consume a final-review requirement when multiple
+tasks truly share an interface or shared state, regardless of whether tasks can
+modify that state, or their composition creates behavior that no task verifies
+independently. Unrelated medium tasks alone do not require final review.
 
-- start on main/master without explicit consent
-- start SDD without local checkpoint commit authorization
-- infer missing risk metadata as low
-- silently downgrade risk
-- dispatch implementer/reviewer agents for a genuinely low task
-- continue direct low-risk work after runtime/public-contract scope appears
-- accept a merged review missing either verdict
-- proceed with an open Spec or Standards issue
-- split findings across multiple fix agents
-- skip final review for high or cross-task risk
-- use commitless snapshots to imitate checkpoint ranges
-- make a subagent read the full plan instead of its task brief
-- paste full briefs, reports, diffs, or accumulated history into prompts
-- trust implementer claims without inspecting report, diff, and checkpoint
-- rerun broad verification only because work is being delegated
-- clean `.superpowers/sdd/` before the run is complete
+## Delegated Task Flow
 
-## Integration
+For each delegated task:
 
-**Required workflow skills:**
+Choose the available agent/model capability for each implementer, task reviewer,
+and required final reviewer to match the work's risk and complexity. Use
+stronger reasoning for high-risk or materially ambiguous work.
 
-- **k-superpowers:using-git-worktrees** - establish or verify isolation
-- **k-superpowers:writing-plans** - produce explicit task risk metadata
-- **k-superpowers:requesting-code-review** - conditional final review
-- **k-superpowers:finishing-a-development-branch** - conditional branch integration after verification
+### Role Prompt Fidelity
 
-**Subagents should use:**
+Before dispatching either delegated role, read its referenced prompt template
+through EOF. Copy the complete inner `prompt: |` body into the agent dispatch,
+substituting only its bracketed placeholders with task-bound values. Do not
+summarize, omit, reorder, translate, or recreate the template from memory, and
+do not replace its XML gates, evidence sequence, comment contract, or output
+contract with a shorter equivalent. Transport-only indentation, wrapping, and
+line-ending changes are allowed; every non-placeholder word must remain in the
+same order. Add task data only through the template's declared inputs or
+controller-context placeholder. If the platform cannot carry the complete
+instantiated body, block delegation instead of weakening it.
 
-- **k-superpowers:type-driven-verification** - focused, type-first verification
+1. Run `./scripts/task-brief PLAN_FILE N` using the original `TASK_BASE`. Read
+   the generated brief and confirm it contains Global Constraints, full task
+   text, exact files, risk/rationale, dependencies/interfaces, comment/design
+   obligations, and bounded verification with expected results. Add only notes
+   derivable from the approved plan; otherwise stop for the missing decision.
+2. Instantiate `./implementer-prompt.md` under Role Prompt Fidelity and dispatch
+   one fresh implementer with that complete body. Resolve its
+   status before advancing. Inspect `DONE`. For `DONE_WITH_CONCERNS`, read the
+   returned `Concern` and the complete report. If approved sources supply the
+   missing context, add only that context and redispatch the same task. If the
+   concern requires a material or otherwise non-derivable decision, stop for
+   that decision. Otherwise treat it only as a nonblocking observation: record
+   it or its durable artifact path in the ledger before proceeding to step 3's
+   checkpoint, ownership checks, and merged review. The status never completes
+   the task or bypasses review. For `NEEDS_CONTEXT`, supply only context
+   derivable from approved sources and redispatch the same task, otherwise stop
+   for the missing decision. For `BLOCKED`, use stronger capability when that
+   is the blocker, split an oversized task without changing its approved
+   contract, or escalate an incorrect plan for approval; stop when none is
+   valid. Never skip to a later task.
+3. Require an authorized local checkpoint. Confirm reported SHA equals `HEAD`,
+   then read the implementer report through EOF, inspect the exact
+   `TASK_BASE..HEAD` task diff/range, and pass task-boundary ownership checks.
+   Reassess only new runtime evidence after this report/diff and after every
+   review-fix checkpoint. If risk escalates to high, persist it in the ledger
+   and mark final review required.
+4. Build the committed review package from the exact task scope. Compute the
+   scope SHA-256 and pass its exact `source = committed-range(TASK_BASE, HEAD)`,
+   `snapshot = package-v1(PACKAGE_PATH)`, full base/head SHAs, and
+   `EXPECTED_SCOPE_SHA256`, with brief, report, requirements, change
+   description, package path, and verification evidence.
+5. Instantiate `./task-reviewer-prompt.md` under Role Prompt Fidelity and
+   dispatch one fresh merged task reviewer with that complete body. It evaluates
+   Spec first and Standards second; both verdicts independently block.
 
-**Alternative:**
+Only `Spec verdict: PASS` plus `Standards verdict: PASS` completes review. Apply
+these transitions without advancing the run:
 
-- **k-superpowers:executing-plans** - inline execution or no checkpoint commit authorization
+Before fixing a finding, compare it with the approved plan and project
+source-of-truth. If they conflict, stop the whole run, preserve artifacts, and
+present the exact conflicting texts for user resolution; do not dismiss the
+finding or edit through the conflict.
+
+- any `FAIL`: send all actionable findings to one fixer, require focused
+  verification and a new authorized checkpoint; if the same result also has
+  `CANNOT_VERIFY`, obtain its smallest missing evidence in this recovery cycle;
+  then regenerate the package and run one fresh complete two-axis review;
+- no `FAIL` but any `CANNOT_VERIFY`: for the two-line pre-binding sentinel,
+  revalidate and regenerate the request binding plus material artifacts;
+  otherwise obtain the smallest missing evidence named by the finding; then run
+  a fresh complete two-axis review;
+- missing or invalid verdict: discard the result and run a fresh corrected
+  two-axis review.
+
+Keep artifacts while evidence or verdicts are open. Do not split one finding
+batch across multiple fixers or accept a single-axis rereview.
+
+## Final Review Condition
+
+Run one independent whole-change review only when the approved plan or runtime
+ledger marks any task high, or records real cross-task shared-interface,
+shared-state, or unverified-composition risk.
+
+Create a committed review package for `MERGE_BASE..HEAD` with the exact
+whole-change scope. Pass its scope hash as `EXPECTED_SCOPE_SHA256` to
+`k-superpowers:requesting-code-review`, together with the plan/spec, Global
+Constraints, exact committed source/base/head, evidence, and unresolved Minor
+observations read from the durable ledger. Apply the same plan/source conflict
+triage before fixing. Batch findings
+into one fixer, require an authorized checkpoint and covering verification,
+regenerate the package, and repeat the complete review. Do not add final review
+for unrelated medium tasks.
+
+## Recovery And Completion
+
+On any unresolved blocker, failed ownership check, missing authorization,
+invalid/open verdict, or failed verification, stop the whole run and preserve
+`.superpowers/sdd/`. Resume the active task only after resolving that state; do
+not dispatch later work and do not clean up early.
+
+After every task and required final review passes, invoke
+`k-superpowers:verification-before-completion`. Run its fresh, bounded
+whole-change evidence command against the exact final state and inspect the
+complete result. Unavailable, stale, noisy, or failing evidence stops the run
+without a completion claim or cleanup. Only fresh bounded passing evidence then
+allows `./scripts/sdd-cleanup` and the completion claim.
+
+Use `k-superpowers:finishing-a-development-branch` only for a feature
+branch/worktree, a requested integration/cleanup action, or a real
+merge/PR/retain/discard decision. For an explicitly authorized current-main run
+without integration work, report verified changes in place without a branch
+menu.
+
+## References
+
+- `k-superpowers:writing-plans` owns initial risk and Unified Handoff semantics.
+- `k-superpowers:requesting-code-review` owns package,
+  source/base/head/scope binding, finding, and verdict shape.
+- `k-superpowers:verification-before-completion` owns completion evidence.
+- `k-superpowers:type-driven-verification` owns applicable design and core-code
+  explanation requirements.
+- `./implementer-prompt.md` and `./task-reviewer-prompt.md` are delegated-role
+  prompts; `./scripts/` owns durable workspace, brief, snapshot, and cleanup
+  operations.
+
+When the request supplies exact output lines or choices, keep all reasoning
+internal and make the final response contain exactly those lines, with no
+explanation.

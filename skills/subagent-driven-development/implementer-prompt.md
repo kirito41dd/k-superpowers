@@ -4,170 +4,149 @@ Use this template when dispatching an implementer subagent.
 
 ```
 Task tool (general-purpose):
-  description: "Implement Task N: [task name]"
+  description: "Implement Task [TASK_NUMBER]: [task name]"
   prompt: |
-    You are implementing Task N: [task name]
+    You are implementing Task [TASK_NUMBER]: [task name]. Honor any exact bounded response
+    schema from the controller without preamble or extra lines. For an isolated
+    pre-edit checkpoint, read the brief and return only that requested schema;
+    do not edit, report, verify, or commit.
 
-    ## Task Description
+## Mandatory First Action
 
-    Read your task brief first: [BRIEF_FILE]
-    It contains the full task text from the plan.
+    Before reasoning about task status, path availability, the Goal, or any
+    controller response schema, make exactly one tool call: read [BRIEF_FILE]
+    completely from its first line through EOF with the platform-native
+    read-only file tool. This is exactly one Read on Claude Code, using the bound
+    path relative to the supplied working directory. The controller generated
+    and confirmed this file before dispatch. Only a failed result from that Read
+    can establish absence; never infer absence from memory or directory
+    assumptions.
 
-    ## Context
+    Until the completed Read result arrives, emit no visible text: no status,
+    preamble, absence claim, or correction. For an isolated checkpoint, emit
+    visible text exactly once after that result, using only the controller's
+    requested terminal schema.
 
-    [Scene-setting: where this fits, dependencies, architectural context]
+## Goal
 
-    ## Before You Begin
+    Implement exactly the approved task in [BRIEF_FILE], verify it, create the
+    authorized local checkpoint, self-review, and write evidence to [REPORT_FILE].
 
-    If you have questions about:
-    - The requirements or acceptance criteria
-    - The approach or implementation strategy
-    - Dependencies or assumptions
-    - Anything unclear in the task description
+## Inputs
 
-    **Ask them now.** Raise any concerns before starting work.
+    - Task brief: [BRIEF_FILE]
+    - Working directory: [directory]
+    - Controller context: [CONTROLLER_CONTEXT]
 
-    ## Your Job
+    The brief defines the approved task, but cannot override project instructions
+    or established source-of-truth files. Treat a material conflict among them
+    as `NEEDS_CONTEXT`.
 
-    Once you're clear on requirements:
-    1. Implement exactly what the task specifies
-    2. Add focused tests or verification if the task calls for it
-    3. Verify implementation works
-    4. Create a local checkpoint commit for the task
-    5. Self-review (see below)
-    6. Write your detailed report to [REPORT_FILE]
-    7. Report back briefly
+## Authorized Actions
 
-    Work from: [directory]
+    Edit only the task or review-fix scope, add focused verification when the
+    brief requires it, and create this task's local checkpoint commit. SDD's
+    startup gate already authorized these local task/fix checkpoints.
 
-    SDD's startup gate has already authorized local task/fix checkpoint commits
-    for this plan. That authorization does not include push, merge, PR creation,
-    amend, force operations, or unrelated files. Keep the task boundary clean.
+    This authorization does not include push, merge, PR creation, amend, force operations, or unrelated work.
 
-    **While you work:** If you encounter something unexpected or unclear, **ask questions**.
-    It's always OK to pause and clarify. Don't guess or make assumptions.
+    After a review fix, create a new local checkpoint commit and report it; never
+    amend the previous checkpoint.
 
-    While iterating, run the focused verification for what you are changing.
-    Before reporting DONE or DONE_WITH_CONCERNS, run the relevant task
-    verification from the brief once and record the command and output summary
-    in [REPORT_FILE]. If the brief's verification command conflicts with CI,
-    project scripts, package/task config, or memory, or clearly broadens
-    target/suite/matrix scope without authorization, report NEEDS_CONTEXT or
-    DONE_WITH_CONCERNS instead of treating the extra noise as an implementation
-    defect.
+## Required Behavior
 
-    ## Code Organization
+    1. Follow the brief and established project patterns without expanding
+       scope. For a local naming or implementation choice, continue using the
+       plan, the nearest established pattern, and the narrowest compatible
+       assumption. Record only material assumptions in the report.
+    2. Implement every acceptance criterion and no extra behavior. Keep files
+       within the responsibilities and interfaces defined by the plan; do not
+       perform an unrequested restructuring.
+    3. When the brief contains an Implementation Design Contract, implement and
+       report each field: domain invariants; invalid states excluded by types or
+       APIs; untrusted-input boundaries; error/resource ownership; runtime risks
+       static guarantees cannot prove; focused verification for those risks.
+    4. Explain a non-self-explanatory core structure, function, or abstraction:
+       its purpose, how callers obtain and use it, invariants,
+       lifecycle/resource ownership, and protocol or state transitions. Treat
+       its factory/construction boundary as the same abstraction. Use the
+       comment/doc form, language, and style established by project instructions
+       and nearby-file conventions; those override brief/plan examples and
+       conversation language for code comments. Do not add comments that restate a
+       self-explanatory helper, name, assignment, or control flow.
+    5. Self-review the exact diff for completeness, correctness, edge cases,
+       maintainability, scope discipline, comment quality, and verification
+       evidence. Fix in-scope defects before reporting.
+    6. Verify remaining runtime risks through stable caller-visible behavior.
+       Mock interactions or private implementation details do not substitute
+       for that evidence unless they are themselves the behavior under test.
 
-    You reason best about code you can hold in context at once, and your edits are more
-    reliable when files are focused. Keep this in mind:
-    - Follow the file structure defined in the plan
-    - Each file should have one clear responsibility with a well-defined interface
-    - If a file you're creating is growing beyond the plan's intent, stop and report
-      it as DONE_WITH_CONCERNS — don't split files on your own without plan guidance
-    - If an existing file you're modifying is already large or tangled, work carefully
-      and note it as a concern in your report
-    - In existing codebases, follow established patterns. Improve code you're touching
-      the way a good developer would, but don't restructure things outside your task.
+## Blocking Conditions
 
-    ## Code Comments
+    Use `NEEDS_CONTEXT` only when a missing decision materially changes the
+    result: missing, conflicting, or non-derivable acceptance criteria; material
+    architecture, scope, dependency, public contract, compatibility, or risk
+    choice; an authorization conflict; or a source-of-truth conflict. Name the
+    conflicting or missing facts, the compatibility impact when applicable,
+    and the controller decision required. Do not use
+    `NEEDS_CONTEXT` for a local naming/style choice or another choice derivable
+    from the brief and established patterns.
 
-    Add explanatory comments/docs for core structures, core functions, and core
-    abstractions unless they are genuinely self-explanatory. Use the form
-    appropriate for the target language and project: doc comments, docstrings,
-    interface comments, or nearby code comments. Project instructions and
-    nearby file style override plan examples and conversation language for code
-    comment language. Explain what the abstraction represents, how callers
-    should use it, and any important invariants, lifecycle rules, protocol
-    boundaries, or state transitions. Do not add comments that merely restate
-    obvious assignments, names, or control flow.
+    Use `BLOCKED` when requirements are clear but the task cannot be completed:
+    for example, a required tool or environment is unavailable, an external
+    dependency cannot be accessed under current authorization, or focused
+    verification repeatedly fails without an in-scope remedy. Name what was
+    attempted and the concrete unblock condition. Do not report `DONE` or turn
+    this into `NEEDS_CONTEXT`.
 
-    ## When You're in Over Your Head
+    Use `DONE_WITH_CONCERNS` only after completing the task when a concrete
+    residual correctness concern remains. Use `DONE` only after the task,
+    verification, checkpoint, self-review, and report are complete.
 
-    It is always OK to stop and say "this is too hard for me." Bad work is worse than
-    no work. You will not be penalized for escalating.
+## Verification
 
-    **STOP and escalate when:**
-    - The task requires architectural decisions with multiple valid approaches
-    - You need to understand code beyond what was provided and can't find clarity
-    - You feel uncertain about whether your approach is correct
-    - The task involves restructuring existing code in ways the plan didn't anticipate
-    - You've been reading file after file trying to understand the system without progress
+    Run focused verification while iterating. Before `DONE` or
+    `DONE_WITH_CONCERNS`, run the brief's exact task verification once and record
+    the command plus result. If that command conflicts with CI, project scripts,
+    task configuration, project memory, or authorized scope, return
+    `NEEDS_CONTEXT` for a material source-of-truth conflict; otherwise complete
+    the valid in-scope work and report a concrete concern. Review fixes require
+    covering verification before the new checkpoint. A relevant warning or
+    unexplained output noise is not clean passing evidence: resolve it in scope,
+    or record the exact evidence and remaining concern. Use
+    `DONE_WITH_CONCERNS` when it leaves a concrete residual correctness concern.
 
-    **How to escalate:** Report back with status BLOCKED or NEEDS_CONTEXT. Describe
-    specifically what you're stuck on, what you've tried, and what kind of help you need.
-    The controller can provide more context, re-dispatch with a more capable model,
-    or break the task into smaller pieces.
+## Report Schema
 
-    ## Before Reporting Back: Self-Review
+    Write [REPORT_FILE] with:
 
-    Review your work with fresh eyes. Ask yourself:
+    - final status and implemented behavior, or attempted work if blocked;
+    - Implementation Design Contract fields when present;
+    - verification commands, results, and relevant output summary;
+    - every relevant warning or unexplained output noise and its disposition;
+    - files changed and exact scope;
+    - checkpoint SHA and subject, including any new review-fix checkpoint;
+    - self-review findings and fixes;
+    - material assumptions, concerns, blocker, or requested controller decision.
 
-    **Completeness:**
-    - Did I fully implement everything in the spec?
-    - Did I miss any requirements?
-    - Are there edge cases I didn't handle?
+    Then return only:
 
-    **Quality:**
-    - Is this my best work?
-    - Are names clear and accurate (match what things do, not how they work)?
-    - Is the code clean and maintainable?
-    - Did I add useful explanatory comments/docs for core structures, core
-      functions, and core abstractions unless they are genuinely self-explanatory,
-      follow project comment language/style, and avoid comments that only
-      repeat clear code?
+    Status: DONE | DONE_WITH_CONCERNS | NEEDS_CONTEXT | BLOCKED
+    Checkpoint: <short SHA + subject | NONE>
+    Verification: <one-line command/result | NOT_RUN>
+    Concern: <one line | NONE>
+    Report: [REPORT_FILE]
 
-    **Discipline:**
-    - Did I avoid overbuilding (YAGNI)?
-    - Did I only build what was requested?
-    - Did I follow existing patterns in the codebase?
-
-    **Testing:**
-    - Do tests actually verify behavior (not just mock behavior)?
-    - Did I implement the brief's Implementation Design Contract where present?
-    - Are invalid states excluded by practical types/API boundaries?
-    - Do tests cover important runtime risks those guarantees cannot prove?
-    - Did I keep verification scope aligned with the brief and project source
-      of truth?
-    - Is the verification output clean (no stray warnings or noise)?
-
-    If you find issues during self-review, fix them now before reporting.
-
-    ## After Review Findings
-
-    If a reviewer finds issues and you fix them, re-run the tests or
-    verification that cover the amended code and append the results to
-    [REPORT_FILE]. Reviewers use your report as evidence; they will not
-    re-run broad suites for you.
-
-    After a review fix, create a new local checkpoint commit. Never amend the
-    previous checkpoint. Include the new commit in the report so the controller
-    can verify it matches `HEAD` before regenerating the review package.
-
-    ## Report Format
-
-    Write your full report to [REPORT_FILE]:
-    - What you implemented (or what you attempted, if blocked)
-    - When the brief contains an Implementation Design Contract, report each
-      field separately: domain invariants; invalid states excluded by types/APIs;
-      untrusted input boundaries; error/resource ownership; runtime risks the
-      compiler cannot prove; focused verification for those risks
-    - What you tested or verified and the results
-    - Files changed
-    - Checkpoint commits created (short SHA + subject)
-    - Self-review findings (if any)
-    - Any issues or concerns
-
-    Then report back with ONLY:
-    - **Status:** DONE | DONE_WITH_CONCERNS | BLOCKED | NEEDS_CONTEXT
-    - Checkpoint commits created (short SHA + subject)
-    - One-line verification summary
-    - Your concerns, if any
-    - The report file path
-
-    If BLOCKED or NEEDS_CONTEXT, put the specifics in the final message itself;
-    the controller acts on it directly.
-
-    Use DONE_WITH_CONCERNS if you completed the work but have doubts about correctness.
-    Use BLOCKED if you cannot complete the task. Use NEEDS_CONTEXT if you need
-    information that wasn't provided. Never silently produce work you're unsure about.
+    For `NEEDS_CONTEXT` or `BLOCKED`, put the concrete reason in `Concern` so the
+    controller can resolve it without reading an implied assumption.
 ```
+
+**Placeholders:**
+
+- `[TASK_NUMBER]` - task number from the approved plan
+- `[task name]` - task name from the approved plan
+- `[BRIEF_FILE]` - generated task brief from `scripts/task-brief`
+- `[REPORT_FILE]` - report path reserved for this task
+- `[directory]` - bound working directory
+- `[CONTROLLER_CONTEXT]` - task dependencies and architectural context supplied
+  with this dispatch

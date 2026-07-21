@@ -1,7 +1,7 @@
 {
   "name": "k-superpowers",
   "description": "Personal fork of the Superpowers core skills library: type-first verification, debugging, collaboration patterns, and proven techniques",
-  "version": "5.2.2",
+  "version": "5.3.0",
   "author": {
     "name": "kirito"
   },

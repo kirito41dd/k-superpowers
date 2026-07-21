@@ -1,6 +1,6 @@
 ---
 name: brainstorming
-description: Use before creating features, components, functionality, configurations, or other behavior changes
+description: Use when designing a requested feature, component, functionality, configuration, or other behavior change before implementation; not for read-only familiarization, analysis, review, or status requests
 ---
 
 # Brainstorming
@@ -10,7 +10,11 @@ Do not implement, scaffold, or invoke an implementation skill before the user
 approves a design. The only terminal transition is `k-superpowers:writing-plans`.
 </HARD-GATE>
 
-Preparation-only requests are not a trigger; read context and wait.
+Trigger only when the current request asks to create or modify behavior, or when
+debugging has established a behavior edit. Read-only familiarization, analysis,
+review, status, and preparation-only requests are not triggers; perform the
+requested read-only work, then stop. Do not infer design work from a possible
+future change.
 
 ## Flow Selection
 

@@ -17,6 +17,9 @@
 
 ## 快速索引（按模块）
 
+- Skills 无持久测试、真实使用反馈驱动迭代 → `requirements.md#2026-07-21-skills-仓库移除全部持久测试`, `decisions.md#2026-07-21-skills-不维护持久测试并停止默认模型验证`, `conventions.md#2026-07-21-skill-修改采用一次编辑一次自审`
+- GPT-5.6 Prompt 优化、日常问答 No Task Skill 与既有行为保护 → `requirements.md#2026-07-21-gpt-56-prompt-优化须保留既有行为`, `decisions.md#2026-07-21-以最小-skill-路由和行为-eval-落地-gpt-56-prompt-优化`, `conventions.md#2026-07-21-日常问答走-no-task-skill-且-prompt-瘦身不得弱化注释契约`
+- SDD Role Prompt 完整保真与 live 随机零读取诊断 → `gotchas.md#2026-07-21-role-prompt-保真不能只查关键字或无边界占位符`, `gotchas.md#2026-07-21-live-reviewer-单次零读取不等于-prompt-结构缺陷`
 - Skills 总览 → `docs/skills-overview.zh.md`
 - 核心代码说明规则 owner 与 Compact/Inline 覆盖 → `conventions.md#2026-07-15-核心代码说明由-type-driven-verification-单一拥有`
 - Skills 瘦身、语言自适应 Rust 工程哲学与 SDD/review 保留范围 → `decisions.md#2026-07-14-研发流程-skills-瘦身并保留语言自适应-rust-工程哲学`, `conventions.md#2026-07-14-rust-哲学只评价代码产出并按目标语言能力适配`
@@ -56,13 +59,20 @@
 - `#type-driven` → `decisions.md`, `conventions.md`
 - `#upstream-pr` → `gotchas.md`
 - `#memory` → `decisions.md`, `conventions.md`
-- `#eval` → `conventions.md`, `gotchas.md`
+- `#eval` → `decisions.md`, `conventions.md`, `gotchas.md`
 - `#version` → `conventions.md`
-- `#comments` → `conventions.md`
-- `#sdd` → `decisions.md`
+- `#comments` → `requirements.md`, `conventions.md`
+- `#sdd` → `decisions.md`, `gotchas.md`
+- `#routing` → `requirements.md`, `decisions.md`, `conventions.md`
+- `#prompt` → `decisions.md`, `conventions.md`, `gotchas.md`
+- `#iteration` → `requirements.md`, `decisions.md`, `conventions.md`
 
 ## 最近热点
 
+- 2026-07-21 Skills 不维护持久测试并停止默认模型验证 → `requirements.md`, `decisions.md`, `conventions.md`, `gotchas.md`
+- 2026-07-21 以最小 Skill 路由落地 GPT-5.6 Prompt 优化 → `requirements.md`, `decisions.md`, `conventions.md`
+- 2026-07-21 Live reviewer 单次零读取不等于 Prompt 结构缺陷 → `gotchas.md`
+- 2026-07-21 Role Prompt 保真不能只查关键字或无边界占位符 → `gotchas.md`
 - 2026-07-15 核心代码说明由 type-driven-verification 单一拥有 → `conventions.md`
 - 2026-07-14 研发流程 Skills 瘦身并保留语言自适应 Rust 工程哲学 → `decisions.md`, `conventions.md`
 - 2026-07-10 主开发流程增加自动 Compact/Full 分流与统一 Handoff → `decisions.md`

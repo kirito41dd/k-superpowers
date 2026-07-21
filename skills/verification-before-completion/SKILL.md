@@ -1,6 +1,6 @@
 ---
 name: verification-before-completion
-description: Use immediately before claiming work is complete, fixed, passing, ready to commit, or ready for integration
+description: Use when work is about to be claimed complete, fixed, passing, ready to commit, or ready for integration
 ---
 
 # Verification Before Completion

@@ -2,9 +2,9 @@
 
 <!-- SUMMARY
 覆盖范围：项目特定的代码风格、命名规则、目录结构、流程约定
-条目数：13
-最近更新：2026-07-15
-高频标签：#skills #memory #eval #personalization #codex #claude-code #brainstorming #opencode #install #verification #type-driven #version #comments
+条目数：15
+最近更新：2026-07-21
+高频标签：#skills #memory #iteration #personalization #codex #claude-code #brainstorming #opencode #install #verification #type-driven #version #comments #routing #prompt
 -->
 
 ## 说明
@@ -24,6 +24,26 @@
 - **正例**：正确写法示范
 - **范围**：影响哪些模块 / 文件类型
 ```
+
+---
+
+## 2026-07-21 Skill 修改采用一次编辑一次自审
+
+- **约定**：Skill 修改以真实使用反馈为输入，默认只做一次聚焦编辑和一次自审；检查直接修改的 skill、其活跃引用、矛盾措辞以及必要的 shell/JSON/diff 等零成本边界。不新增或维护持久测试、fixture、snapshot、eval matrix、ablation、golden output，也不默认调用任何付费模型验证。只有用户明确要求并接受成本时才运行模型验证。单次随机模型输出不定义回归，非阻断 review 建议进入后续迭代。
+- **理由**：skills 是给智能 agent 的行为指导，模型能力与上下文会持续变化；把随机输出固化为测试会造成过拟合、review/fix 循环、交付延迟和不可控成本。
+- **反例**：每次改 prompt 都跑多模型 campaign；一次 reviewer 偏离就修改产品约束并全量复测；review 发现可选优化后反复扩大 scope。
+- **正例**：根据真实任务的明确问题调整最小文本，自审行为边界和注释契约，运行廉价静态检查后交付；新问题在下一次真实反馈中独立处理。
+- **范围**：`skills/*`, `README.md`, `docs/skills-overview.zh.md`。
+
+---
+
+## 2026-07-21 日常问答走 No Task Skill 且 Prompt 瘦身不得弱化注释契约
+
+- **约定**：普通知识问答、闲聊和无需仓库/工具/workflow 的解释应直接回答，入口 bootstrap 不等于必须调用 task skill，也不得输出 skill 公告或流程 ceremony。只有当前阶段确有 owner 时才加载最小充分 skill。任何 prompt/skill 瘦身都必须保留 `#2026-07-15-核心代码说明由-type-driven-verification-单一拥有` 的传播链：核心解释要求、项目/邻近文件决定的注释形式与语言、self-explanatory 排除，以及 implementer/reviewer 的独立自包含检查。
+- **理由**：用户明确指出日常问答可能完全不需要 skill，并要求现有代码注释产品行为不受优化影响。把 no-skill 作为合法终态可减少误路由；把注释契约作为行为 gate 可避免 owner 去重时静默删除关键质量要求。
+- **反例**：回答常识问题前加载 brainstorming；因对话使用中文就改写项目英文注释；用注释数量代替核心抽象契约检查；为缩短 subagent prompt 删除 caller/invariant/lifecycle/protocol 要求。
+- **正例**：日常问答直接作答；变更请求只加载当前 owner；非自解释核心抽象按项目语言解释 purpose、caller、invariant、生命周期和协议/状态转换，自解释 helper 不加复述注释。
+- **范围**：`skills/using-superpowers/SKILL.md`, `skills/type-driven-verification/SKILL.md`, `skills/writing-plans/SKILL.md`, `skills/executing-plans/SKILL.md`, `skills/subagent-driven-development/*`, `skills/requesting-code-review/*`。
 
 ---
 
@@ -122,6 +142,8 @@
 - **范围**：`skills/using-superpowers/SKILL.md`, `skills/brainstorming/SKILL.md`
 
 ## 2026-05-21 Skill 正文变更必须先评估
+
+> [DEPRECATED 2026-07-21] 其中压力场景和 before/after eval 要求已被「Skill 修改采用一次编辑一次自审」取代；先明确行为边界、做静态审查和反例检查的原则继续有效。
 
 - **约定**：修改 `skills/*/SKILL.md` 前采用类型优先、风险驱动验证，而不是默认 RED-GREEN-REFACTOR。先明确行为不变量、触发条件、禁止状态和影响范围；小范围措辞/流程 gate 变更可通过静态审查、反例检查和相关文本搜索验证。只有高风险行为塑造、触发条件、subagent 流程或容易误触发/漏触发的改动，才需要构造压力场景或 before/after eval。
 - **理由**：这是个人 fork，更接近 Rust 哲学：优先让规则边界和非法状态清晰可证明，测试/压力场景用于覆盖类型和静态审查无法证明的行为风险；不把所有改动都套进 TDD 红绿灯仪式。

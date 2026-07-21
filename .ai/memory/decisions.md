@@ -2,9 +2,9 @@
 
 <!-- SUMMARY
 覆盖范围：架构决策、技术选型、废弃方案（ADR 风格）
-条目数：16
-最近更新：2026-07-14
-高频标签：#memory #fork #personalization #codex #opencode #claude-code #install #verification #type-driven #skills #sdd
+条目数：18
+最近更新：2026-07-21
+高频标签：#memory #fork #personalization #codex #opencode #claude-code #install #verification #type-driven #skills #sdd #routing #prompt #iteration
 -->
 
 ## 写入格式（ADR 风格）
@@ -19,6 +19,30 @@
 - **影响**：影响的模块 / 文件
 - **状态**：已实施 / 试验中 / [DEPRECATED 原因]
 ```
+
+---
+
+## 2026-07-21 Skills 不维护持久测试并停止默认模型验证
+
+- **背景**：GPT-5.6 优化实现超过 24 小时，反复出现 review、模型测试、fix、再 review 的随机反馈循环，仅 Claude 测试即消耗约 200 美元。该仓库的主要产物是给持续变强的 agent 使用的自然语言 skills，不是需要把随机模型输出冻结为确定行为的传统程序。
+- **选项**：A）继续维护并扩充确定性 harness 和 live eval；B）只减少场景与轮次；C）删除全部持久测试，以真实使用反馈和廉价静态检查驱动迭代。
+- **决策**：选择 C。删除整个 `tests/`、`docs/testing.md` 和 `skills/writing-skills/testing-skills-with-subagents.md`。不维护 fixture、snapshot、eval matrix、ablation 或 golden output；除非用户明确要求并接受成本，否则不调用 Claude、OpenCode、Codex 等模型做验证。Skill 修改默认一次编辑、一次自审，发现非阻断改进留到后续真实迭代；单次随机输出只是观察，不构成回归。
+- **理由**：对高能力、持续变化的 agent 过拟合测试样本会制造脆弱约束和高额验证成本，也会让 review 范围不断扩张。真实任务反馈更接近产品价值；语法、JSON、引用与 diff 检查足以保护仓库内确定性的可执行边界。
+- **影响**：`tests/`, `docs/testing.md`, `skills/writing-skills/*`, `README.md`, `docs/skills-overview.zh.md`, plugin manifests 和项目记忆。版本更新为 `5.3.0`。
+- **状态**：已实施。此前要求行为 eval、固定 harness、ablation 或 live campaign 的现行决策均被本条取代；历史记录保留，仅作背景。
+
+---
+
+## 2026-07-21 以最小 Skill 路由和行为 Eval 落地 GPT-5.6 Prompt 优化
+
+> [DEPRECATED 2026-07-21] 其中行为 eval、固定 harness、ablation 和 live campaign 要求已被「Skills 不维护持久测试并停止默认模型验证」取代；No Task Skill、最小 owner、Git 边界、review 可靠性和注释契约继续有效。
+
+- **背景**：GPT-5.6 prompting guidance 建议从已工作的 prompt 出发逐组删减、避免重复约束、集中授权边界，并用同场景 eval 保护行为。本 fork 已完成一次大幅瘦身，但入口仍可能对普通问答加载 task skill，SDD/controller/reviewer 还存在 owner 重复、长 prompt 压缩和证据绑定不严的问题。完整需求见 `requirements.md#2026-07-21-gpt-56-prompt-优化须保留既有行为`。
+- **选项**：A）在现有 owner 上继续收敛并逐组验证；B）把 workflow 全面重写成统一状态机；C）维护 GPT-5.6 专用 prompt 分支。
+- **决策**：选择 A。入口路由新增显式 `no task skill` 终态，并为 preparation、read-only、设计、调试、approved-spec planning 和 execution handoff 选择唯一当前 owner。主 skills 只保留 trigger、状态转换、授权和 failure transition；独立 subagent prompts 继续自包含。SDD dispatch 必须完整、有序实例化 role prompt，只允许声明占位符的一致替换和传输空白变化；review 绑定 source/base/head/scope、严格工具结果生命周期、双轴 verdict 和真实 diff 坐标。Prompt slimming 采用冻结场景的 before/after ablation，行为回归优先于 token 节省，provider/额度不可用只能记为 `SKIPPED`。
+- **理由**：最小充分 skill 集减少无关 ceremony 和上下文，同时单一 owner 降低漂移；保留跨平台、自包含 subagent contract 可继续服务 Codex、Claude Code 和 OpenCode。以行为 gate 而非词数作为验收标准，能在压缩 prompt 时保护 Git 边界、review 可靠性和核心注释质量。
+- **影响**：`skills/using-superpowers`, `skills/brainstorming`, `skills/writing-plans`, `skills/executing-plans`, `skills/subagent-driven-development`, `skills/requesting-code-review`, `skills/type-driven-verification`, `skills/writing-skills`, `tests/skill-triggering`, `tests/claude-code`, `tests/opencode`, plugin manifests 和文档。
+- **状态**：已实施，版本 `5.2.3`；测试/eval 部分已废弃，其余产品行为继续有效。
 
 ---
 

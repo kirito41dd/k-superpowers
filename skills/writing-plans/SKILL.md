@@ -9,6 +9,8 @@ Write plans for a skilled engineer with little project context. Read
 `Flow: Compact | Full` from the approved spec; missing flow is a blocker unless
 an explicit brainstorming handoff supplies it.
 
+Honor an exact bounded response schema without preamble or code fences.
+
 Save to `docs/superpowers/plans/YYYY-MM-DD-<topic>.md`. Follow conversation
 language for prose and project conventions for code/comments.
 
@@ -26,10 +28,14 @@ For non-self-explanatory core structures, functions, or abstractions, plan the
 necessary explanations defined by `k-superpowers:type-driven-verification`.
 
 Risk is `low` only for nonbehavioral docs/comments/format/mechanical config or
-rename; `medium` for bounded local runtime behavior; `high` for public API,
-persisted format, security, concurrency, protocol, state machine, cross-module
-contract, or migration. Missing risk never defaults low. Shared interface/state
-or composed behavior requires final whole-change review.
+rename; `medium` for bounded local runtime behavior. Migration is `high`, as are
+public API, persisted format, security, concurrency, protocol, state machine,
+and cross-module contract changes. Missing risk never defaults low.
+
+Any `high` task requires final whole-change review. Multiple medium tasks require
+it only when they truly share an interface or shared state, regardless of whether
+tasks can modify that state, or their composition creates behavior that no task
+verifies independently.
 
 ## Implementation Design Contract
 
@@ -64,7 +70,9 @@ feedback loop; a persistent regression test is conditional, not automatic.
 ## Unified Execution Handoff
 
 After a faithful Compact plan passes self-review, or after the user explicitly
-approves a Full plan, offer exactly:
+approves a Full plan, offer exactly the five alternatives below. "Unified" means
+one decision combines controller, workspace, and checkpoint authorization; it
+does not mean the menu has only one alternative.
 
 1. SDD + create worktree + authorize this plan's local checkpoint commits
 2. SDD + current workspace + authorize this plan's local checkpoint commits
@@ -72,7 +80,11 @@ approves a Full plan, offer exactly:
 4. Inline + current workspace + no implementation commits
 5. Revise design/plan
 
-Selection authorizes implementation and only named workspace/local commits. It
-never authorizes push, merge, PR, amend, force, unrelated commits, or doc commits.
-SDD requires checkpoint authorization; decline routes Inline. Then invoke
+Selections 1-4 authorize implementation and only the named workspace/local
+checkpoints. Selection 5 authorizes only design/plan revision; it authorizes no
+implementation, workspace change, or checkpoint. No option authorizes push,
+merge, PR, amend, force, unrelated commits, or separate spec/plan document commits.
+Approved implementation tasks that edit docs/comments remain normal
+task scope and may checkpoint under SDD options 1-2. Without checkpoint
+authorization, do not start SDD; use an Inline option. Then invoke
 `subagent-driven-development` for 1-2 or `executing-plans` for 3-4.

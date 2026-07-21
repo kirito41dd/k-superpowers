@@ -5,8 +5,9 @@ description: Use when creating, editing, reviewing, or verifying skills and thei
 
 # Writing Skills
 
-Skill text is behavior-shaping code. Preserve valid behavior, change only the
-target contract, and match verification strength to behavioral risk.
+Skill text guides an intelligent agent; it is not deterministic application
+code. Preserve useful behavior, change only the target contract, and optimize
+for fast feedback from real use rather than fixed model outputs.
 
 ## Mode
 
@@ -14,10 +15,11 @@ target contract, and match verification strength to behavioral risk.
 |------|-------|
 | Create | A reusable technique/pattern/reference has no suitable owner |
 | Edit | Change an existing trigger, workflow, contract, example, or reference |
-| Verify | Test current behavior without editing |
+| Verify | Inspect supplied real-use evidence without editing |
 | Review only | Report findings and risks; do not edit |
 
 Do not create a new skill merely to avoid fixing the existing owner.
+`Verify` and `Review only` do not authorize Git, publishing, or external writes.
 
 ## Required Change Contract
 
@@ -37,22 +39,26 @@ Read target and direct support files. State the behavior change, affected
 surfaces, and failure mode. After edits, mark every field `preserved` or approved
 `changed`, with evidence.
 
-## Risk And Verification
+## Iteration Model
 
-Verification is never zero and is classified by effect, not diff size:
+Use a user-observed failure, friction point, or requested behavior as the normal
+input. Make the smallest coherent change, inspect the resulting contract, and
+return it to real use quickly.
 
-| Risk | Examples | Required evidence |
-|------|----------|-------------------|
-| Low | Typo, formatting, dead reference | Static invariant review and conflicting-text search |
-| Medium | Checklist/order/cross-reference/process gate | Low checks plus counterexample walkthrough |
-| High | Trigger, discipline, subagent flow, authorization, new behavior skill | Observed failure evidence, or 2-3 synthetic failure classes when none exists; post-change behavior scenarios and review |
+- Do not create persistent tests, fixtures, snapshots, eval matrices, ablation
+  records, or model-specific golden outputs for Skill behavior.
+- Do not call Claude, OpenCode, Codex, or another model for verification unless
+  the user explicitly requests that run and accepts its cost.
+- Do not freeze prose, tool-call order, or exact responses unless they are an
+  actual external protocol required by the user or platform.
+- Treat a single stochastic model response as an observation, not a regression.
+  Change the Skill only when the issue is reproducible or the text has a clear
+  contract defect.
+- New nonblocking improvements discovered during review go to a later
+  iteration; they do not reopen the current change.
 
-Observed traces replace synthetic baselines for the same failure. A high-risk
-campaign uses one review, one batched fix pass, and one re-review; expand only
-for a new failure class or material fix. Load
-`testing-skills-with-subagents.md` for pressure-scenario and loophole methods.
-
-Complete and verify one coherent behavior contract before unrelated skill work.
+Complete one behavior contract before unrelated Skill work. Prefer one edit and
+one self-review pass; avoid review/fix loops without a new blocking defect.
 
 ## Authoring Rules
 
@@ -68,24 +74,23 @@ Complete and verify one coherent behavior contract before unrelated skill work.
   shows they are required.
 - Project/user instructions override generic authoring guidance.
 
-## Verification By Skill Type
+## Review
 
-| Type | Verify |
-|------|--------|
-| Discipline | Compliance under representative pressure |
-| Technique | Application, variation, and missing-information cases |
-| Pattern | Recognition, application, and counterexample |
-| Reference | Retrieval, correct application, and gap checks |
+Read the edited Skill and direct active references once. Check that triggers,
+states, ownership, authorization, failure transitions, and user-requested
+behavior remain coherent. Search for active contradictory text. For modified
+executable support files, syntax or JSON parsing is sufficient unless the user
+asks for more.
 
-Unavailable fresh-agent checks are skipped, never passed. Static checks still
-run but do not replace required high-risk behavior evidence.
+Do not manufacture synthetic failures to justify more work. If real-use
+evidence is incomplete, state the uncertainty and hand the change back for use.
 
 ## Deployment Checklist
 
-Track only applicable items: mode/invariants/risk/baseline; targeted changes;
-required static/counterexample/behavior verification; one finding fix/re-review;
-docs/tests/manifests synchronization; and only explicitly authorized Git or
-publishing actions.
+Track only applicable items: mode and change contract; smallest targeted edit;
+active docs/manifests synchronization; one self-review and conflicting-text
+search; cheap syntax/parse checks for edited executable files; and only
+explicitly authorized Git or publishing actions.
 
-`anthropic-best-practices.md` is non-normative background. This skill and project
+`anthropic-best-practices.md` is a non-normative snapshot. This skill and project
 instructions are the local source of truth.

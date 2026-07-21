@@ -14,6 +14,14 @@ if [ -d "$legacy_skills_dir" ]; then
     warning_message="\n\n<important-reminder>IN YOUR FIRST REPLY AFTER SEEING THIS MESSAGE YOU MUST TELL THE USER:⚠️ **WARNING:** Superpowers now uses Claude Code's skills system. Custom skills in ~/.config/superpowers/skills will not be read. Move custom skills to ~/.claude/skills instead. To make this message go away, remove ~/.config/superpowers/skills</important-reminder>"
 fi
 
+# Inject the entry router synchronously so its decision boundaries apply before
+# the model can plan or perform a first action. Other skills remain on demand.
+using_superpowers_path="${PLUGIN_ROOT}/skills/using-superpowers/SKILL.md"
+if ! using_superpowers_content=$(cat "$using_superpowers_path"); then
+    printf 'Failed to read using-superpowers entry router: %s\n' "$using_superpowers_path" >&2
+    exit 1
+fi
+
 # Escape string for JSON embedding using bash parameter substitution.
 # Each ${s//old/new} is a single C-level pass - orders of magnitude
 # faster than the character-by-character loop this replaces.
@@ -27,8 +35,9 @@ escape_for_json() {
     printf '%s' "$s"
 }
 
+using_superpowers_escaped=$(escape_for_json "$using_superpowers_content")
 warning_escaped=$(escape_for_json "$warning_message")
-session_context="<EXTREMELY_IMPORTANT>K Superpowers is enabled: use the relevant k-superpowers skill before acting; planning tools do not replace the skill gate.${warning_escaped}</EXTREMELY_IMPORTANT>"
+session_context="<EXTREMELY_IMPORTANT>\nK Superpowers is enabled. The using-superpowers entry router is already loaded below; do not invoke it again. For all other skills, use the platform skill tool.\n\n${using_superpowers_escaped}\n\n${warning_escaped}\n</EXTREMELY_IMPORTANT>"
 
 # Output context injection as JSON.
 # Cursor hooks expect additional_context (snake_case).

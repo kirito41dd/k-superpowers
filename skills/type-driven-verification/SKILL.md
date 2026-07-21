@@ -51,10 +51,12 @@ enforceable invariants into the language and API; do not copy syntax.
 ## Core Explanations
 
 Add explanatory comments/docs for core structures, functions, and abstractions
-unless they are genuinely self-explanatory. Explain purpose, caller usage,
-important invariants, lifecycle/resource rules, protocol boundaries, or state
-transitions. Follow project and nearby-file language/style; do not restate
-obvious code.
+unless they are genuinely self-explanatory. Explain each applicable dimension:
+purpose, how callers obtain and use it, important invariants,
+lifecycle/resource rules, and protocol boundaries or state transitions. When a
+factory or construction boundary is how callers obtain the abstraction, treat
+it as part of the same explanation instead of a separate comment obligation.
+Follow project and nearby-file language/style; do not restate obvious code.
 
 ## Choosing Verification
 
