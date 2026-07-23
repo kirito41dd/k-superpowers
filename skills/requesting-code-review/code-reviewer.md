@@ -30,7 +30,10 @@ Do not request tests merely because none were added. Identify the exact
 unproved behavior and its impact. For non-self-explanatory core code, name the
 specific missing purpose, caller use, invariant, lifecycle/resource rule,
 protocol/state transition, or established comment-language requirement. Do not
-count comments or demand restatements of obvious code.
+count comments or demand restatements of obvious code. For a core test, report
+an explanation gap only when its protected contract, regression purpose,
+unusual fixture/order, or critical assertion consequence remains unclear after
+reading its name and structure.
 
 Each finding reports:
 

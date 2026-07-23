@@ -47,6 +47,18 @@ rules, and protocol boundaries or state transitions. Treat a factory as part of
 the abstraction callers obtain. Follow project and nearby-file comment language
 and style; do not restate obvious code.
 
+## Core Test Explanations
+
+Make core tests reveal the semantic contract and regression risk they protect.
+Prefer behavior-focused names, clear scenario structure, and domain-named
+fixtures. When an invariant, regression background, unusual input/order, or
+critical assertion consequence is not self-explanatory, add a concise nearby
+comment or assertion message explaining what can break and why it matters.
+
+Do not narrate setup or restate assertions. Keep the production invariant
+explained with the production abstraction; tests provide focused evidence and
+diagnostic context rather than becoming the only documentation.
+
 ## Evidence
 
 Choose evidence from the actual remaining risk: compiler/type checks, focused

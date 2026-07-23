@@ -25,7 +25,10 @@ current blockers.
 Review Spec first for missing, wrong, extra, or incompatible behavior. Review
 Standards independently for correctness, boundary validation, invalid states,
 errors/resources, project conventions, maintainability, core explanations, and
-runtime risk not proved by supplied evidence.
+runtime risk not proved by supplied evidence. For core tests, check that names,
+structure, and any necessary nearby explanation make the protected semantic
+contract and regression risk understandable; do not require comments when the
+test is already self-explanatory.
 
 Each finding includes a stable ID, `Critical | Important | Minor`,
 `Spec | Standards`, location when applicable, issue, impact, and required fix.

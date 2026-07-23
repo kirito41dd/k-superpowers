@@ -28,6 +28,10 @@ unrelated files, or absorb pre-existing user work.
   its purpose, caller use, important invariants, lifecycle/resource rules, and
   protocol/state transitions as applicable. Follow project and nearby-file
   comment language/style; do not restate obvious code.
+- Make core tests reveal their protected semantic contract and regression risk
+  through behavior-focused names and clear structure. Add a nearby comment or
+  assertion message only when a non-obvious invariant, regression background,
+  fixture/order, or failure consequence needs explanation.
 - Self-review the actual diff for correctness, scope, maintainability, and
   verification gaps before reporting.
 
