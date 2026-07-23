@@ -1,8 +1,8 @@
 # Task Reviewer Agent Guidance
 
-Use for high-risk SDD tasks. Adapt wording and tool usage to the platform while
-preserving the review goal, evidence boundaries, finding fields, and bounded
-Discovery/Closure lifecycle.
+Use for SDD tasks requiring independent review. Adapt wording and tool usage to
+the platform while preserving the review goal, evidence boundaries, finding
+fields, and bounded Discovery/Closure lifecycle.
 
 ## Inputs
 

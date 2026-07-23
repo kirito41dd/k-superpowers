@@ -1,6 +1,6 @@
 ---
 name: writing-plans
-description: Use when approved requirements or a spec need a persistent multi-step implementation plan before code changes
+description: Use when approved requirements or a spec need a persistent multi-step implementation plan, or an approved plan needs execution handoff before code changes
 ---
 
 # Writing Plans
@@ -35,17 +35,27 @@ reference its applicable questions rather than copying a mandatory form.
 
 ## Handoff
 
-After the user approves the plan or has already asked to implement it, use the
-safe default unless a different route has material value:
+A faithful plan that adds no material decision needs no separate approval when
+implementation is already authorized. Otherwise obtain approval before
+execution.
+
+When the plan contains genuinely independent tasks and delegation has a
+concrete latency, context, safety, or recovery benefit, ask one concise choice:
+
+- SDD in the selected workspace, explicitly authorizing this plan's local
+  checkpoint commits; or
+- Inline in the selected workspace with no implementation commits.
+
+SDD also requires current-session delegation support. If those conditions do
+not apply, use the safe default:
 
 ```text
 Inline + current workspace + no implementation commit
 ```
 
-Ask a concise choice only when worktree isolation, SDD, or checkpoint commits
-would materially improve safety, recovery, or latency. SDD additionally requires
-independent tasks, current-session delegation support, and explicit checkpoint
-commit authorization.
+Ask about worktree isolation separately only when it materially improves safety
+or recovery. Do not present SDD merely as ceremony, but do not hide a qualified
+SDD candidate behind the Inline default.
 
 No plan approval authorizes push, merge, PR, amend, force, destructive cleanup,
 unrelated work, or a separate documentation commit. Ask separately for those

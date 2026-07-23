@@ -1,12 +1,18 @@
 ---
 name: dispatching-parallel-agents
-description: Use when two or more workstreams can proceed concurrently with meaningful latency benefit and manageable integration risk
+description: Use when two or more non-SDD workstreams can proceed concurrently with meaningful latency benefit and manageable integration risk
 ---
 
 # Dispatching Parallel Agents
 
 Parallelize when expected latency or context benefit exceeds delegation and
 integration cost. Shared read-only files and context are allowed.
+
+This skill owns parallel investigation, analysis, diagnosis, and other general
+workstreams. For an approved implementation plan with independent repository
+tasks, durable handoff, and checkpoint ownership, use
+`k-superpowers:subagent-driven-development`. Do not use generic parallel edits
+to bypass its plan or commit authorization.
 
 Keep work sequential when:
 

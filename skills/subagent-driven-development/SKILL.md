@@ -45,11 +45,13 @@ revert, absorb, or manufacture ownership of pre-existing changes.
 Use effect-based judgment rather than mandatory metadata:
 
 - **Low:** docs, comments, formatting, or mechanical work. Controller implements,
-  verifies, inspects the diff, and checkpoints directly.
+  verifies, inspects the diff across Spec and Standards, and checkpoints
+  directly.
 - **Medium:** bounded behavior with no material public, security, persistence,
   concurrency, protocol, or integration risk. One implementer executes;
-  controller reads the report, actual diff, and evidence and performs the task
-  self-review. No independent reviewer by default.
+  controller reads the report, actual diff, and evidence and performs a
+  two-axis Spec/Standards self-review, then one independent reviewer uses the
+  bounded review lifecycle.
 - **High:** consequential public contract, security, persisted data, migration,
   concurrency, protocol, state-machine, or similarly costly failure. One
   implementer executes and one independent reviewer uses the bounded review
@@ -94,21 +96,17 @@ into ceremony. Never skip a blocked task to continue dependent work.
 
 ## Review
 
-For high tasks, use `k-superpowers:requesting-code-review` once in Discovery
-mode. Freeze stable findings, adjudicate them through
+For medium and high tasks, use `k-superpowers:requesting-code-review` once in
+Discovery mode. Freeze stable findings, adjudicate them through
 `k-superpowers:receiving-code-review`, apply at most one coherent fix batch, and
 return to the same logical reviewer for Closure. Record nonblocking follow-ups.
 `STOPPED_BLOCKED` returns control to the user; it does not trigger another
 autonomous fix/review loop.
 
-Medium tasks use controller review unless the user, approved plan, or new
-evidence identifies a concrete reason for independence. Do not add review merely
-to make delegation look rigorous.
-
 Run a final whole-change review only when multiple tasks create a real
-shared-interface, shared-state, or unverified composition risk. A single high
-task that already completed its task review does not receive a duplicate final
-review.
+shared-interface, shared-state, or unverified composition risk. A single medium
+or high task that already completed its task review does not receive a duplicate
+final review.
 
 ## Completion
 

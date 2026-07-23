@@ -1,6 +1,6 @@
 ---
 name: type-driven-verification
-description: Use when implementing consequential domain behavior, core logic, bug fixes, public APIs, parsers, protocols, state machines, resources, or other changes needing explicit design and evidence
+description: Use when implementing consequential domain behavior, core logic, bug fixes, public APIs, parsers, protocols, state machines, resources, non-self-explanatory core code, or other changes needing explicit design, explanation, and evidence
 ---
 
 # Type-Driven Verification

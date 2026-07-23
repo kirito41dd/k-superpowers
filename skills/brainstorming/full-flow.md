@@ -19,5 +19,9 @@ risk.
 6. Ask separately before committing the document. Design approval can authorize
    implementation edits when the user explicitly asks to proceed, but it never
    authorizes a commit or external action.
+7. When implementation is authorized, assess execution topology once before
+   editing. Use `k-superpowers:writing-plans` when independently deliverable
+   scopes make delegation or durable execution handoff useful; otherwise use
+   Inline in the current workspace with no commit.
 
 Follow existing project patterns and avoid unrelated improvement work.

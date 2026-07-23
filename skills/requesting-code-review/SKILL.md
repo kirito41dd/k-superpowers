@@ -1,18 +1,25 @@
 ---
 name: requesting-code-review
-description: Use when consequential or high-risk work needs an independent requirements and quality judgment
+description: Use when completed work changes nontrivial runtime behavior, fixes a bug, affects core logic, public APIs, parsers, security, permissions, persisted state, migrations, destructive cleanup, concurrency, protocols, state machines, resources, or cross-module behavior, lacks strong verification evidence, or the user or approved plan requests independent review
 ---
 
 # Requesting Code Review
 
-Request independent review only when its expected risk reduction justifies the
-latency and context cost. Review is not a universal completion ritual.
+Independent review is the default for nontrivial runtime behavior and bug
+fixes. Skip it only when the controller can establish that the change is limited
+to docs, comments, formatting, a mechanical rename/configuration edit, or
+simple self-explanatory glue. When classification is uncertain, review.
 
 One logical reviewer evaluates two axes:
 
 - **Spec:** required, missing, wrong, extra, or incompatible behavior;
 - **Standards:** correctness, project conventions, boundaries, errors/resources,
   maintainability, core explanations, and verification quality.
+
+Every change receives one same-controller self-review across these two axes
+before either outcome. The user, approved plan, weak verification evidence, or
+concrete new risk evidence also requires independent review. Resolved design
+decisions do not make implementation exempt.
 
 ## Evidence
 

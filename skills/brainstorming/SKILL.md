@@ -21,17 +21,21 @@ security, migration, or permission choice is unresolved.
 
 Inspect relevant context, present the recommended behavior and important
 trade-off concisely, and obtain one approval. Present alternatives only when
-there is a real choice. After the user approves or says to implement, proceed in
-the current workspace with no commit by default. Do not create a spec or plan
-artifact unless it has real handoff value or the user requests it.
+there is a real choice. After approval, proceed only when the original request
+or a later response explicitly asks to implement. Use the current workspace
+with no commit by default. Do not create a spec or plan artifact unless it has
+real handoff value or the user requests it.
 
 ### Compact
 
 Use for bounded multi-step or tightly coupled work that benefits from a concise
 shared design. Ask only questions whose answers materially affect the result.
 Present the coherent design once: goal, affected boundaries, behavior, material
-failure paths, and verification. After approval, either implement Inline or
-write a persistent plan when cross-session/executor handoff makes it useful.
+failure paths, and verification. After approval, when implementation is already
+authorized, assess execution topology once. Use `k-superpowers:writing-plans`
+when independently deliverable tasks make delegation or durable execution
+handoff useful; otherwise implement Inline. Without an implementation request,
+stop after the approved design.
 
 ### Full
 

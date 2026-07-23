@@ -18,18 +18,22 @@ Use internal todos proportional to the work. Follow the approved slices, but
 adapt local ordering when evidence or dependencies make another order safer or
 faster. Load `k-superpowers:type-driven-verification` when consequential domain
 logic, public APIs, parsers, protocols, state, resources, or non-self-explanatory
-core abstractions need its design and explanation guidance.
+core structures, functions, or abstractions need its design and explanation
+guidance.
 
-Run focused verification as the work progresses. Independent code review is not
-a default checkpoint: request it only when the approved plan, user, or a
-concrete high-risk uncertainty calls for it. Same-controller Inline review may
-inspect requirements, the current diff, relevant context, and evidence directly;
-use a frozen review package only when crossing contexts or stabilizing a moving
-working tree is useful.
+Run focused verification as the work progresses. Before completion, inspect the
+actual diff once across Spec and Standards. Use an independent reviewer when the
+completed change matches `k-superpowers:requesting-code-review`'s trigger, the
+approved plan or user requests one, or concrete new evidence makes independent
+judgment materially valuable. Skip independent review only for the clearly
+low-risk exclusions defined by that owner.
 
 When review is required, follow `k-superpowers:requesting-code-review`'s bounded
-Discovery/Closure lifecycle. A stopped closure returns control to the user and
-does not start another autonomous cycle.
+Discovery/Closure lifecycle. Same-controller review may inspect requirements,
+the current diff, relevant context, and evidence directly. Use a frozen package
+when crossing contexts or stabilizing a moving working tree is useful. A
+stopped closure returns control to the user and does not start another
+autonomous cycle.
 
 Before claiming the whole change complete, use
 `k-superpowers:verification-before-completion` with evidence proportionate to
