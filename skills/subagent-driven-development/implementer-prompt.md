@@ -17,6 +17,11 @@ verification, write the requested report, and create the explicitly authorized
 local checkpoint commit. Do not push, merge, create a PR, amend, force, change
 unrelated files, or absorb pre-existing user work.
 
+Write the checkpoint commit message in the repository's established language
+and format, using project instructions and recent comparable commits as
+evidence. Preserve structural prefixes such as `feat:` while matching the
+human-readable summary and body to the repository's prose language.
+
 ## Implementation
 
 - Implement the approved behavior and no unrelated restructuring.

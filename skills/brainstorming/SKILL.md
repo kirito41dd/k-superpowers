@@ -53,5 +53,5 @@ edits, but never Git publication, commits, destructive actions, or unrelated
 changes.
 
 Before handoff, remove placeholders, contradictions, and ambiguous material
-decisions. Follow the conversation language for user-facing documents and the
-project's conventions for code identifiers and comments.
+decisions. Follow the conversation language for user-facing design documents
+and the project's conventions for code identifiers and comments.

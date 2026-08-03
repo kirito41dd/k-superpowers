@@ -29,6 +29,7 @@ useful later, and do not load mutually exclusive execution paths together.
 | Approved persistent plan without an execution choice | `k-superpowers:writing-plans` for handoff |
 | Approved plan with Inline selected | `k-superpowers:executing-plans` |
 | Approved plan with SDD selected and checkpoint commits authorized | `k-superpowers:subagent-driven-development` |
+| Verified work with an explicit local commit or integration/cleanup request | `k-superpowers:finishing-a-development-branch` |
 | Explicitly named skill | Use it unless it conflicts with a higher-priority instruction or is unavailable |
 
 Preparation/read-only work may use any operation the agent can establish is

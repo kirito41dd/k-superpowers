@@ -3,6 +3,32 @@
 Load only after the user selects an action. Substitute verified branch/path
 values; never infer authorization for another action.
 
+## Repository Voice
+
+Before composing an authorized commit message or review request, follow the
+repository's established language and message format. Infer them from explicit
+project instructions first, then repository templates and recent comparable
+human-authored commits or review requests. Preserve structural conventions such
+as Conventional Commit prefixes while matching the human-readable summary and
+body to the repository's prose language. When evidence is mixed, use the
+strongest comparable repository signal; use the user's language only when
+repository evidence is absent.
+
+## COMMIT
+
+Inspect staged and unstaged changes before committing. Stage only verified,
+authorized paths, and stop if the resulting commit would absorb pre-existing or
+out-of-scope work. After the relevant verification:
+
+```bash
+git add -- <authorized-paths>
+git diff --cached --check
+git commit -m '<subject>'
+```
+
+Report the commit SHA and subject. A COMMIT action does not authorize amend,
+push, merge, PR, or cleanup.
+
 ## MERGE
 
 ```bash
@@ -60,7 +86,7 @@ description as the same heading. Use headings only for section labels; do not
 wrap whole list items or body blocks in bold. For example:
 
 ```bash
--o 'merge_request.description=## Changes\n\n- First change\n- Second change\n\n## Verification\n\n- `cargo test`'
+-o 'merge_request.description=## <changes>\n\n- <item>\n\n## <verification>\n\n- `<command>`'
 ```
 
 Inspect the push output and report the created merge request URL. GitLab push

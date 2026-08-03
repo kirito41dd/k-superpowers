@@ -37,6 +37,7 @@ autonomous cycle.
 
 Before claiming the whole change complete, use
 `k-superpowers:verification-before-completion` with evidence proportionate to
-the claim. Current-main work without an integration request reports changes in
-place; use `finishing-a-development-branch` only for a real branch/worktree
-integration or cleanup decision.
+the claim. Current-main work without an explicit local commit or integration
+request reports changes in place; use `finishing-a-development-branch` only for
+a separately authorized local commit or a real branch/worktree integration or
+cleanup decision.

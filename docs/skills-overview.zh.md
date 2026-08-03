@@ -139,9 +139,10 @@ snapshot 的场景；scope 使用显式 paths 与 source/base/head，不使用 s
 - completion claim 必须有相称证据；
 - 核心注释、类型/API 优先和有界 review closure 保持。
 
-`finishing-a-development-branch` 仅处理真实 merge/PR/MR/retain/discard/cleanup
-决策；创建 review request 时按仓库 provider 路由：简单 GitLab MR 优先使用
-push options，GitHub 使用 `gh`，复杂 GitLab 操作使用 `glab` 或 API，浏览器兜底。
-base 在开发期间前进时，默认将 feature rebase 到最新 base，再 fast-forward
-合入；已发布分支的 force-push 仍需单独授权。
+`finishing-a-development-branch` 处理显式授权的 local commit 与真实
+merge/PR/MR/retain/discard/cleanup 决策；commit message 和 review request 文案
+优先跟随项目指令、仓库模板与近期同类历史。创建 review request 时按仓库 provider
+路由：简单 GitLab MR 优先使用 push options，GitHub 使用 `gh`，复杂 GitLab 操作使用
+`glab` 或 API，浏览器兜底。base 在开发期间前进时，默认将 feature rebase 到最新
+base，再 fast-forward 合入；已发布分支的 force-push 仍需单独授权。
 `using-git-worktrees` 继续单一拥有 workspace placement 与 cleanup ownership。

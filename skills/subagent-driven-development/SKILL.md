@@ -115,9 +115,10 @@ recovery needs it. After all tasks and any required integration review, invoke
 `k-superpowers:verification-before-completion` for bounded whole-change evidence.
 Only then clean owned SDD artifacts and report completion.
 
-Use `finishing-a-development-branch` only for a real integration/cleanup
-decision. Current-main execution without such a request reports verified
-changes in place.
+Authorized SDD checkpoint commits remain owned here. Use
+`finishing-a-development-branch` only for a separately requested post-execution
+integration/cleanup decision. Current-main execution without such a request
+reports verified changes in place.
 
 ## Owners
 

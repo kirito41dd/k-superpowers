@@ -27,7 +27,7 @@ Skill 文本是给持续进化的智能体使用的行为指导，不以固定�
 
 ## 当前定制重点
 
-- `using-superpowers`：普通问答直接回答；清晰、已批准的变更走 Direct，安全默认是 current workspace + Inline + no commit；独立多任务先完成一次 execution handoff，不强制无价值 ceremony。
+- `using-superpowers`：普通问答直接回答；清晰、已批准的变更走 Direct，安全默认是 current workspace + Inline + no commit；显式 local commit 或集成请求交给 `finishing-a-development-branch`；独立多任务先完成一次 execution handoff，不强制无价值 ceremony。
 - `brainstorming` / `writing-plans`：只有真实取舍才列方案，只有交接价值才落持久 spec/plan；Full 保护 material decision，而不是逐章节审批；符合条件的 plan 主动给出 SDD checkpoint 授权与 Inline no-commit 选择。
 - `type-driven-verification`：采用类型优先、风险驱动验证，并单一拥有核心代码与核心测试说明合同。核心测试优先靠行为化命名和结构表达契约，只为非显然不变量、回归背景、特殊 fixture/顺序或关键断言后果补充说明。
 - `subagent-driven-development`：只在独立任务且委派收益明确、用户授权本 plan checkpoint commits 时使用。Low 由 controller 处理，medium/high 均有 independent reviewer；final review 只保护真实跨任务 integration risk。
@@ -123,7 +123,7 @@ codex plugin list | grep k-superpowers
 预期能看到：
 
 ```text
-k-superpowers@k-superpowers-dev  installed, enabled  5.4.6
+k-superpowers@k-superpowers-dev  installed, enabled  5.4.8
 ```
 
 本地 marketplace 的结构是：

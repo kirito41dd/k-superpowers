@@ -1,16 +1,16 @@
 ---
 name: finishing-a-development-branch
-description: Use when verified work on a feature branch or worktree needs a merge, PR, retention, discard, or cleanup decision
+description: Use when verified work needs an authorized local commit or a branch/worktree merge, PR, retention, discard, or cleanup decision
 ---
 
 # Finishing A Development Branch
 
 ## Entry Gate
 
-Use only when verified work has a real Git integration/cleanup decision. Skip
-for current-main Inline work with no integration request. Identify branch,
-detached state, base, canonical workspace path, and ownership state before
-presenting actions.
+Use only when verified work has an explicitly authorized local commit or a real
+Git integration/cleanup decision. Skip current-main Inline work while neither
+exists. Identify branch/detached state and the selected action's relevant base,
+workspace, ownership, and change scope before acting.
 
 ## Actions
 
@@ -18,9 +18,11 @@ Use semantic actions; numeric menu positions are presentation only:
 
 | State | Actions |
 |-------|---------|
-| Named branch | `MERGE`, `PR`, `KEEP`, `DISCARD` |
-| Detached HEAD | `PR`, `KEEP`, `DISCARD` |
+| Named branch | `COMMIT`, `MERGE`, `PR`, `KEEP`, `DISCARD` |
+| Detached HEAD | `COMMIT`, `PR`, `KEEP`, `DISCARD` |
 
+- `COMMIT`: stage only the verified, authorized paths and create a local commit;
+  preserve workspace and do not infer push, merge, PR, amend, or cleanup.
 - `MERGE`: update the local base, rebase the feature onto it, verify, then
   fast-forward the base and verify the integrated result. Stop on conflicts;
   clean up only if ownership permits.
@@ -46,4 +48,5 @@ authorization.
 - `platform-owned(handle/tool)`: invoke only the platform cleanup mechanism.
 - `unowned`: preserve and report the path.
 
-Directory names never prove ownership. PR and KEEP always preserve workspace.
+Directory names never prove ownership. COMMIT, PR, and KEEP always preserve
+workspace.
