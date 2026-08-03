@@ -48,15 +48,28 @@ git push -u origin <feature> \
   -o merge_request.create \
   -o merge_request.target=<base> \
   -o 'merge_request.title=<title>' \
-  -o 'merge_request.description=<short-description>'
+  -o 'merge_request.description=<description-with-escaped-newlines>'
+```
+
+Git push options cannot contain literal newline characters. For a structured
+GitLab Flavored Markdown description, encode each intended newline as the two
+characters `\n` inside the single-line option; GitLab converts them to newlines
+before rendering. Do not substitute spaces or `<br>` for Markdown block
+boundaries: a leading heading marker would then style the rest of the
+description as the same heading. Use headings only for section labels; do not
+wrap whole list items or body blocks in bold. For example:
+
+```bash
+-o 'merge_request.description=## Changes\n\n- First change\n- Second change\n\n## Verification\n\n- `cargo test`'
 ```
 
 Inspect the push output and report the created merge request URL. GitLab push
 options are server-side GitLab behavior, not portable Git flags. If the branch
 has already been pushed without a new update, or the request needs richer
-metadata, reviewers, labels, milestones, fork targeting, or updates to an
-existing merge request, use an authenticated `glab` command or the GitLab API.
-Use the browser only when those paths are unavailable or interactive UI work is
+metadata, reviewers, labels, milestones, fork targeting, an update to an
+existing merge request, or a description that cannot be represented safely as
+a push-option value, use an authenticated `glab` command or the GitLab API. Use
+the browser only when those paths are unavailable or interactive UI work is
 actually needed.
 
 For GitHub:
