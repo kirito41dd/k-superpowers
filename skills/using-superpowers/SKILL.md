@@ -57,7 +57,8 @@ pre-existing user changes. Stop only for a real conflict or material decision.
 Before code edits, load `k-superpowers:type-driven-verification` when the change
 contains consequential domain behavior, public boundaries, parsers, protocols,
 state, resources, or introduces or modifies a non-self-explanatory core
-structure, function, or abstraction. Implement and perform bounded verification.
+structure, function, or abstraction, or materially grows unusually large or
+multi-responsibility code. Implement and perform bounded verification.
 
 Before completion, inspect the actual diff once across Spec and Standards. When
 the completed change matches `k-superpowers:requesting-code-review`'s trigger,

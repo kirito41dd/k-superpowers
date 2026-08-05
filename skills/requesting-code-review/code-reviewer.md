@@ -33,7 +33,9 @@ protocol/state transition, or established comment-language requirement. Do not
 count comments or demand restatements of obvious code. For a core test, report
 an explanation gap only when its protected contract, regression purpose,
 unusual fixture/order, or critical assertion consequence remains unclear after
-reading its name and structure.
+reading its name and structure. Treat unusually large changed functions or
+files as a cohesion signal: report a concrete separable responsibility or
+reasoning, review, testing, or change-isolation cost rather than line count alone.
 
 Each finding reports:
 

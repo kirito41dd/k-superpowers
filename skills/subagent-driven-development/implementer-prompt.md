@@ -28,7 +28,7 @@ human-readable summary and body to the repository's prose language.
 - Use established project patterns for local naming and implementation choices.
 - Apply `type-driven-verification` guidance when the task contains consequential
   domain logic, public interfaces, parsers, protocols, state, resources, or
-  significant error boundaries.
+  significant error boundaries, or unusually large or multi-responsibility code.
 - For a non-self-explanatory core structure, function, or abstraction, explain
   its purpose, caller use, important invariants, lifecycle/resource rules, and
   protocol/state transitions as applicable. Follow project and nearby-file

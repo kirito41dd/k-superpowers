@@ -18,8 +18,8 @@ Use internal todos proportional to the work. Follow the approved slices, but
 adapt local ordering when evidence or dependencies make another order safer or
 faster. Load `k-superpowers:type-driven-verification` when consequential domain
 logic, public APIs, parsers, protocols, state, resources, or non-self-explanatory
-core structures, functions, or abstractions need its design and explanation
-guidance.
+core structures, functions, or abstractions, or unusually large or
+multi-responsibility code need its design and explanation guidance.
 
 Run focused verification as the work progresses. Before completion, inspect the
 actual diff once across Spec and Standards. Use an independent reviewer when the

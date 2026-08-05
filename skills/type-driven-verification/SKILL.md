@@ -1,6 +1,6 @@
 ---
 name: type-driven-verification
-description: Use when implementing consequential domain behavior, core logic, bug fixes, public APIs, parsers, protocols, state machines, resources, non-self-explanatory core code, or other changes needing explicit design, explanation, and evidence
+description: Use when implementing consequential domain behavior, core logic, bug fixes, public APIs, parsers, protocols, state machines, resources, non-self-explanatory core code, unusually large or multi-responsibility code, or other changes needing explicit design, explanation, and evidence
 ---
 
 # Type-Driven Verification
@@ -38,6 +38,20 @@ questions for docs, formatting, mechanical changes, and simple glue.
 
 Do not imitate Rust with low-value wrappers. Use the strongest practical
 guarantees of the project language.
+
+## Cohesion And Size
+
+Treat source size as a maintainability signal, not a mechanical limit. As a
+general guide, when a function grows to roughly 300 lines or a source file to
+roughly 2,000 lines, examine whether it combines stable, independently nameable
+responsibilities. Split when doing so improves local reasoning, review,
+navigation, testing, or change isolation.
+
+Keep cohesive code together when splitting would mainly add indirection or
+scatter an invariant. Generated, declarative, fixture-heavy, and similarly
+structured code may reasonably differ. Do not expand an approved change merely
+to refactor pre-existing large code, but avoid adding a new independent
+responsibility when a focused module is a cleaner in-scope home.
 
 ## Core Explanations
 

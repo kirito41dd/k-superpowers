@@ -28,7 +28,9 @@ errors/resources, project conventions, maintainability, core explanations, and
 runtime risk not proved by supplied evidence. For core tests, check that names,
 structure, and any necessary nearby explanation make the protected semantic
 contract and regression risk understandable; do not require comments when the
-test is already self-explanatory.
+test is already self-explanatory. Treat unusually large changed functions or
+files as a cohesion signal and report only a concrete separable responsibility
+or reasoning, review, testing, or change-isolation cost, not line count alone.
 
 Each finding includes a stable ID, `Critical | Important | Minor`,
 `Spec | Standards`, location when applicable, issue, impact, and required fix.
