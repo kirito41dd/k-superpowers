@@ -1,6 +1,6 @@
 {
   "name": "k-superpowers",
-  "version": "5.4.8",
+  "version": "5.4.10",
   "type": "module",
   "main": ".opencode/plugins/superpowers.js"
 }

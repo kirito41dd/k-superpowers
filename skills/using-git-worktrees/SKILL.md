@@ -42,17 +42,18 @@ automatic cleanup. Never infer ownership from `.worktrees/` or another path.
 
 ## Manual Placement
 
-Honor an explicit user directory. Otherwise use an existing project-local
-`.worktrees/`/`worktrees/` only when `git check-ignore` confirms the selected
-path. If it is not ignored, use:
+Honor an explicit user directory. Otherwise mirror Zed's default
+project-adjacent layout:
 
 ```text
-~/.config/superpowers/worktrees/<project>/<branch>
+<repository-parent>/worktrees/<project>/<worktree-name>
 ```
 
-Worktree consent does not authorize editing `.gitignore`; that requires a
-separate file-edit authorization. Creation failure stops and reports. Never
-silently switch to current workspace or another location.
+Derive a short filesystem-safe worktree name from the requested branch or task.
+For `/path/to/project`, the pool is `/path/to/worktrees/project/`; because it is
+outside the repository, it needs no project `.gitignore` change. Creation
+failure stops and reports. Never silently switch to current workspace or
+another location.
 
 ## New-Workspace Setup
 

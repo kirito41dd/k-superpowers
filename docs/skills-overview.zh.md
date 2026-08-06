@@ -151,3 +151,5 @@ merge/PR/MR/retain/discard/cleanup 决策；commit message 和 review request �
 `glab` 或 API，浏览器兜底。base 在开发期间前进时，默认将 feature rebase 到最新
 base，再 fast-forward 合入；已发布分支的 force-push 仍需单独授权。
 `using-git-worktrees` 继续单一拥有 workspace placement 与 cleanup ownership。
+无平台原生创建能力且用户未指定目录时，手工 worktree 默认使用与 Zed 一致的仓库同级
+`<repository-parent>/worktrees/<project>/<worktree-name>` 布局。
