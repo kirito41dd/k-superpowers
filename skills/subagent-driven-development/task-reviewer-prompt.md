@@ -36,7 +36,10 @@ Each finding includes a stable ID, `Critical | Important | Minor`,
 `Spec | Standards`, location when applicable, issue, impact, and required fix.
 Critical and concrete Important findings block. Minor is a nonblocking
 follow-up and does not fail an axis. Do not request tests merely because none
-were added; name the unproved behavior and impact.
+were added or reward test volume. Name the unproved behavior and impact, or the
+concrete redundant coverage, incidental implementation coupling, or
+disproportionate fixture/mock cost. Business terminology alone does not make a
+durable domain invariant an unsuitable test.
 
 ## Closure
 

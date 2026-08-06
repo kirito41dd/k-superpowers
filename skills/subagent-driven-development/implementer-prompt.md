@@ -33,10 +33,14 @@ human-readable summary and body to the repository's prose language.
   its purpose, caller use, important invariants, lifecycle/resource rules, and
   protocol/state transitions as applicable. Follow project and nearby-file
   comment language/style; do not restate obvious code.
-- Make core tests reveal their protected semantic contract and regression risk
-  through behavior-focused names and clear structure. Add a nearby comment or
-  assertion message only when a non-obvious invariant, regression background,
-  fixture/order, or failure consequence needs explanation.
+- Add only the smallest set of persistent tests needed for stable, consequential
+  risks not proved by types, boundary validation, or existing evidence. Prefer a
+  narrow stable boundary, consolidate equivalent cases, and avoid duplicate
+  layers or incidental implementation details. Make retained core tests reveal
+  their semantic contract and regression risk through behavior-focused names and
+  clear structure. Add a nearby comment or assertion message only when a
+  non-obvious invariant, regression background, fixture/order, or failure
+  consequence needs explanation.
 - Self-review the actual diff for correctness, scope, maintainability, and
   verification gaps before reporting.
 

@@ -26,16 +26,20 @@ change. For Standards, examine correctness, invalid states, untrusted inputs,
 error/resource ownership, compatibility, maintainability, project conventions,
 core-code explanations, and runtime risks not proved by evidence.
 
-Do not request tests merely because none were added. Identify the exact
-unproved behavior and its impact. For non-self-explanatory core code, name the
-specific missing purpose, caller use, invariant, lifecycle/resource rule,
-protocol/state transition, or established comment-language requirement. Do not
-count comments or demand restatements of obvious code. For a core test, report
-an explanation gap only when its protected contract, regression purpose,
-unusual fixture/order, or critical assertion consequence remains unclear after
-reading its name and structure. Treat unusually large changed functions or
-files as a cohesion signal: report a concrete separable responsibility or
-reasoning, review, testing, or change-isolation cost rather than line count alone.
+Do not request tests merely because none were added or reward test volume.
+Identify the exact unproved behavior and its impact. Report excessive-test
+findings only for concrete redundancy, incidental implementation coupling, or
+disproportionate fixture/mock maintenance cost; business terminology alone does
+not make a durable domain invariant an unsuitable test. For non-self-explanatory
+core code, name the specific missing purpose, caller use, invariant,
+lifecycle/resource rule, protocol/state transition, or established
+comment-language requirement. Do not count comments or demand restatements of
+obvious code. For a core test, report an explanation gap only when its protected
+contract, regression purpose, unusual fixture/order, or critical assertion
+consequence remains unclear after reading its name and structure. Treat
+unusually large changed functions or files as a cohesion signal: report a
+concrete separable responsibility or reasoning, review, testing, or
+change-isolation cost rather than line count alone.
 
 Each finding reports:
 

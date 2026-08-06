@@ -53,6 +53,27 @@ structured code may reasonably differ. Do not expand an approved change merely
 to refactor pre-existing large code, but avoid adding a new independent
 responsibility when a focused module is a cleaner in-scope home.
 
+## Test Selection
+
+Add a persistent test when it protects a stable, consequential contract that
+types, compiler checks, boundary validation, or existing evidence cannot
+establish. Business relevance, an acceptance example, or the existence of an
+implementation branch is not sufficient by itself. Test durable domain
+invariants and costly failure modes with the smallest set of cases at the
+narrowest stable caller-visible or domain boundary.
+
+Consolidate equivalent cases with table-driven or property-oriented tests when
+that preserves diagnostic value. Avoid duplicating the same risk across helper,
+module, and end-to-end layers; enumerating permutations without distinct failure
+modes; or pinning private control flow, incidental ordering, exact text, or
+arbitrary limits unless they are genuine compatibility, safety, or protocol
+contracts. For a bug fix, prefer one focused regression or an existing reliable
+proxy when it proves the failure cannot recur.
+
+Treat mocks, fixtures, and test-only infrastructure as maintained code. Omit,
+merge, or remove tests when their marginal confidence does not justify their
+coupling and maintenance cost.
+
 ## Core Explanations
 
 Explain non-self-explanatory core structures, functions, and abstractions. Cover
@@ -85,5 +106,7 @@ symptom or reliable proxy changed, but not necessarily a new persistent test or
 fixed test-before-code order.
 
 A reviewer requesting redesign or tests must name the concrete invalid state,
-boundary failure, or unproved runtime behavior. “No tests added” alone is not a
-finding.
+boundary failure, or unproved runtime behavior. A reviewer reporting excessive
+tests must name the redundant risk coverage, incidental coupling, or
+disproportionate maintenance cost. Neither “no tests added” nor test count alone
+is a finding.

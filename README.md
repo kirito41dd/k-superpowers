@@ -17,7 +17,7 @@ Workflow 工程原则：
 
 - **固定边界，不固定路径**：明确目标、owner、权限、material decision 和成功证据；除真实外部协议外，不冻结 agent 的措辞、tool 顺序或局部判断。
 - **交付速度是一等指标**：默认使用可逆、低权限、低 ceremony 的 Direct/Inline 路径；只有能降低实际风险或总延迟时才增加 plan、worktree、SDD 或 review。
-- **类型优先验证**：用 `type-driven-verification` 取代上游的强制逐测试流程——优先用类型、接口、可见性、所有权表达不变量，测试只保护核心行为、公共 API 和回归风险，不做覆盖率仪式。计划模板同样按"定类型边界 → 实现 → 只测类型证不了的行为 → 验证"展开。
+- **类型优先验证**：用 `type-driven-verification` 取代上游的强制逐测试流程——优先用类型、接口、可见性、所有权表达不变量；持久测试只保护稳定、高影响且现有证据无法证明的合同，不因业务示例或实现分支机械增加测试，也不做覆盖率仪式。计划模板同样按"定类型边界 → 实现 → 只测类型证不了的行为 → 验证"展开。
 - **一个不变量一个 owner**：同一条政策只在一处完整定义，caller 只传播适用结果和边界，避免多副本漂移。
 - **额外权限必须显式**：批准设计并说“改吧”可授权当前 scope 的文件编辑；commit、push、merge、PR、amend、force、discard 和外部写仍需单独授权。
 - **零成本抽象**：高频注入的内容只留触发条件、不变量和决策点，流程细节放支撑文件按需加载，与 `.ai/memory/` 的渐进披露同构。
@@ -29,7 +29,7 @@ Skill 文本是给持续进化的智能体使用的行为指导，不以固定�
 
 - `using-superpowers`：普通问答直接回答；清晰、已批准的变更走 Direct，安全默认是 current workspace + Inline + no commit；显式 local commit 或集成请求交给 `finishing-a-development-branch`；独立多任务先完成一次 execution handoff，不强制无价值 ceremony。
 - `brainstorming` / `writing-plans`：只有真实取舍才列方案，只有交接价值才落持久 spec/plan；Full 保护 material decision，而不是逐章节审批；符合条件的 plan 主动给出 SDD checkpoint 授权与 Inline no-commit 选择。
-- `type-driven-verification`：采用类型优先、风险驱动验证，并单一拥有核心代码与核心测试说明合同。核心测试优先靠行为化命名和结构表达契约，只为非显然不变量、回归背景、特殊 fixture/顺序或关键断言后果补充说明。
+- `type-driven-verification`：采用类型优先、风险驱动验证，并单一拥有测试准入、核心代码与核心测试说明合同。测试优先覆盖稳定领域不变量和不同失败类型，合并等价排列、避免跨层重复与偶然实现耦合；保留的核心测试靠行为化命名和结构表达契约，只为非显然不变量、回归背景、特殊 fixture/顺序或关键断言后果补充说明。
 - `subagent-driven-development`：只在独立任务且委派收益明确、用户授权本 plan checkpoint commits 时使用。Low 由 controller 处理，medium/high 均有 independent reviewer；final review 只保护真实跨任务 integration risk。
 - `requesting-code-review`：所有改动做 controller Spec/Standards 自审；除纯文档/注释/格式、机械 rename/config 和简单 glue 外，非平凡行为与 bug fix 默认触发独立双轴 review，并保持一次 Discovery、一次批量修复、一次 Closure。
 - `systematic-debugging`：优先建立 feedback loop；无法复现的生产/外部问题允许证据化、带置信度诊断，无验证不声称 fixed，按信息增益而非固定次数停止。
@@ -123,7 +123,7 @@ codex plugin list | grep k-superpowers
 预期能看到：
 
 ```text
-k-superpowers@k-superpowers-dev  installed, enabled  5.4.10
+k-superpowers@k-superpowers-dev  installed, enabled  5.4.11
 ```
 
 本地 marketplace 的结构是：
