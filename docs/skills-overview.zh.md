@@ -1,160 +1,155 @@
-# K Superpowers Skills 总览
+# K Superpowers：从用户角度看这套 Skills
 
-本文用于维护个人 fork；执行时以各 skill 正文为准。
+本文是仓库当前 14 个 Skill 的完整用户向总览。实际执行仍以各 Skill 正文为准，
+但日常使用不需要记住这些名字：直接说明你想做什么，Agent 会选择当前任务所需的
+最小流程。
 
-## 总体哲学
+## 这套 Skills 解决什么问题
 
-Skills 面向能够理解上下文、权衡风险并持续进化的智能 agent。规则固定目标、owner、
-授权、安全边界、material decision 和完成证据，不把自然语言 agent 模拟成解析器或死板
-状态机。除真实外部协议外，不冻结 prompt 字节、tool-call 顺序、输出行数或局部实现路径。
+K Superpowers 希望让 Coding Agent 像有判断力的工程师一样工作：该直接做时直接做，
+遇到真正影响结果的决定时再找你，不用流程数量、测试数量或 Review 次数制造“严谨感”。
 
-交付速度、用户等待时间和模型调用成本是一等产品指标。默认选择可逆、低权限、低
-ceremony 的路径；plan、worktree、delegation、review 和更宽验证只有在能降低实际风险
-或总延迟时才加入。
+你会感受到这些特点：
 
-## 代码产出哲学
+- 简单问题直接回答，清晰的小改动直接实现，不强制先写设计、计划或创建 worktree。
+- 架构、范围、依赖、公共接口、兼容性、安全和迁移等重要决定由你确认；局部实现交给
+  Agent 判断。
+- 写代码时优先用类型、API、可见性和边界校验排除非法状态，只为剩余的重要运行时
+  风险保留测试。
+- 遇到 Bug 先找证据和根因，不堆叠猜测性修复；无法验证时会明确说明置信度和缺口。
+- 非平凡代码会经过 Spec 与工程质量两方面检查，但 Review 有明确终点，不会无限循环。
+- commit、push、merge、MR/PR、强推和清理工作区都不会从“帮我改代码”中自动推导，
+  需要单独授权。
 
-Rust-inspired 哲学只约束 agent 如何设计代码，不要求 workflow 模仿 Rust。优先使用
-目标语言的类型、窄 API、可见性和资源模型排除非法状态，并在不可信边界做运行时校验。
-测试只保护静态系统无法证明的核心语义与高价值回归。
-
-`type-driven-verification` 提供按需思考问题：领域不变量、非法状态、输入边界、错误/
-资源 ownership、剩余 runtime risk 和相称证据。这不是必填表单。非自解释的核心结构、
-函数和抽象继续说明 purpose、caller use、不变量、生命周期/资源和协议/状态转换；注释
-语言与风格服从项目及邻近文件。核心测试优先通过行为化命名、清晰结构和领域化 fixture
-表达所保护的语义契约；只有回归背景、不明显不变量、特殊输入/顺序或关键断言后果无法
-自解释时，才补充邻近注释或 assertion message，不要求测试注释覆盖率。
-
-持久测试只保护稳定、高影响且类型、边界校验或现有证据无法证明的合同；业务相关性、
-验收示例或实现分支本身不是测试理由。优先在最窄稳定边界用最少案例覆盖不同失败类型，
-合并等价排列，避免跨层重复和锁定偶然实现细节；mock、fixture 与测试基础设施同样计入
-维护成本。稳定的领域不变量不会因为带有业务语义而被排除。
-
-代码规模只作为内聚性信号：函数约 300 行、源文件约 2,000 行时检查是否混合了稳定且
-可命名的独立职责，由 agent 根据局部推理、review、测试和变更隔离收益决定是否拆分。
-不因行数机械失败，也不自动扩大范围去重构遗留大文件；生成式、声明式、fixture 密集等
-结构可以合理例外。
-
-## 主流程
+## 一次任务通常怎么进行
 
 ```text
-ordinary question -> direct answer (no task skill)
-preparation/read-only -> requested non-mutating work -> stop
-bug/unexpected behavior -> systematic-debugging
-
-clear approved bounded change
-  -> Direct
-  -> current workspace + Inline + no commit
-  -> focused verification
-
-multi-step change needing durable execution handoff
-  -> writing-plans
-  -> independent tasks + concrete delegation benefit
-       -> ask SDD checkpoint authorization
-       -> SDD when selected and authorized
-     otherwise
-       -> Inline
-
-tightly coupled multi-step change
-  -> concise design or internal todo when useful
-  -> executing-plans
-
-Direct/Inline code edit
-  -> load type-driven-verification for consequential behavior or
-     non-self-explanatory core structures/functions/abstractions
-  -> controller Spec/Standards self-review
-  -> independent two-axis review for nontrivial behavior or bug fixes
+你的请求
+  ├─ 问答、检查、解释、状态查询 ──────────────> 只读处理并返回
+  ├─ Bug、报错、性能或异常行为 ──────────────> 诊断根因，再决定修复
+  ├─ 需求存在重要取舍 ──────────────────────> 先给出相称设计，等你确认
+  └─ 目标清楚、范围明确 ─────────────────────> 直接实现
+                                                  │
+                         多步骤且需要稳定交接？ ───┤
+                              ├─ 否：单 Agent 连续完成
+                              └─ 是：写计划，再选 Inline 或 SDD
+                                                  │
+                                      聚焦验证、自审、必要时独立 Review
+                                                  │
+                                             汇报结果，不自动提交
 ```
 
-- `using-superpowers` 只选择当前最小 owner；未来可能相关不是 trigger。
-- `brainstorming` 按 Direct/Compact/Full 调整设计深度。只有真实取舍才展示多个方案；
-  Full 保护不可逆、安全、协议、迁移和重大兼容性决定，不做逐章节 ceremony。设计批准
-  后只在已有明确实现请求时继续，并在编辑前评估一次执行拓扑。
-- `writing-plans` 只在跨会话、delegation 或复杂执行需要稳定交接时写持久 plan。安全
-  默认无需五选一 handoff；对真正独立且委派收益明确的任务，主动给出 SDD checkpoint
-  授权与 Inline no-commit 的简洁选择。
-- `executing-plans` 由一个 agent 连续执行批准范围，适应证据和依赖调整局部顺序；
-  所有改动做 controller 双轴自审；除纯文档/注释/格式、机械 rename/config 和简单
-  自解释 glue 外，非平凡行为与 bug fix 默认独立双轴 review。
+Worktree 是独立的工作区选择，只有你明确要求或隔离确有价值时才创建。Git 提交和
+MR/PR 是实现完成后的独立动作，不属于默认流程。
 
-## SDD
+## 常见请求会得到什么
 
-SDD 只用于真正独立、当前会话可委派且收益明确的任务，并继续要求用户显式授权本计划
-local checkpoint commits。该授权不覆盖 push、merge、PR、amend、force、无关工作或
-单独 spec/plan commit。
+| 你的意图 | 默认处理方式 | 你需要决定什么 |
+|---|---|---|
+| “解释一下这段代码” | 读取并解释，不进入设计或实现流程 | 通常不需要 |
+| “先看看这个问题” | 只做调查、分析或状态汇报 | 是否继续修改由你决定 |
+| “加一个明确的小功能” | 当前工作区直接实现、聚焦验证，不提交 | 只有发现重要设计分歧时才询问 |
+| “这个需求怎么设计” | 根据复杂度给出一次相称设计 | 确认真正影响行为的选择 |
+| “按这个复杂方案实现” | 需要时生成可交接计划，再单 Agent 或 SDD 执行 | 是否授权 SDD 的本地 checkpoint commits |
+| “修这个 Bug” | 先复现或收集证据，再修根因并验证症状 | 证据不足或需要扩大范围时决定下一步 |
+| “建个 worktree 做” | 使用平台原生能力或项目相邻目录创建隔离工作区 | 通常只需明确要创建 |
+| “提交代码” | 只提交已验证且属于本次范围的文件 | commit 不自动包含 push 或 MR/PR |
+| “提 MR/PR” | 根据 GitLab/GitHub 和仓库惯例选择对应方式 | 这是显式外部写操作 |
 
-风险与执行按实际效果判断：
+## 代码质量取向
 
-- low：controller 直接实现、验证和自审；
-- medium：implementer 执行，controller 双轴自审，再由 independent reviewer 审查；
-- high：implementer + independent reviewer；
-- final review：仅真实跨任务共享接口、共享状态或未验证组合风险。
+这套 Skills 的代码审美受 Rust 工程经验影响，但不会要求所有语言模仿 Rust 语法。
 
-单个 high task 已完成 task review 后不重复 whole-change review。Task snapshot 和
-checkpoint ownership 继续保护用户已有修改与提交边界。Delegated prompts 传播 goal、
-inputs、权限、material blockers、质量/验证期望和结果信息，但 controller 可根据平台和
-任务调整措辞、读取顺序与工具使用。
+- Rust 优先使用 enum、newtype、ownership、穷尽匹配和受控构造。
+- TypeScript 优先使用 discriminated union、严格空值和运行时 schema 校验不可信输入。
+- Go 优先使用明确 struct、constructor、小 interface 和显式错误传播。
+- 动态语言通过边界 validator、明确数据模型和窄 API 补足静态能力。
 
-## Review
+测试不是实现仪式。持久测试用于保护稳定、高影响、类型和现有证据无法证明的契约；
+优先用最少案例覆盖不同失败类型，避免同一风险在多层重复、枚举无意义排列或锁定私有
+实现细节。Mock、fixture 和测试基础设施也按需要维护的代码计算成本。
 
-`requesting-code-review` 使用有界生命周期：
+代码规模是内聚性提示，不是硬门禁。函数接近 300 行、源文件接近 2,000 行时，Agent
+会检查是否混入了可独立命名的职责；只有拆分确实改善理解、Review、测试或变更隔离时
+才拆，不会为了数字重构无关遗留代码。
+
+非自解释的核心结构、函数和抽象应说明用途、调用方式、关键不变量、生命周期或协议/
+状态转换；注释语言和形式跟随项目及邻近文件，不追求机械注释覆盖率。
+
+## 14 个 Skill 分工
+
+### 入口与设计
+
+| Skill | 什么时候介入 | 对用户的价值 |
+|---|---|---|
+| `using-superpowers` | 每次会话开始时判断当前意图 | 只加载最小必要流程；普通问答可以完全不进入任务 Skill |
+| `brainstorming` | 需求包含尚未确认的行为或重要取舍 | 按复杂度提供 Direct、Compact 或 Full 设计，只把重要决定交给你 |
+
+### 计划、执行与并行
+
+| Skill | 什么时候介入 | 对用户的价值 |
+|---|---|---|
+| `writing-plans` | 多步骤工作需要跨会话、委派或稳定交接 | 生成能直接执行的计划，不为简单改动制造文档 |
+| `executing-plans` | 已批准计划适合由一个 Agent 连续完成 | 在批准范围内灵活调整顺序，默认不提交 |
+| `subagent-driven-development` | 已批准计划包含真正独立任务，委派有明确收益，并已授权 checkpoint commits | 用独立实现与 Review 加速复杂工作，同时隔离每个任务的修改所有权 |
+| `dispatching-parallel-agents` | 多个调查、分析或诊断任务可以安全并行 | 缩短等待时间，但不并行冲突写入或顺序依赖任务 |
+
+### 实现质量、调试与 Review
+
+| Skill | 什么时候介入 | 对用户的价值 |
+|---|---|---|
+| `type-driven-verification` | 核心逻辑、公共 API、解析器、协议、状态、资源、复杂或过大的代码 | 负责类型/API 设计、测试选择、核心代码说明和相称证据，是实现质量的主要 owner |
+| `systematic-debugging` | Bug、失败、性能问题或异常行为 | 先观察、区分假设和追踪根因，再做最小可靠修复 |
+| `requesting-code-review` | 非平凡运行时行为、Bug fix、高风险边界、证据不足，或你明确要求 Review | 同一 Reviewer 检查需求正确性与工程质量；一次发现、一次集中修复、一次闭环 |
+| `receiving-code-review` | 收到 Reviewer、同事或平台的修改意见 | 把意见当作需要验证的技术主张；接受有证据的问题，也会拒绝不适用的建议 |
+| `verification-before-completion` | 准备声称完成、修复、通过、可提交或可集成 | 每个结论都绑定新鲜且相称的证据，不拿局部检查冒充全量通过 |
+
+### 工作区与 Git 交付
+
+| Skill | 什么时候介入 | 对用户的价值 |
+|---|---|---|
+| `using-git-worktrees` | 你明确要求 worktree，或隔离能显著提高安全性和恢复能力 | 选择合适位置、建立 ownership 标记，并确保后续只清理确属 Agent 创建的工作区 |
+| `finishing-a-development-branch` | 你明确要求 commit、merge、MR/PR、保留、丢弃或清理分支/worktree | 每个 Git 动作独立授权；只处理已验证、已授权的范围，不把提交自动升级为发布 |
+
+### Skill 自身维护
+
+| Skill | 什么时候介入 | 对用户的价值 |
+|---|---|---|
+| `writing-skills` | 创建、修改、审查或验证 Skill | 用真实使用反馈做一次聚焦修改和一次自审，不维护容易过拟合的模型 golden tests |
+
+## Review 为什么不会没完没了
+
+非平凡变更通常会走一个有界闭环：
 
 ```text
-Discovery -> frozen finding ledger -> one fix batch -> Closure
-          -> PASS | PASS_WITH_FOLLOWUPS | STOPPED_BLOCKED
+Discovery → 固定问题清单 → 一次集中修复 → Closure
+                                      ├─ PASS
+                                      ├─ PASS_WITH_FOLLOWUPS
+                                      └─ STOPPED_BLOCKED，交还用户决定
 ```
 
-所有改动由 controller 按 Spec / Standards 做一次自审。只有能明确证明属于纯文档/
-注释/格式、机械 rename/config 或简单自解释 glue 时才跳过独立 reviewer；非平凡运行时
-行为、bug fix、核心逻辑、公共 API、parser、安全权限、持久化/迁移、破坏性 cleanup、
-并发、协议/状态机、资源与跨模块行为、证据不足，或用户/批准 plan 明确要求时默认独立
-reviewer。分类不确定时选择 review；设计已经明确不等于实现可以免审。
+Reviewer 必须指出具体问题、影响和所需修复，不能只因为“没写测试”或测试数量不同就报错。
+次要建议进入后续事项，不会反复开启新的 Review/Fix 循环。
 
-Stable ID、severity、Spec/Standards、issue、impact 和 required fix 保留；不要求精确
-行数、首字符或纯文本编码。Minor 与无因果关系的新观察进入 follow-up。Closure 优先
-由同一逻辑 reviewer 完成，失败后交还用户，不自动继续 review/fix。
+## 明确保留给用户的控制权
 
-冻结的是 change goal、修改 scope 和 evidence snapshot，不是 reviewer 的只读能力。
-Reviewer 可为具体问题读取调用方、邻近实现、项目规范和直接依赖，但不得修改工作区、
-扩大 change request 或把无关观察升级为 blocker。Package 只用于跨 context 或需要冻结
-snapshot 的场景；scope 使用显式 paths 与 source/base/head，不使用 scope hash。
+- “实现”只授权当前范围内的文件修改，不授权 commit、push、merge 或 MR/PR。
+- “提交”只代表本地 commit，不自动推送；“提 MR/PR”才包含远端写入。
+- 不覆盖、吸收、stash、回滚或清理用户已有修改。
+- 删除分支或 worktree 前必须证明 ownership；破坏性丢弃需要明确确认。
+- 新出现的架构、范围、依赖、公共合同、兼容性、安全或迁移决定会返回给你。
+- 缺少证据时只报告已知事实、置信度和缺口，不会声称“已修复”或“全部通过”。
 
-## Debugging 与 Completion
+## 怎么使用
 
-- `systematic-debugging` 优先建立最小 feedback loop；无法本地复现时，可从 logs、traces、
-  dumps 和环境差异提出带置信度的诊断。没有验证不能声称 fixed。连续尝试不再产生信息、
-  scope 扩大或证据指向架构决定时停止，不使用固定失败次数。
-- `verification-before-completion` 让 claim 与 evidence 对齐。证据可以是命令、编译器/
-  类型保证、行为检查、diff inspection、review record 或可靠 artifact；未变化的代码不因
-  bookkeeping 或 delegation 机械重跑相同验证。
+直接用自然语言描述目标即可，例如：
 
-## 并行与 Skill 迭代
+```text
+先分析这个报错，不要改代码。
+按现在的设计实现，先不要提交。
+这个任务放 worktree 里做。
+把当前这批改动提交，但不要 push。
+检查完后帮我提 GitLab MR。
+```
 
-- `dispatching-parallel-agents` 允许共享只读文件和上下文；只禁止冲突写入、顺序依赖、
-  一个任务使另一个失效或整合成本高于收益的并行。它负责调查、分析、诊断等通用
-  workstream；已有批准 plan、持久 handoff 和 checkpoint ownership 的并行代码实现由
-  SDD 负责。
-- `writing-skills` 小改动只明确目标和可能回归的不变量；完整合同只用于 routing、权限、
-  delegation、review 等高影响行为，并且只记录适用项。
-- Skill 修改以真实使用反馈驱动，一次 coherent edit、一次 self-review。仓库不维护持久
-  skill tests/evals，也不默认调用模型验证；新非阻断建议进入下一轮。
-
-## 保留的硬边界
-
-- commit、push、merge、PR、amend、force 和外部写需要明确授权；
-- destructive discard 需要确认；
-- 不覆盖、吸收或清理用户已有修改；
-- worktree cleanup 必须证明 ownership；
-- material architecture/scope/dependency/public contract/compatibility 交给用户；
-- completion claim 必须有相称证据；
-- 核心注释、类型/API 优先和有界 review closure 保持。
-
-`finishing-a-development-branch` 处理显式授权的 local commit 与真实
-merge/PR/MR/retain/discard/cleanup 决策；commit message 和 review request 文案
-优先跟随项目指令、仓库模板与近期同类历史。创建 review request 时按仓库 provider
-路由：简单 GitLab MR 优先使用 push options，GitHub 使用 `gh`，复杂 GitLab 操作使用
-`glab` 或 API，浏览器兜底。base 在开发期间前进时，默认将 feature rebase 到最新
-base，再 fast-forward 合入；已发布分支的 force-push 仍需单独授权。
-`using-git-worktrees` 继续单一拥有 workspace placement 与 cleanup ownership。
-无平台原生创建能力且用户未指定目录时，手工 worktree 默认使用与 Zed 一致的仓库同级
-`<repository-parent>/worktrees/<project>/<worktree-name>` 布局。
+这些限定会成为本次任务的真实边界，不需要你手动拼装 Skill 流程。

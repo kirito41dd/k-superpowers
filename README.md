@@ -4,6 +4,11 @@
 
 本仓库不面向上游贡献，也不使用上游 marketplace 发布链路。默认安装方式以 git 或本地路径为主。
 
+## 快速了解
+
+想先知道这套 Skills 实际会怎样帮你分析、设计、写代码、调试、Review 和交付，参见
+[从用户角度看 K Superpowers：完整 14 个 Skill 总览](docs/skills-overview.zh.md)。
+
 ## 定制哲学
 
 本 fork 用 Rust-inspired 工程哲学指导 agent 产出的代码设计；workflow 自身采用
@@ -36,7 +41,7 @@ Skill 文本是给持续进化的智能体使用的行为指导，不以固定�
 - `writing-skills`：以真实使用反馈驱动最小修改；不创建持久化测试、eval matrix 或模型 golden output，也不默认调用模型做验证。单次随机输出只作观察，新改进不反复 reopen 当前迭代。
 - `CLAUDE.md`：只保留项目记忆规则，后续用于放个人 fork 的 agent 提示。
 - `.ai/memory/`：记录本 fork 的长期决策、约定、坑点和术语。
-- `docs/skills-overview.zh.md`：中文梳理每个 skill 的核心思想、流程和 `description` 注入效果。
+- `docs/skills-overview.zh.md`：从用户角度介绍整套工作方式、14 个 Skill 分工和权限边界。
 
 ## OpenCode 安装
 
