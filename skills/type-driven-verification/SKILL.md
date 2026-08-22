@@ -62,6 +62,11 @@ implementation branch is not sufficient by itself. Test durable domain
 invariants and costly failure modes with the smallest set of cases at the
 narrowest stable caller-visible or domain boundary.
 
+Do not add persistent tests or reshape production abstractions, including
+enums, errors, or helpers, solely to test human-readable developer log copy.
+Test logs only when machine consumers, audit/compliance obligations, or
+documented compatibility depend on their events, fields, or exact output.
+
 Consolidate equivalent cases with table-driven or property-oriented tests when
 that preserves diagnostic value. Avoid duplicating the same risk across helper,
 module, and end-to-end layers; enumerating permutations without distinct failure

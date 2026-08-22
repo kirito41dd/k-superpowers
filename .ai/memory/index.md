@@ -13,10 +13,14 @@
 | `decisions.md` | 用户问“为什么” / 做技术选型 / 准备改 workflow 哲学 | 确定技术方案、架构决策 |
 | `gotchas.md` | 调试 bug / 修改敏感模块前 / 准备向 upstream 提 PR | 遇到非显而易见的坑 |
 | `conventions.md` | 写新文档 / 改 skill / 用户纠正风格时 | 用户明确指出项目约定 |
+| `feedback.md` | 使用或重构 skill / 复盘 Agent 研发体验 | 用户反馈真实使用中的不爽点或过度行为 |
 | `glossary.md` | 遇到陌生术语 | 用户使用项目特定名词 |
 
 ## 快速索引（按模块）
 
+- Skill 使用反馈 → `feedback.md`
+- 提交阶段重复运行已完成的验证 → `feedback.md#2026-08-22-提交阶段重复运行已完成的验证`
+- 纯日志改动被过度工程化 → `feedback.md#2026-08-22-纯日志改动被过度工程化`
 - Judgment-First、智能 Agent、有界 Review 与真实交付 → `requirements.md#2026-07-21-skills-以智能-agent-和真实交付为中心`, `decisions.md#2026-07-21-skills-工作流采用-judgment-first-与有界-review`, `conventions.md#2026-07-21-把-agent-当作聪明的智能体`
 - Skills 无持久测试、真实使用反馈驱动迭代 → `requirements.md#2026-07-21-skills-仓库移除全部持久测试`, `decisions.md#2026-07-21-skills-不维护持久测试并停止默认模型验证`, `conventions.md#2026-07-21-skill-修改采用一次编辑一次自审`
 - GPT-5.6 Prompt 优化、日常问答 No Task Skill 与既有行为保护 → `requirements.md#2026-07-21-gpt-56-prompt-优化须保留既有行为`, `decisions.md#2026-07-21-以最小-skill-路由和行为-eval-落地-gpt-56-prompt-优化`, `conventions.md#2026-07-21-日常问答走-no-task-skill-且-prompt-瘦身不得弱化注释契约`
@@ -47,7 +51,11 @@
 
 ## 标签索引
 
-- `#skills` → `requirements.md`, `conventions.md`, `glossary.md`
+- `#skills` → `requirements.md`, `conventions.md`, `feedback.md`, `glossary.md`
+- `#feedback` → `feedback.md`
+- `#logging` → `feedback.md`
+- `#git` → `feedback.md`
+- `#performance` → `feedback.md`
 - `#fork` → `requirements.md`, `decisions.md`
 - `#personalization` → `decisions.md`, `conventions.md`
 - `#codex` → `decisions.md`, `conventions.md`
@@ -55,7 +63,7 @@
 - `#opencode` → `decisions.md`, `conventions.md`
 - `#install` → `decisions.md`, `conventions.md`
 - `#brainstorming` → `conventions.md`
-- `#verification` → `decisions.md`, `conventions.md`
+- `#verification` → `decisions.md`, `conventions.md`, `feedback.md`
 - `#type-driven` → `decisions.md`, `conventions.md`
 - `#upstream-pr` → `gotchas.md`
 - `#memory` → `decisions.md`, `conventions.md`
@@ -63,14 +71,16 @@
 - `#version` → `conventions.md`
 - `#comments` → `requirements.md`, `conventions.md`
 - `#sdd` → `decisions.md`, `gotchas.md`
-- `#routing` → `requirements.md`, `decisions.md`, `conventions.md`
+- `#routing` → `requirements.md`, `decisions.md`, `conventions.md`, `feedback.md`
 - `#prompt` → `decisions.md`, `conventions.md`, `gotchas.md`
 - `#iteration` → `requirements.md`, `decisions.md`, `conventions.md`
 - `#judgment-first` → `requirements.md`, `decisions.md`, `conventions.md`
-- `#review` → `requirements.md`, `decisions.md`
+- `#review` → `requirements.md`, `decisions.md`, `feedback.md`
 
 ## 最近热点
 
+- 2026-08-22 提交阶段重复运行已完成的验证 → `feedback.md`
+- 2026-08-22 纯日志改动被过度工程化 → `feedback.md`
 - 2026-07-21 Skills 工作流采用 Judgment-First 与有界 Review → `requirements.md`, `decisions.md`, `conventions.md`
 - 2026-07-21 Skills 不维护持久测试并停止默认模型验证 → `requirements.md`, `decisions.md`, `conventions.md`, `gotchas.md`
 - 2026-07-21 以最小 Skill 路由落地 GPT-5.6 Prompt 优化 → `requirements.md`, `decisions.md`, `conventions.md`

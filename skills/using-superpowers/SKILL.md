@@ -54,6 +54,12 @@ current workspace + Inline + no commit
 
 Before editing, inspect relevant project instructions and detect overlap with
 pre-existing user changes. Stop only for a real conflict or material decision.
+Classify consequence from semantic delta, not file location. Human-readable
+logging-only edits that preserve control flow, caller-visible behavior,
+state or resource lifecycles, and sensitive-data safety need neither
+`k-superpowers:type-driven-verification` nor persistent tests; verify them
+through diff and relevant format/compile checks unless machine consumers or
+documented contracts depend on them.
 Before code edits, load `k-superpowers:type-driven-verification` when the change
 contains consequential domain behavior, public boundaries, parsers, protocols,
 state, resources, or introduces or modifies a non-self-explanatory core

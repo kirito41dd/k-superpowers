@@ -1,14 +1,20 @@
 ---
 name: requesting-code-review
-description: Use when completed work changes nontrivial runtime behavior, fixes a bug, affects core logic, public APIs, parsers, security, permissions, persisted state, migrations, destructive cleanup, concurrency, protocols, state machines, resources, or cross-module behavior, lacks strong verification evidence, or the user or approved plan requests independent review
+description: Use when completed work changes nontrivial runtime behavior, fixes a bug, changes core logic, public APIs, parsers, security or permission behavior, persisted state, migrations, destructive cleanup, concurrency, protocols, state machines, resources, or cross-module behavior, lacks strong verification evidence, or the user or approved plan requests independent review
 ---
 
 # Requesting Code Review
 
 Independent review is the default for nontrivial runtime behavior and bug
 fixes. Skip it only when the controller can establish that the change is limited
-to docs, comments, formatting, a mechanical rename/configuration edit, or
-simple self-explanatory glue. When classification is uncertain, review.
+to docs, comments, formatting, a mechanical rename/configuration edit,
+human-readable developer logs, or simple self-explanatory glue. When
+classification is uncertain, review.
+
+Judge changed behavior, not file location. Logging-only changes that preserve
+security decisions and caller-visible behavior need only same-controller review
+of intended branches and sensitive-data safety, even in auth, permission, or
+security code.
 
 One logical reviewer evaluates two axes:
 

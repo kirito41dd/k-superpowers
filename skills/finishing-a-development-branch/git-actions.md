@@ -18,7 +18,11 @@ repository evidence is absent.
 
 Inspect staged and unstaged changes before committing. Stage only verified,
 authorized paths, and stop if the resulting commit would absorb pre-existing or
-out-of-scope work. After the relevant verification:
+out-of-scope work. Reuse fresh evidence when the authorized content matches the
+verified diff; staging or committing unchanged content does not require
+rerunning compilation or tests. Rerun only after a relevant content, input,
+environment, or claim change, or when evidence is stale or incomplete. Do not
+bypass repository hooks. Then:
 
 ```bash
 git add -- <authorized-paths>
