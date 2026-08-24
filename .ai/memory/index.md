@@ -19,6 +19,7 @@
 ## 快速索引（按模块）
 
 - Skill 使用反馈 → `feedback.md`
+- 含 submodule 的干净 worktree 被误判为不可清理 → `feedback.md#2026-08-24-含-submodule-的干净-worktree-被误判为不可清理`
 - 提交阶段重复运行已完成的验证 → `feedback.md#2026-08-22-提交阶段重复运行已完成的验证`
 - 纯日志改动被过度工程化 → `feedback.md#2026-08-22-纯日志改动被过度工程化`
 - Judgment-First、智能 Agent、有界 Review 与真实交付 → `requirements.md#2026-07-21-skills-以智能-agent-和真实交付为中心`, `decisions.md#2026-07-21-skills-工作流采用-judgment-first-与有界-review`, `conventions.md#2026-07-21-把-agent-当作聪明的智能体`
@@ -56,6 +57,8 @@
 - `#logging` → `feedback.md`
 - `#git` → `feedback.md`
 - `#performance` → `feedback.md`
+- `#worktree` → `feedback.md`
+- `#submodule` → `feedback.md`
 - `#fork` → `requirements.md`, `decisions.md`
 - `#personalization` → `decisions.md`, `conventions.md`
 - `#codex` → `decisions.md`, `conventions.md`
@@ -79,6 +82,7 @@
 
 ## 最近热点
 
+- 2026-08-24 含 submodule 的干净 worktree 被误判为不可清理 → `feedback.md`
 - 2026-08-22 提交阶段重复运行已完成的验证 → `feedback.md`
 - 2026-08-22 纯日志改动被过度工程化 → `feedback.md`
 - 2026-07-21 Skills 工作流采用 Judgment-First 与有界 Review → `requirements.md`, `decisions.md`, `conventions.md`

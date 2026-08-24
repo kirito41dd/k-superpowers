@@ -2,13 +2,37 @@
 
 <!-- SUMMARY
 覆盖范围：真实研发中使用 skills 的不爽点、期望规则和处理状态
-条目数：2
-最近更新：2026-08-22
-高频标签：#feedback #skills #routing #verification #review #logging #git #performance
+条目数：3
+最近更新：2026-08-24
+高频标签：#feedback #skills #routing #verification #review #logging #git #performance #worktree #submodule
 -->
 
 只记录经过脱敏、可公开泛化的真实使用体验，不写私有项目名、业务标识、
 接口或存储细节。新反馈放在顶部，过时反馈标记 `[DEPRECATED]`，不删除。
+
+---
+
+## 2026-08-24 含 submodule 的干净 worktree 被误判为不可清理
+
+### 场景
+
+用户要求清理工作区，普通 `git worktree remove` 因 worktree 含已初始化的
+submodule 而拒绝删除。
+
+### 不爽点
+
+- Agent 把 Git 的 submodule 特殊限制直接当成无法清理。
+- Submodule 是正常项目结构，不应因此残留已经完成的干净 worktree。
+
+### 我的规则
+
+- Submodule 本身不是清理阻塞条件。
+- Worktree 归属明确且包含 submodule 在内的状态为空时，可单次 `--force` 清理。
+- Worktree 脏、锁定、归属不明或失败原因不同时仍应停止，不能无条件强删。
+
+### 处理状态
+
+MERGE/DISCARD 共用的清理说明已增加受控 fallback，版本为 `5.4.14`。
 
 ---
 

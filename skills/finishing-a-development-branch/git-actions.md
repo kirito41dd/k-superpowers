@@ -33,6 +33,13 @@ git commit -m '<subject>'
 Report the commit SHA and subject. A COMMIT action does not authorize amend,
 push, merge, PR, or cleanup.
 
+## Worktree Removal
+
+Submodules alone do not block cleanup. If ordinary `git worktree remove` fails
+only because submodules exist, retry once with `--force` after provenance
+matches and a status check including untracked files and submodules is empty.
+Never force a dirty, locked, unowned, or differently failing worktree.
+
 ## MERGE
 
 ```bash
