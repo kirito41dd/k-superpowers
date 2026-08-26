@@ -2,13 +2,37 @@
 
 <!-- SUMMARY
 覆盖范围：真实研发中使用 skills 的不爽点、期望规则和处理状态
-条目数：3
-最近更新：2026-08-24
-高频标签：#feedback #skills #routing #verification #review #logging #git #performance #worktree #submodule
+条目数：4
+最近更新：2026-08-26
+高频标签：#feedback #skills #routing #verification #review #logging #git #gitlab #handoff #performance #worktree #submodule
 -->
 
 只记录经过脱敏、可公开泛化的真实使用体验，不写私有项目名、业务标识、
 接口或存储细节。新反馈放在顶部，过时反馈标记 `[DEPRECATED]`，不删除。
+
+---
+
+## 2026-08-26 上下文压缩后漏读 PR action recipe
+
+### 场景
+
+父 skill 已加载，但延迟执行 PR action 时未重读对应 recipe。
+
+### 不爽点
+
+- Agent 先普通 push，再尝试未安装的 `glab`，最后又尝试无效的 no-op push options。
+- “skill 已加载”的摘要掩盖了实际未读取 action 细节。
+
+### 我的规则
+
+- 每个 action 执行前重读完整 recipe，不依赖记忆或上下文摘要。
+- GitLab 同项目新分支首次 push 直接用 push options 创建 MR，不预查 `glab`。
+- 已推送且无更新时不做 no-op push；改用已认证的 `glab`/API，不可用则报告或给手动链接。
+- 只授权 COMMIT 时，不推送或创建 MR。
+
+### 处理状态
+
+已增加 action recipe gate 并收紧 GitLab PR 路径，版本为 `5.4.15`。
 
 ---
 

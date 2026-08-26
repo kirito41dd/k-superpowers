@@ -34,8 +34,15 @@ Use semantic actions; numeric menu positions are presentation only:
 - `DISCARD`: show branch, commits, and workspace, then require exact `discard`
   confirmation before deletion.
 
-Commands live in `git-actions.md`. Failure stops the selected action; do not
-continue into cleanup after failed merge, push, PR, or verification.
+## Action Recipe Gate
+
+After the user selects an action, read its complete section and applicable
+shared guidance in `git-actions.md` before the first Git command for that
+action. Do this at execution time even if the parent skill was read earlier or
+a context summary says it was loaded; do not execute from memory.
+
+Failure stops the selected action; do not continue into cleanup after failed
+merge, push, PR, or verification.
 
 Rebasing is the default when the base advanced during development; do not merge
 the base into the feature merely to synchronize it. Rewriting an already

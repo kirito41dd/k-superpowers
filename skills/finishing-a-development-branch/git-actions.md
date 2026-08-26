@@ -76,9 +76,8 @@ a GitHub pull request or GitLab merge request. Determine the provider from
 repository configuration, remote context, and available authenticated tools;
 do not assume every remote is GitHub or rely on URL shape alone.
 
-For a straightforward GitLab merge request in the same project, create it as
-part of a branch push. This avoids searching for a separate CLI or opening a
-browser when GitLab's native push options are sufficient:
+For the first push of a new branch in the same GitLab project, create the merge
+request with GitLab push options before looking for or invoking `glab`:
 
 ```bash
 git push -u origin <feature> \
@@ -102,12 +101,12 @@ wrap whole list items or body blocks in bold. For example:
 
 Inspect the push output and report the created merge request URL. GitLab push
 options are server-side GitLab behavior, not portable Git flags. If the branch
-has already been pushed without a new update, or the request needs richer
-metadata, reviewers, labels, milestones, fork targeting, an update to an
-existing merge request, or a description that cannot be represented safely as
-a push-option value, use an authenticated `glab` command or the GitLab API. Use
-the browser only when those paths are unavailable or interactive UI work is
-actually needed.
+is already pushed with no new update, do not attempt a no-op push solely to send
+push options. For that case, or when richer metadata, reviewers, labels,
+milestones, fork targeting, an existing merge request, or an unsafe push-option
+description requires it, use authenticated `glab` or the GitLab API. If neither
+is available, report the missing capability or provide a manual creation link;
+do not guess commands.
 
 For GitHub:
 
