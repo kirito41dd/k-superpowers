@@ -24,6 +24,13 @@ resources, or significant error boundaries, consider the applicable questions:
 These are thinking dimensions, not a mandatory report form. Skip irrelevant
 questions for docs, formatting, mechanical changes, and simple glue.
 
+When a change designs or alters the behavior or boundaries of a backend business
+command, transactional or stateful use case, or permission-sensitive or complex
+business query, read
+[Use-Case-Driven Transactional Application Services](use-case-driven-transactional-services.md)
+for the applicable use-case, transaction, data-ownership, state, and side-effect
+boundaries.
+
 ## Language Capability
 
 - **Rust:** enums/newtypes, private validated construction, ownership/lifetimes,

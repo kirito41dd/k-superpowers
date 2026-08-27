@@ -41,6 +41,13 @@ unusually large changed functions or files as a cohesion signal: report a
 concrete separable responsibility or reasoning, review, testing, or
 change-isolation cost rather than line count alone.
 
+When the approved semantic delta alters the behavior or boundaries of a backend
+business command, transactional or stateful use case, or permission-sensitive
+or complex business query, apply the relevant
+[use-case-driven service guidance](../type-driven-verification/use-case-driven-transactional-services.md)
+under the project's own architecture rules; do not enforce unused layers or a
+legacy rewrite.
+
 Each finding reports:
 
 ```text

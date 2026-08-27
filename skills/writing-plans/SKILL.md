@@ -32,6 +32,11 @@ docs/mechanical work does not block because a `low` label is absent.
 
 `k-superpowers:type-driven-verification` owns implementation design guidance;
 reference its applicable questions rather than copying a mandatory form.
+For plans that alter the behavior or boundaries of a backend business command,
+transactional or stateful use case, or permission-sensitive or complex business
+query, also apply its
+[use-case-driven service guidance](../type-driven-verification/use-case-driven-transactional-services.md)
+without turning every responsibility into a required task or abstraction.
 
 ## Handoff
 

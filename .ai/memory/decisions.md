@@ -2,9 +2,9 @@
 
 <!-- SUMMARY
 覆盖范围：架构决策、技术选型、废弃方案（ADR 风格）
-条目数：19
-最近更新：2026-07-21
-高频标签：#memory #fork #personalization #codex #opencode #claude-code #install #verification #type-driven #skills #sdd #routing #prompt #iteration #judgment-first #review
+条目数：20
+最近更新：2026-08-27
+高频标签：#memory #fork #personalization #codex #opencode #claude-code #install #verification #type-driven #skills #sdd #routing #prompt #iteration #judgment-first #review #backend #ddd #application-service #cqrs #transaction
 -->
 
 ## 写入格式（ADR 风格）
@@ -19,6 +19,17 @@
 - **影响**：影响的模块 / 文件
 - **状态**：已实施 / 试验中 / [DEPRECATED 原因]
 ```
+
+---
+
+## 2026-08-27 后端业务服务采用用例驱动的事务型应用服务规范
+
+- **背景**：后端业务服务需要复用一套轻量边界：Handler 负责协议，Application Service 按业务用例编排并持有事务，领域与数据所属模块保护业务语义和状态变化，查询可轻量读写分离，外部副作用在提交后执行，要求可靠投递时使用 Outbox。若每个项目重复描述容易遗漏；若新建顶层 skill 又会增加路由和上下文成本。
+- **选项**：A）只写入各项目 `AGENTS.md`；B）新增独立顶层 skill；C）由 `type-driven-verification` 维护一份条件加载的后端业务服务参考，并让计划与审查入口轻量引用。
+- **决策**：选择 C。参考同时使用“用例驱动的轻量 DDD”“用例驱动的分层架构”两个别名，完整名称为“用例驱动的事务型应用服务”；说明其核心借鉴分层架构、DDD Application Service、事务边界、轻量 CQRS 与显式状态机。Outbox 仅用于要求可靠投递的跨边界副作用，不是架构中心；这套实践也不是某个标准框架的官方名称。仅适用于有业务语义、事务或权限边界的后端服务，项目规则优先，不强制目录、Repository trait 或全量 DDD。
+- **理由**：把完整规范下沉到按需参考，可以跨项目复用核心边界，同时保持高频 skill 精简；把它归入实现设计 owner，也避免新增一个与 TDV 竞争的路由入口。
+- **影响**：`skills/type-driven-verification/`, `skills/writing-plans/SKILL.md`, `skills/requesting-code-review/code-reviewer.md`。版本更新为 `5.4.17`。
+- **状态**：已实施。
 
 ---
 
