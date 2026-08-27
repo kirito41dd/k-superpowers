@@ -31,6 +31,10 @@ business query, read
 for the applicable use-case, transaction, data-ownership, state, and side-effect
 boundaries.
 
+When the semantic delta alters persistence access, database schema,
+migration/backfill behavior, or ownership/sharding boundaries, read
+[Backend Database Schema and Migrations](backend-database-schema-and-migrations.md).
+
 ## Language Capability
 
 - **Rust:** enums/newtypes, private validated construction, ownership/lifetimes,

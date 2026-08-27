@@ -2,9 +2,9 @@
 
 <!-- SUMMARY
 覆盖范围：架构决策、技术选型、废弃方案（ADR 风格）
-条目数：20
-最近更新：2026-08-27
-高频标签：#memory #fork #personalization #codex #opencode #claude-code #install #verification #type-driven #skills #sdd #routing #prompt #iteration #judgment-first #review #backend #ddd #application-service #cqrs #transaction
+条目数：21
+最近更新：2026-08-28
+高频标签：#memory #fork #personalization #codex #opencode #claude-code #install #verification #type-driven #skills #sdd #routing #prompt #iteration #judgment-first #review #backend #ddd #application-service #cqrs #transaction #database #ddl #migration #sharding #orm
 -->
 
 ## 写入格式（ADR 风格）
@@ -19,6 +19,17 @@
 - **影响**：影响的模块 / 文件
 - **状态**：已实施 / 试验中 / [DEPRECATED 原因]
 ```
+
+---
+
+## 2026-08-28 后端数据库采用面向在线演进与分片的通用规范
+
+- **背景**：互联网后端业务库反复需要说明同一组边界：老服务不停机时 DDL 必须向前兼容；常规访问优先 ORM/Query Builder 和参数绑定；自增行 ID 不承担跨分片业务身份；外键会绑定物理库和生命周期，引用完整性应由业务事务、数据库约束与对账共同保护。若只留在项目文档中，每个项目都要重新声明；若塞入业务服务架构参考，又会混淆应用分层与数据库演进。
+- **选项**：A）继续由各项目维护；B）新增顶层数据库 skill；C）由 `type-driven-verification` 维护一份按语义增量加载的数据库参考，并让业务服务、计划与审查入口轻量引用。
+- **决策**：选择 C。规范面向可能分库分表或按 owner 拆分的后端 OLTP 服务，覆盖在线 schema 演进、DDL/Data Migration 分离、持久化访问安全、行 ID/业务 ID、shard key、无外键完整性、并发约束、时间/金额语义、索引与比例化证据。项目规则优先；不强制所有 SQL 使用 ORM，不禁止表内自增主键，也不把无外键推广到明确依赖外键的单库系统。
+- **理由**：独立支撑参考既能跨项目复用高价值数据库边界，也能避免新增顶层路由和高频上下文膨胀；明确 ORM、无外键和分片的适用边界，可防止安全口号替代真实参数绑定、约束与兼容性证据。
+- **影响**：`skills/type-driven-verification/`, `skills/writing-plans/SKILL.md`, `skills/requesting-code-review/code-reviewer.md`。版本更新为 `5.4.18`。
+- **状态**：已实施。
 
 ---
 

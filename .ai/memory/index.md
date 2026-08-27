@@ -18,6 +18,7 @@
 
 ## 快速索引（按模块）
 
+- 后端数据库在线演进与分片规范 → `decisions.md#2026-08-28-后端数据库采用面向在线演进与分片的通用规范`
 - 后端业务服务的用例驱动事务边界 → `decisions.md#2026-08-27-后端业务服务采用用例驱动的事务型应用服务规范`
 - Skill 使用反馈 → `feedback.md`
 - 提交请求可能绕过独立 Review → `feedback.md#2026-08-27-提交请求可能绕过独立-review`
@@ -86,9 +87,11 @@
 - `#judgment-first` → `requirements.md`, `decisions.md`, `conventions.md`
 - `#review` → `requirements.md`, `decisions.md`, `feedback.md`
 - `#backend` / `#ddd` / `#application-service` / `#cqrs` / `#transaction` → `decisions.md`
+- `#database` / `#ddl` / `#migration` / `#sharding` / `#orm` → `decisions.md`
 
 ## 最近热点
 
+- 2026-08-28 后端数据库采用面向在线演进与分片的通用规范 → `decisions.md`
 - 2026-08-27 后端业务服务采用用例驱动的事务型应用服务规范 → `decisions.md`
 - 2026-08-27 提交请求可能绕过独立 Review → `feedback.md`
 - 2026-08-26 上下文压缩后漏读 PR action recipe → `feedback.md`

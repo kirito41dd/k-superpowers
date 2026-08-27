@@ -37,6 +37,9 @@ transactional or stateful use case, or permission-sensitive or complex business
 query, also apply its
 [use-case-driven service guidance](../type-driven-verification/use-case-driven-transactional-services.md)
 without turning every responsibility into a required task or abstraction.
+For plans that alter persistence access, schema, migration/backfill behavior, or
+ownership/sharding boundaries, apply the
+[backend database guidance](../type-driven-verification/backend-database-schema-and-migrations.md).
 
 ## Handoff
 

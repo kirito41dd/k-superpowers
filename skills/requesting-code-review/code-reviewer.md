@@ -48,6 +48,11 @@ or complex business query, apply the relevant
 under the project's own architecture rules; do not enforce unused layers or a
 legacy rewrite.
 
+When the approved semantic delta alters persistence access, schema,
+migration/backfill behavior, or ownership/sharding boundaries, apply the
+[backend database guidance](../type-driven-verification/backend-database-schema-and-migrations.md)
+under the project's own database and deployment rules.
+
 Each finding reports:
 
 ```text

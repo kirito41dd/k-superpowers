@@ -58,9 +58,11 @@ a pending member or releasing a seat. Low-level insert, update, and delete
 operations may exist behind the owning module, but should not let other modules
 bypass its invariants.
 
-Keep SQL with the module that owns the data. ORM, query builders, and raw SQL are
-all acceptable when they preserve that ownership boundary. Do not add repository
-traits or wrapper types solely to imitate an architectural diagram.
+Keep SQL with the module that owns the data. When persistence access, schema, or
+sharding is part of the semantic delta, apply
+[Backend Database Schema and Migrations](backend-database-schema-and-migrations.md).
+Do not add repository traits or wrapper types solely to imitate an architectural
+diagram.
 
 ### State And Concurrency
 
