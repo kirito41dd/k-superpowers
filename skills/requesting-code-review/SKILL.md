@@ -5,11 +5,11 @@ description: Use when completed work changes nontrivial runtime behavior, fixes 
 
 # Requesting Code Review
 
-Independent review is the default for nontrivial runtime behavior and bug
-fixes. Skip it only when the controller can establish that the change is limited
-to docs, comments, formatting, a mechanical rename/configuration edit,
-human-readable developer logs, or simple self-explanatory glue. When
-classification is uncertain, review.
+Independent review is the default when a completed change matches this skill's
+trigger. Simple, self-explanatory changes with strong controller evidence need
+no formal review; docs, comments, formatting, mechanical edits, human-readable
+developer logs, and simple glue are common examples. When classification is
+uncertain, review.
 
 Judge changed behavior, not file location. Logging-only changes that preserve
 security decisions and caller-visible behavior need only same-controller review
@@ -22,10 +22,11 @@ One logical reviewer evaluates two axes:
 - **Standards:** correctness, project conventions, boundaries, errors/resources,
   maintainability, core explanations, and verification quality.
 
-Every change receives one same-controller self-review across these two axes
-before either outcome. The user, approved plan, weak verification evidence, or
-concrete new risk evidence also requires independent review. Resolved design
-decisions do not make implementation exempt.
+Changes outside the trigger finish with ordinary controller inspection and
+verification; do not invoke formal review solely to record a skip. An explicit
+user or approved-plan requirement, weak verification evidence, or concrete new
+risk evidence requires independent review. Resolved design decisions do not
+make implementation exempt.
 
 ## Evidence
 

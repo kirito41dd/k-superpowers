@@ -19,6 +19,7 @@
 ## 快速索引（按模块）
 
 - Skill 使用反馈 → `feedback.md`
+- 提交请求可能绕过独立 Review → `feedback.md#2026-08-27-提交请求可能绕过独立-review`
 - 上下文压缩后漏读 PR action recipe → `feedback.md#2026-08-26-上下文压缩后漏读-pr-action-recipe`
 - 含 submodule 的干净 worktree 被误判为不可清理 → `feedback.md#2026-08-24-含-submodule-的干净-worktree-被误判为不可清理`
 - 提交阶段重复运行已完成的验证 → `feedback.md#2026-08-22-提交阶段重复运行已完成的验证`
@@ -55,6 +56,7 @@
 
 - `#skills` → `requirements.md`, `conventions.md`, `feedback.md`, `glossary.md`
 - `#feedback` → `feedback.md`
+- `#independent-review` → `feedback.md`
 - `#logging` → `feedback.md`
 - `#git` → `feedback.md`
 - `#gitlab` → `feedback.md`
@@ -85,6 +87,7 @@
 
 ## 最近热点
 
+- 2026-08-27 提交请求可能绕过独立 Review → `feedback.md`
 - 2026-08-26 上下文压缩后漏读 PR action recipe → `feedback.md`
 - 2026-08-24 含 submodule 的干净 worktree 被误判为不可清理 → `feedback.md`
 - 2026-08-22 提交阶段重复运行已完成的验证 → `feedback.md`

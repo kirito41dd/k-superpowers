@@ -12,6 +12,11 @@ Git integration/cleanup decision. Skip current-main Inline work while neither
 exists. Identify branch/detached state and the selected action's relevant base,
 workspace, ownership, and change scope before acting.
 
+Before `COMMIT`, `MERGE`, or `PR`, apply
+`k-superpowers:requesting-code-review`'s independent-review trigger to the final
+relevant diff. Complete a required review when no valid result covers that diff;
+changes outside the trigger need no formal review.
+
 ## Actions
 
 Use semantic actions; numeric menu positions are presentation only:

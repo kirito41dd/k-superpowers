@@ -2,13 +2,36 @@
 
 <!-- SUMMARY
 覆盖范围：真实研发中使用 skills 的不爽点、期望规则和处理状态
-条目数：4
-最近更新：2026-08-26
-高频标签：#feedback #skills #routing #verification #review #logging #git #gitlab #handoff #performance #worktree #submodule
+条目数：5
+最近更新：2026-08-27
+高频标签：#feedback #skills #routing #verification #review #independent-review #logging #git #gitlab #handoff #performance #worktree #submodule
 -->
 
 只记录经过脱敏、可公开泛化的真实使用体验，不写私有项目名、业务标识、
 接口或存储细节。新反馈放在顶部，过时反馈标记 `[DEPRECATED]`，不删除。
+
+---
+
+## 2026-08-27 提交请求可能绕过独立 Review
+
+### 场景
+
+任务完成后用户直接要求提交，Agent 可能漏掉本应进行的独立 Review。
+
+### 不爽点
+
+- 独立 reviewer 确实能发现问题，却依赖用户主动提醒。
+- 不能因此让所有简单任务都进入正式 Review。
+
+### 我的规则
+
+- 简单、自解释且证据充分的改动只做普通检查和验证。
+- 命中 Review trigger 的变更默认派发独立 reviewer。
+- COMMIT/MERGE/PR 前补查缺失的必要 Review，不重复已有有效 Review。
+
+### 处理状态
+
+已收紧正式 Review 边界并增加 Git action 前兜底，版本为 `5.4.16`。
 
 ---
 
