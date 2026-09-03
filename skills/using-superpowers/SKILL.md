@@ -21,6 +21,7 @@ useful later, and do not load mutually exclusive execution paths together.
 | Intent | Route |
 |---|---|
 | Ordinary question answerable from current knowledge | Answer directly |
+| Turn an existing technical direction, implementation context, or research into meeting-ready review and decision material | `k-superpowers:preparing-technical-review` |
 | Familiarize, inspect, explain, review, or report status | Perform only the requested non-mutating work, then stop |
 | Bug or unexpected behavior | `k-superpowers:systematic-debugging` |
 | Behavior change without approved design | `k-superpowers:brainstorming` |

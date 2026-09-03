@@ -21,6 +21,7 @@
 - 后端数据库在线演进与分片规范 → `decisions.md#2026-08-28-后端数据库采用面向在线演进与分片的通用规范`
 - 后端业务服务的用例驱动事务边界 → `decisions.md#2026-08-27-后端业务服务采用用例驱动的事务型应用服务规范`
 - Skill 使用反馈 → `feedback.md`
+- 技术评审材料的人类可读性和可行性论证 → `feedback.md#2026-09-02-技术评审材料难以让非作者快速理解`
 - 提交请求可能绕过独立 Review → `feedback.md#2026-08-27-提交请求可能绕过独立-review`
 - 上下文压缩后漏读 PR action recipe → `feedback.md#2026-08-26-上下文压缩后漏读-pr-action-recipe`
 - 含 submodule 的干净 worktree 被误判为不可清理 → `feedback.md#2026-08-24-含-submodule-的干净-worktree-被误判为不可清理`
@@ -58,6 +59,7 @@
 
 - `#skills` → `requirements.md`, `conventions.md`, `feedback.md`, `glossary.md`
 - `#feedback` → `feedback.md`
+- `#technical-review` / `#readability` / `#feasibility` → `feedback.md`
 - `#independent-review` → `feedback.md`
 - `#logging` → `feedback.md`
 - `#git` → `feedback.md`
@@ -91,6 +93,7 @@
 
 ## 最近热点
 
+- 2026-09-02 技术评审材料难以让非作者快速理解 → `feedback.md`
 - 2026-08-28 后端数据库采用面向在线演进与分片的通用规范 → `decisions.md`
 - 2026-08-27 后端业务服务采用用例驱动的事务型应用服务规范 → `decisions.md`
 - 2026-08-27 提交请求可能绕过独立 Review → `feedback.md`

@@ -7,7 +7,7 @@
 ## 快速了解
 
 想先知道这套 Skills 实际会怎样帮你分析、设计、写代码、调试、Review 和交付，参见
-[从用户角度看 K Superpowers：完整 14 个 Skill 总览](docs/skills-overview.zh.md)。
+[从用户角度看 K Superpowers：完整 15 个 Skill 总览](docs/skills-overview.zh.md)。
 
 ## 定制哲学
 
@@ -41,7 +41,7 @@ Skill 文本是给持续进化的智能体使用的行为指导，不以固定�
 - `writing-skills`：以真实使用反馈驱动最小修改；不创建持久化测试、eval matrix 或模型 golden output，也不默认调用模型做验证。单次随机输出只作观察，新改进不反复 reopen 当前迭代。
 - `CLAUDE.md`：只保留项目记忆规则，后续用于放个人 fork 的 agent 提示。
 - `.ai/memory/`：记录本 fork 的长期决策、约定、坑点和术语。
-- `docs/skills-overview.zh.md`：从用户角度介绍整套工作方式、14 个 Skill 分工和权限边界。
+- `docs/skills-overview.zh.md`：从用户角度介绍整套工作方式、15 个 Skill 分工和权限边界。
 
 ## OpenCode 安装
 
@@ -128,7 +128,7 @@ codex plugin list | grep k-superpowers
 预期能看到：
 
 ```text
-k-superpowers@k-superpowers-dev  installed, enabled  5.4.18
+k-superpowers@k-superpowers-dev  installed, enabled  5.4.19
 ```
 
 本地 marketplace 的结构是：
