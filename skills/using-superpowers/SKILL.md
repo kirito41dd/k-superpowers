@@ -24,8 +24,8 @@ useful later, and do not load mutually exclusive execution paths together.
 | Turn an existing technical direction, implementation context, or research into meeting-ready review and decision material | `k-superpowers:preparing-technical-review` |
 | Familiarize, inspect, explain, review, or report status | Perform only the requested non-mutating work, then stop |
 | Bug or unexpected behavior | `k-superpowers:systematic-debugging` |
-| Behavior change without approved design | `k-superpowers:brainstorming` |
-| Approved clear, bounded change with an implementation request | Direct implementation in the current workspace, no commit |
+| Design request or behavior change with unresolved material decisions | `k-superpowers:brainstorming` |
+| Clear, bounded behavior and scope with implementation requested | Direct implementation in the current workspace, no commit |
 | Approved multi-step change whose independent slices make durable handoff or delegation useful | `k-superpowers:writing-plans` |
 | Approved persistent plan without an execution choice | `k-superpowers:writing-plans` for handoff |
 | Approved plan with Inline selected | `k-superpowers:executing-plans` |
@@ -39,9 +39,14 @@ related skill exists.
 
 ## Direct Implementation
 
-Use Direct when the approved change is clear, reversible, confined to one
+Use Direct when the change is clear, reversible, confined to one
 problem domain, and has no unresolved architecture, scope, dependency, public
-contract, compatibility, security, or permission decision.
+contract, compatibility, security, migration, or permission decision.
+
+A user's implementation request that already specifies the intended behavior
+and scope supplies approval for that bounded change. Do not require a separate
+design approval or turn ordinary local implementation choices into an approval
+gate. A design-only request does not authorize implementation.
 
 Before choosing Direct, check once whether independently deliverable scopes and
 a concrete delegation benefit make a persistent plan useful. If so, use

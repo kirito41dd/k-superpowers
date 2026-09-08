@@ -2,22 +2,31 @@
 
 ## Overview
 
-When you fix a bug caused by invalid data, adding validation at one place feels sufficient. But that single check can be bypassed by different code paths, refactoring, or mocks.
+Use this reference when evidence shows that protection at the owning boundary
+leaves a distinct failure path, another trust boundary, or state that can change
+after earlier validation. `type-driven-verification` owns the choice of types,
+APIs, and runtime boundaries; this reference helps assess additional protection.
 
-**Core principle:** Validate at EVERY layer data passes through. Make the bug structurally impossible.
+**Core principle:** Each additional guard must address a concrete remaining risk.
+Do not duplicate checks merely because data crosses another layer.
 
 ## Why Multiple Layers
 
-Single validation: "We fixed the bug"
-Multiple layers: "We made the bug impossible"
+An existing type/API guarantee may be sufficient. Before adding a guard, name
+the path or changed state that makes that guarantee insufficient. A mock that
+violates the real boundary usually calls for fixing the test double, not another
+production guard solely to accommodate it.
 
-Different layers catch different cases:
-- Entry validation catches most bugs
-- Business logic catches edge cases
-- Environment guards prevent context-specific dangers
-- Debug logging helps when other layers fail
+Different responsibilities can justify different protections:
+- Entry validation rejects untrusted input.
+- Business operations enforce domain invariants and current-state conditions.
+- Environment guards restrict operations with separate resource or safety risks.
+- Debug logging supplies evidence; it does not prevent invalid state.
 
-## The Four Layers
+## Possible Protection Points
+
+The examples below are alternatives to select from, not four required layers.
+Keep an extra check only when the actual call paths or state changes justify it.
 
 ### Layer 1: Entry Point Validation
 **Purpose:** Reject obviously invalid input at API boundary
@@ -38,7 +47,9 @@ function createProject(name: string, workingDirectory: string) {
 ```
 
 ### Layer 2: Business Logic Validation
-**Purpose:** Ensure data makes sense for this operation
+**Purpose:** Enforce the business boundary when callers can reach it without
+earlier validation. Omit a repeated shape check when all callers already provide
+a validated value whose guarantee still holds.
 
 ```typescript
 function initializeWorkspace(projectDir: string, sessionId: string) {
@@ -70,7 +81,9 @@ async function gitInit(directory: string) {
 ```
 
 ### Layer 4: Debug Instrumentation
-**Purpose:** Capture context for forensics
+**Purpose:** Capture context for forensics. Instrumentation is diagnostic evidence,
+not another validation layer; keep it bounded and remove temporary probes after
+verification.
 
 ```typescript
 async function gitInit(directory: string) {
@@ -89,9 +102,12 @@ async function gitInit(directory: string) {
 When you find a bug:
 
 1. **Trace the data flow** - Where does bad value originate? Where used?
-2. **Map all checkpoints** - List every point data passes through
-3. **Add validation at each layer** - Entry, business, environment, debug
-4. **Test each layer** - Try to bypass layer 1, verify layer 2 catches it
+2. **Identify the owner** - Which type, API, or runtime boundary owns the invariant?
+3. **Assess remaining paths** - Can real callers bypass that boundary, or can the
+   relevant state change after validation? Add only the justified protection.
+4. **Verify the distinct risk** - Check the symptom or reliable proxy and any
+   newly protected failure path, following `type-driven-verification`'s focused
+   evidence guidance.
 
 ## Example from Session
 
@@ -103,20 +119,18 @@ Bug: Empty `projectDir` caused `git init` in source code
 3. `WorkspaceManager.createWorkspace('')`
 4. `git init` runs in `process.cwd()`
 
-**Four layers added:**
+**Historical checks and instrumentation:**
 - Layer 1: `Project.create()` validates not empty/exists/writable
 - Layer 2: `WorkspaceManager` validates projectDir not empty
 - Layer 3: `WorktreeManager` refuses git init outside tmpdir in tests
 - Layer 4: Stack trace logging before git init
 
-**Result:** All 1847 tests passed, bug impossible to reproduce
+**Reported result:** 1847 tests passed and the pollution was not observed in that
+run. This is evidence for the exercised behavior, not proof that all recurrence
+paths are impossible.
 
 ## Key Insight
 
-All four layers were necessary. During testing, each layer caught bugs the others missed:
-- Different code paths bypassed entry validation
-- Mocks bypassed business logic checks
-- Edge cases on different platforms needed environment guards
-- Debug logging identified structural misuse
-
-**Don't stop at one validation point.** Add checks at every layer.
+The historical implementation is not a checklist. Preserve the owning boundary,
+justify each additional guard by its independent risk, and distinguish prevention
+from diagnostic evidence. Guard count and layer count do not establish correctness.

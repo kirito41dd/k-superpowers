@@ -2,9 +2,12 @@
 
 ## Overview
 
-Bugs often manifest deep in the call stack (git init in wrong directory, file created in wrong location, database opened with wrong path). Your instinct is to fix where the error appears, but that's treating a symptom.
+Bugs often manifest deep in the call stack: git init in the wrong directory, a
+file created in the wrong location, or a database opened with the wrong path.
+Trace how the bad state reached the failing operation before choosing where to
+repair it.
 
-**Core principle:** Trace backward through the call chain until you find the original trigger, then fix at the source.
+**Core principle:** Trace bad state toward its source, then repair the boundary that owns the violated invariant.
 
 ## When to Use
 
@@ -12,16 +15,16 @@ Bugs often manifest deep in the call stack (git init in wrong directory, file cr
 digraph when_to_use {
     "Bug appears deep in stack?" [shape=diamond];
     "Can trace backwards?" [shape=diamond];
-    "Fix at symptom point" [shape=box];
+    "Gather missing evidence" [shape=box];
     "Fix at the obvious cause" [shape=box];
     "Trace to original trigger" [shape=box];
-    "BETTER: Also add defense-in-depth" [shape=box];
+    "Repair the owning boundary" [shape=box];
 
     "Bug appears deep in stack?" -> "Can trace backwards?" [label="yes"];
     "Bug appears deep in stack?" -> "Fix at the obvious cause" [label="no - shallow"];
     "Can trace backwards?" -> "Trace to original trigger" [label="yes"];
-    "Can trace backwards?" -> "Fix at symptom point" [label="no - dead end"];
-    "Trace to original trigger" -> "BETTER: Also add defense-in-depth";
+    "Can trace backwards?" -> "Gather missing evidence" [label="no"];
+    "Trace to original trigger" -> "Repair the owning boundary";
 }
 ```
 
@@ -123,37 +126,48 @@ Runs tests one-by-one, stops at first polluter. See script for usage.
 
 **Fix:** Made tempDir a getter that throws if accessed before beforeEach
 
-**Also added defense-in-depth:**
+**Historical additional checks and instrumentation:**
 - Layer 1: Project.create() validates directory
 - Layer 2: WorkspaceManager validates not empty
 - Layer 3: NODE_ENV guard refuses git init outside tmpdir
 - Layer 4: Stack trace logging before git init
 
+These were choices made in that session, not required layers for every fix.
+Each additional guard needs a distinct failure path; logging provides diagnostic
+evidence rather than enforcing the invariant.
+
 ## Key Principle
+
+Use `type-driven-verification` to choose the type/API boundary or runtime guard
+that owns the invariant. Add another check only for a concrete bypass, a separate
+trust boundary, or state that can change after earlier validation. Repeating the
+same check along an already-protected path adds no independent guarantee.
+Use [defense-in-depth.md](defense-in-depth.md) when such a remaining risk needs
+additional protection.
 
 ```dot
 digraph principle {
     "Found immediate cause" [shape=ellipse];
-    "Can trace one level up?" [shape=diamond];
-    "Trace backwards" [shape=box];
-    "Is this the source?" [shape=diamond];
-    "Fix at source" [shape=box];
-    "Add validation at each layer" [shape=box];
-    "Bug impossible" [shape=doublecircle];
-    "NEVER fix just the symptom" [shape=octagon, style=filled, fillcolor=red, fontcolor=white];
+    "Cause and owning boundary established?" [shape=diamond];
+    "Trace or gather missing evidence" [shape=box];
+    "Repair the owning boundary" [shape=box];
+    "Distinct failure path remains?" [shape=diamond];
+    "Add targeted protection" [shape=box];
+    "Verify symptom or reliable proxy" [shape=box];
 
-    "Found immediate cause" -> "Can trace one level up?";
-    "Can trace one level up?" -> "Trace backwards" [label="yes"];
-    "Can trace one level up?" -> "NEVER fix just the symptom" [label="no"];
-    "Trace backwards" -> "Is this the source?";
-    "Is this the source?" -> "Trace backwards" [label="no - keeps going"];
-    "Is this the source?" -> "Fix at source" [label="yes"];
-    "Fix at source" -> "Add validation at each layer";
-    "Add validation at each layer" -> "Bug impossible";
+    "Found immediate cause" -> "Cause and owning boundary established?";
+    "Cause and owning boundary established?" -> "Trace or gather missing evidence" [label="no"];
+    "Cause and owning boundary established?" -> "Repair the owning boundary" [label="yes"];
+    "Repair the owning boundary" -> "Distinct failure path remains?";
+    "Distinct failure path remains?" -> "Add targeted protection" [label="yes"];
+    "Distinct failure path remains?" -> "Verify symptom or reliable proxy" [label="no"];
+    "Add targeted protection" -> "Verify symptom or reliable proxy";
 }
 ```
 
-**NEVER fix just where the error appears.** Trace back to find the original trigger.
+Do not mistake symptom suppression for a cause-based fix. Stop tracing when the
+evidence establishes the responsible boundary; report missing evidence when it
+does not, following the main skill's stop conditions.
 
 ## Stack Trace Tips
 
@@ -167,5 +181,6 @@ digraph principle {
 From debugging session (2025-10-03):
 - Found root cause through 5-level trace
 - Fixed at source (getter validation)
-- Added 4 layers of defense
-- 1847 tests passed, zero pollution
+- Added checks and diagnostic instrumentation at four locations
+- Reported 1847 tests passing with no pollution observed; this does not prove
+  every recurrence path is excluded

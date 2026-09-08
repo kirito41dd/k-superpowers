@@ -1,12 +1,14 @@
 ---
 name: brainstorming
-description: Use when designing a requested feature, component, functionality, configuration, or other behavior change before implementation; not for read-only familiarization, analysis, review, or status requests
+description: Use when the user requests design work or a behavior change has unresolved material decisions before implementation; not for clear implementation requests without material ambiguity, or read-only familiarization, analysis, review, or status requests
 ---
 
 # Brainstorming
 
-Do not edit behavior before the user understands and approves the intended
-change. Make the design proportional to the decision, not to a template.
+Resolve material behavior and design choices before implementation. A clear,
+bounded implementation request can itself supply approval for the specified
+behavior and scope. Make the design proportional to the remaining decision,
+not to a template.
 
 Read-only familiarization, analysis, review, status, and preparation requests
 are not design work. Perform them and stop.
@@ -19,12 +21,14 @@ Use when the goal is clear, the change is reversible and single-domain, and no
 material architecture, scope, dependency, public contract, compatibility,
 security, migration, or permission choice is unresolved.
 
-Inspect relevant context, present the recommended behavior and important
-trade-off concisely, and obtain one approval. Present alternatives only when
-there is a real choice. After approval, proceed only when the original request
-or a later response explicitly asks to implement. Use the current workspace
-with no commit by default. Do not create a spec or plan artifact unless it has
-real handoff value or the user requests it.
+If the user already specified the intended behavior and scope and asked to
+implement, inspect relevant context and proceed through Direct implementation
+without another approval. For design work, present the recommendation and real
+trade-offs concisely; obtain approval only for decisions not already settled.
+Implement only when the original request or a later response asks to implement;
+a design-only request ends after the design. Use the current workspace with no
+commit by default. Do not create a spec or plan artifact unless it has real
+handoff value or the user requests it.
 
 ### Compact
 
@@ -46,11 +50,11 @@ ceremonial alternatives or approval after every prose section.
 
 ## Approval Boundary
 
-Approval covers the presented design. A later material architecture, scope,
-dependency, public-contract, compatibility, or risk decision returns to the
-user. Approval plus an explicit implementation request authorizes in-scope
-edits, but never Git publication, commits, destructive actions, or unrelated
-changes.
+Approval covers the user-specified bounded change or a design the user approved.
+A later material architecture, scope, dependency, public-contract, compatibility,
+or risk decision returns to the user. Approval plus an explicit implementation
+request authorizes in-scope edits, but never Git publication, commits,
+destructive actions, or unrelated changes.
 
 Before handoff, remove placeholders, contradictions, and ambiguous material
 decisions. Follow the conversation language for user-facing design documents
