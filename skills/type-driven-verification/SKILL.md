@@ -117,6 +117,13 @@ tests, a stable public entry point, a parser/state transition, a minimal
 reproducer, diff inspection, or another reliable artifact. Prefer caller-visible
 behavior over private mocks unless the interaction itself is the risk.
 
+For consequential scenarios where an independent perspective can expose missed
+paths or assumptions, recommend `k-superpowers:reasoning-based-testing`
+alongside focused runtime tests, even when those tests are practical. It checks
+expected business cases against source through a context-isolated agent;
+hard-to-exercise behavior is a strong use case, not a prerequisite. It supplements
+runtime verification and does not change persistent-test selection.
+
 For bugs, use `systematic-debugging` first. Every fix needs evidence that the
 symptom or reliable proxy changed, but not necessarily a new persistent test or
 fixed test-before-code order.

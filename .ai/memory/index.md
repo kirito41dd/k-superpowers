@@ -1,142 +1,39 @@
 # 项目记忆索引
 
 <!-- SUMMARY
-本文件是记忆系统的路标。新会话或任务开始时只读本文件，
-根据任务按需加载下方具体文件，不要预读全部记忆。
+本文件提供分类入口和关键条目导航，不枚举全部记忆。
+操作规范见 policy.md；各文件中的格式示例不是实际记忆。
 -->
 
-## 文件清单
+## 分类入口
 
-| 文件 | 何时读取 | 何时写入 |
-|------|---------|---------|
-| `requirements.md` | 用户提新需求 / 讨论功能范围 | 需求变更、功能增删 |
-| `decisions.md` | 用户问“为什么” / 做技术选型 / 准备改 workflow 哲学 | 确定技术方案、架构决策 |
-| `gotchas.md` | 调试 bug / 修改敏感模块前 / 准备向 upstream 提 PR | 遇到非显而易见的坑 |
-| `conventions.md` | 写新文档 / 改 skill / 用户纠正风格时 | 用户明确指出项目约定 |
-| `feedback.md` | 使用或重构 skill / 复盘 Agent 研发体验 | 用户反馈真实使用中的不爽点或过度行为 |
-| `glossary.md` | 遇到陌生术语 | 用户使用项目特定名词 |
+| 文件 | 用途与检索线索 |
+|------|----------------|
+| [requirements.md](requirements.md) | 需求范围、个人 fork 定位、工作流目标 |
+| [decisions.md](decisions.md) | 技术方案、取舍、适用条件和替代关系 |
+| [gotchas.md](gotchas.md) | 历史坑点及待核验的上游贡献要求；按状态解释 |
+| [conventions.md](conventions.md) | 项目特定约定、注释、验证和安装规则 |
+| [feedback.md](feedback.md) | 实际使用中的问题、用户规则与处理进展 |
+| [glossary.md](glossary.md) | Skill、Harness 等术语和历史用语 |
+| [policy.md](policy.md) | 检索、写入授权、冲突处理和归档规则 |
 
-## 快速索引（按模块）
+## 模块与关键条目
 
-- 后端数据库在线演进与分片规范 → `decisions.md#2026-08-28-后端数据库采用面向在线演进与分片的通用规范`
-- 后端业务服务的用例驱动事务边界 → `decisions.md#2026-08-27-后端业务服务采用用例驱动的事务型应用服务规范`
-- Skill 使用反馈 → `feedback.md`
-- 技术评审材料的人类可读性和可行性论证 → `feedback.md#2026-09-02-技术评审材料难以让非作者快速理解`
-- 提交请求可能绕过独立 Review → `feedback.md#2026-08-27-提交请求可能绕过独立-review`
-- 上下文压缩后漏读 PR action recipe → `feedback.md#2026-08-26-上下文压缩后漏读-pr-action-recipe`
-- 含 submodule 的干净 worktree 被误判为不可清理 → `feedback.md#2026-08-24-含-submodule-的干净-worktree-被误判为不可清理`
-- 提交阶段重复运行已完成的验证 → `feedback.md#2026-08-22-提交阶段重复运行已完成的验证`
-- 纯日志改动被过度工程化 → `feedback.md#2026-08-22-纯日志改动被过度工程化`
-- Judgment-First、智能 Agent、有界 Review 与真实交付 → `requirements.md#2026-07-21-skills-以智能-agent-和真实交付为中心`, `decisions.md#2026-07-21-skills-工作流采用-judgment-first-与有界-review`, `conventions.md#2026-07-21-把-agent-当作聪明的智能体`
-- Skills 无持久测试、真实使用反馈驱动迭代 → `requirements.md#2026-07-21-skills-仓库移除全部持久测试`, `decisions.md#2026-07-21-skills-不维护持久测试并停止默认模型验证`, `conventions.md#2026-07-21-skill-修改采用一次编辑一次自审`
-- GPT-5.6 Prompt 优化、日常问答 No Task Skill 与既有行为保护 → `requirements.md#2026-07-21-gpt-56-prompt-优化须保留既有行为`, `decisions.md#2026-07-21-以最小-skill-路由和行为-eval-落地-gpt-56-prompt-优化`, `conventions.md#2026-07-21-日常问答走-no-task-skill-且-prompt-瘦身不得弱化注释契约`
-- 历史 Role Prompt Fidelity 与 live reviewer 诊断（已废弃） → `gotchas.md#2026-07-21-role-prompt-保真不能只查关键字或无边界占位符`, `gotchas.md#2026-07-21-live-reviewer-单次零读取不等于-prompt-结构缺陷`
-- Skills 总览 → `docs/skills-overview.zh.md`
-- 核心代码说明规则 owner 与 Compact/Inline 覆盖 → `conventions.md#2026-07-15-核心代码说明由-type-driven-verification-单一拥有`
-- Skills 瘦身、语言自适应 Rust 工程哲学与 SDD/review 保留范围 → `decisions.md#2026-07-14-研发流程-skills-瘦身并保留语言自适应-rust-工程哲学`, `conventions.md#2026-07-14-rust-哲学只评价代码产出并按目标语言能力适配`
-- 历史 Compact/Full、Unified Handoff 与 SDD checkpoint/reviewer 机制（已由 Judgment-First 取代） → `decisions.md#2026-07-10-主开发流程增加自动-compactfull-分流与统一-handoff`, `decisions.md#2026-07-10-sdd-改为风险自适应执行并合并-task-reviewer`
-- Skill 验证命令与代码注释 source-of-truth → `conventions.md#2026-07-08-skill-验证命令与代码注释-source-of-truth`
-- SDD reviewer/controller 上游纪律吸收 → `decisions.md#2026-07-08-吸收上游-sdd-reviewer-与-controller-纪律`
-- SDD task brief 全局约束与复审路由 → `decisions.md#2026-07-08-强化-sdd-task-brief-全局约束与复审路由`
-- Skill 写代码时的注释原则 → `conventions.md#2026-07-07-skill-写代码时的注释原则`
-- 上游 v6 SDD 文件交接与进度账本 → `decisions.md#2026-06-26-跟进上游-v6-sdd-文件交接与进度账本`
-- 上游 v6 writing-plans 结构增强 → `decisions.md#2026-06-26-跟进上游-v6-writing-plans-结构增强`
-- 版本号更新规则 → `conventions.md#2026-06-25-重要变更必须更新插件版本号`
-- 外部实现纪律吸收 → `decisions.md#2026-06-25-吸收外部-skills-中强化-agent-写代码的实现纪律`, `conventions.md#2026-06-25-skill-实现纪律吸收边界`
-- Fork 定制方向 → `decisions.md#2026-05-21-个人-fork-不面向上游贡献`
-- 安装链路收敛 / CC 插件改名 → `decisions.md#2026-06-10-收敛安装链路并将-claude-code-插件改名为-k-superpowers`
-- Codex app 本地市场安装 → `decisions.md#2026-05-22-codex-app-使用仓库级本地-marketplace-安装-k-superpowers`
-- OpenCode 安装方式 → `decisions.md#2026-05-21-opencode-使用-k-superpowers-git-安装`
-- 生态集成范围 → `conventions.md#2026-06-10-三条安装链路并列维护cc-插件命名-k-superpowers`
-- Codex app marketplace 目录规则 → `conventions.md#2026-05-22-codex-app-本地-marketplace-使用仓库根目录`
-- 预热型请求处理 → `conventions.md#2026-05-21-预热型请求不触发-brainstorming`
-- 验证哲学 → `decisions.md#2026-05-26-将-test-driven-development-改名为-type-driven-verification`
-- PR/上游贡献规则 → `gotchas.md#2026-05-21-上游-pr-门槛很高`
-- Skill 修改纪律 → `conventions.md#2026-05-21-skill-正文变更必须先评估`
-- 项目定位 → `requirements.md#2026-05-21-个人-fork-用于后续微调-superpowers-skills`
+- 工作流哲学 | `skills/` | judgment-first、routing → [2026-07-21 Skills 工作流采用 Judgment-First 与有界 Review](decisions.md#dec-20260721-01)；[2026-07-21 把 Agent 当作聪明的智能体](conventions.md#conv-20260721-01)
+- Skill 迭代 | `skills/writing-skills/` | 真实反馈、验证成本 → [2026-07-21 Skill 修改采用一次编辑一次自审](conventions.md#conv-20260721-02)；[2026-07-21 Skills 不维护持久测试并停止默认模型验证](decisions.md#dec-20260721-02)
+- 日常路由 | `skills/using-superpowers/` | 普通问答、只读准备 → [2026-07-21 日常问答走 No Task Skill 且 Prompt 瘦身不得弱化注释契约](conventions.md#conv-20260721-03)；[2026-05-21 预热型请求不触发 brainstorming](conventions.md#conv-20260521-03)
+- 代码质量 | `skills/type-driven-verification/` | Rust 哲学、核心说明 → [2026-07-14 Rust 哲学只评价代码产出并按目标语言能力适配](conventions.md#conv-20260714-01)；[2026-07-15 核心代码说明由 type-driven-verification 单一拥有](conventions.md#conv-20260715-01)；[2026-07-07 Skill 写代码时的注释原则](conventions.md#conv-20260707-01)
+- 后端服务 | `skills/type-driven-verification/` | 用例、事务、数据归属 → [2026-08-27 后端业务服务采用用例驱动的事务型应用服务规范](decisions.md#dec-20260827-01)
+- 数据库 | `skills/type-driven-verification/` | DDL、migration、sharding → [2026-08-28 后端数据库采用面向在线演进与分片的通用规范](decisions.md#dec-20260828-01)
+- 技术评审材料 | `skills/preparing-technical-review/` | 可读性、可行性 → [2026-09-02 技术评审材料难以让非作者快速理解](feedback.md#fb-20260902-01)
+- 独立 Review | `skills/requesting-code-review/` | 提交前审查 → [2026-08-27 提交请求可能绕过独立 Review](feedback.md#fb-20260827-01)
+- Git 交付 | `skills/finishing-a-development-branch/` | recipe、证据复用 → [2026-08-26 上下文压缩后漏读 PR action recipe](feedback.md#fb-20260826-01)；[2026-08-22 提交阶段重复运行已完成的验证](feedback.md#fb-20260822-01)
+- Worktree | `skills/using-git-worktrees/` | submodule、清理 → [2026-08-24 含 submodule 的干净 worktree 被误判为不可清理](feedback.md#fb-20260824-01)
+- 研发日志 | `skills/using-superpowers/` | logging、比例化验证 → [2026-08-22 纯日志改动被过度工程化](feedback.md#fb-20260822-02)
+- 安装与版本 | `.claude-plugin/`、`.agents/plugins/`、`.opencode/` → [2026-06-10 三条安装链路并列维护，CC 插件命名 k-superpowers](conventions.md#conv-20260610-01)；[2026-05-22 Codex app 本地 marketplace 使用仓库根目录](conventions.md#conv-20260522-01)；[2026-06-25 重要变更必须更新插件版本号](conventions.md#conv-20260625-01)
+- 项目定位 | 全项目 | fork、personalization → [2026-05-21 个人 fork 用于后续微调 Superpowers skills](requirements.md#req-20260521-01)；[2026-05-21 个人 fork 不面向上游贡献](decisions.md#dec-20260521-03)
+- 项目记忆 | `.ai/memory/`、`CLAUDE.md` | 稳定 ID、来源、授权 → [2026-09-08 升级项目记忆的检索、授权和维护规则](decisions.md#dec-20260908-01)
+- Skills 用户向总览 → [工作方式与 Skill 分工](../../docs/skills-overview.zh.md)
 
-## 标签索引
-
-- `#skills` → `requirements.md`, `conventions.md`, `feedback.md`, `glossary.md`
-- `#feedback` → `feedback.md`
-- `#technical-review` / `#readability` / `#feasibility` → `feedback.md`
-- `#independent-review` → `feedback.md`
-- `#logging` → `feedback.md`
-- `#git` → `feedback.md`
-- `#gitlab` → `feedback.md`
-- `#handoff` → `feedback.md`
-- `#performance` → `feedback.md`
-- `#worktree` → `feedback.md`
-- `#submodule` → `feedback.md`
-- `#fork` → `requirements.md`, `decisions.md`
-- `#personalization` → `decisions.md`, `conventions.md`
-- `#codex` → `decisions.md`, `conventions.md`
-- `#claude-code` → `decisions.md`, `conventions.md`
-- `#opencode` → `decisions.md`, `conventions.md`
-- `#install` → `decisions.md`, `conventions.md`
-- `#brainstorming` → `conventions.md`
-- `#verification` → `decisions.md`, `conventions.md`, `feedback.md`
-- `#type-driven` → `decisions.md`, `conventions.md`
-- `#upstream-pr` → `gotchas.md`
-- `#memory` → `decisions.md`, `conventions.md`
-- `#eval` → `decisions.md`, `conventions.md`, `gotchas.md`
-- `#version` → `conventions.md`
-- `#comments` → `requirements.md`, `conventions.md`
-- `#sdd` → `decisions.md`, `gotchas.md`
-- `#routing` → `requirements.md`, `decisions.md`, `conventions.md`, `feedback.md`
-- `#prompt` → `decisions.md`, `conventions.md`, `gotchas.md`
-- `#iteration` → `requirements.md`, `decisions.md`, `conventions.md`
-- `#judgment-first` → `requirements.md`, `decisions.md`, `conventions.md`
-- `#review` → `requirements.md`, `decisions.md`, `feedback.md`
-- `#backend` / `#ddd` / `#application-service` / `#cqrs` / `#transaction` → `decisions.md`
-- `#database` / `#ddl` / `#migration` / `#sharding` / `#orm` → `decisions.md`
-
-## 最近热点
-
-- 2026-09-02 技术评审材料难以让非作者快速理解 → `feedback.md`
-- 2026-08-28 后端数据库采用面向在线演进与分片的通用规范 → `decisions.md`
-- 2026-08-27 后端业务服务采用用例驱动的事务型应用服务规范 → `decisions.md`
-- 2026-08-27 提交请求可能绕过独立 Review → `feedback.md`
-- 2026-08-26 上下文压缩后漏读 PR action recipe → `feedback.md`
-- 2026-08-24 含 submodule 的干净 worktree 被误判为不可清理 → `feedback.md`
-- 2026-08-22 提交阶段重复运行已完成的验证 → `feedback.md`
-- 2026-08-22 纯日志改动被过度工程化 → `feedback.md`
-- 2026-07-21 Skills 工作流采用 Judgment-First 与有界 Review → `requirements.md`, `decisions.md`, `conventions.md`
-- 2026-07-21 Skills 不维护持久测试并停止默认模型验证 → `requirements.md`, `decisions.md`, `conventions.md`, `gotchas.md`
-- 2026-07-21 以最小 Skill 路由落地 GPT-5.6 Prompt 优化 → `requirements.md`, `decisions.md`, `conventions.md`
-- 2026-07-21 历史 Live reviewer 与 Role Prompt Fidelity 诊断（已废弃） → `gotchas.md`
-- 2026-07-15 核心代码说明由 type-driven-verification 单一拥有 → `conventions.md`
-- 2026-07-14 研发流程 Skills 瘦身并保留语言自适应 Rust 工程哲学 → `decisions.md`, `conventions.md`
-- 2026-07-10 主开发流程增加自动 Compact/Full 分流与统一 Handoff → `decisions.md`
-- 2026-07-10 SDD 改为风险自适应执行并合并 Task Reviewer → `decisions.md`
-- 2026-07-08 Skill 验证命令与代码注释 source-of-truth → `conventions.md`
-- 2026-07-08 吸收上游 SDD reviewer 与 controller 纪律 → `decisions.md`
-- 2026-07-08 强化 SDD task brief 全局约束与复审路由 → `decisions.md`
-- 2026-07-07 更新 Skill 写代码时的注释原则 → `conventions.md`
-- 2026-06-26 跟进上游 v6 SDD 文件交接与进度账本 → `decisions.md`
-- 2026-06-26 跟进上游 v6 writing-plans 结构增强 → `decisions.md`
-- 2026-06-25 重要变更必须更新插件版本号 → `conventions.md`
-- 2026-06-25 吸收外部 skills 中强化 agent 写代码的实现纪律 → `decisions.md`
-- 2026-06-25 Skill 实现纪律吸收边界 → `conventions.md`
-- 2026-06-10 收敛安装链路并将 Claude Code 插件改名为 k-superpowers → `decisions.md`
-- 2026-06-10 三条安装链路并列维护,CC 插件命名 k-superpowers → `conventions.md`
-- 2026-06-03 清除 skills 内全部 TDD/RED-GREEN 残留字眼 → `decisions.md`
-- 2026-05-26 将 test-driven-development 改名为 type-driven-verification → `decisions.md`
-- 2026-05-25 Skill 正文变更改为类型优先、风险驱动验证 → `conventions.md`
-- 2026-05-22 Codex app 使用仓库级本地 marketplace 安装 k-superpowers → `decisions.md`
-- 2026-05-22 Codex app 本地 marketplace 使用仓库根目录 → `conventions.md`
-- 2026-05-21 从强制 TDD 改为类型优先验证 → `decisions.md`
-- 2026-05-21 优先维护 OpenCode 安装链路 → `conventions.md`
-- 2026-05-21 OpenCode 使用 k-superpowers git 安装 → `decisions.md`
-- 2026-05-21 预热型请求不触发 brainstorming → `conventions.md`
-- 2026-05-21 个人 fork 不面向上游贡献 → `decisions.md`
-- 2026-05-21 安装项目级 AI 记忆系统 → `decisions.md`
-- 2026-05-21 Skill 正文变更必须先评估 → `conventions.md`
-- 2026-05-21 上游 PR 门槛很高 → `gotchas.md`
-- 2026-05-21 个人 fork 用于后续微调 Superpowers skills → `requirements.md`
-
-## 归档规则
-
-- 单个记忆文件超过 500 行时，归档最旧的 100 行到 `archive/<year>/<filename>`。
-- 标记为 `[DEPRECATED]` 的条目在文件超限时优先归档。
-- 读取时默认不加载 `archive/`，除非用户明确要求。
+历史流程、测试 campaign 和旧安装取舍保留在原分类文件，可按标题、路径和关键词检索；
+已替代条目提供替代链接。归档入口见 [archive/README.md](archive/README.md)。

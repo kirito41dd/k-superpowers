@@ -1,18 +1,42 @@
 # Skill 使用反馈
 
 <!-- SUMMARY
-覆盖范围：真实研发中使用 skills 的不爽点、期望规则和处理状态
-条目数：6
-最近更新：2026-09-02
-高频标签：#feedback #skills #technical-review #readability #feasibility #routing #verification #review #independent-review #logging #git #gitlab #handoff #performance #worktree #submodule
+覆盖范围：真实研发中使用 skills 的不爽点、期望规则和处理进展。
 -->
 
 只记录经过脱敏、可公开泛化的真实使用体验，不写私有项目名、业务标识、
-接口或存储细节。新反馈放在顶部，过时反馈标记 `[DEPRECATED]`，不删除。
+接口或存储细节。字段、写入授权和维护规则见 [policy.md](policy.md)。
+
+## 写入格式
+
+以下仅为格式示例；状态表示记忆有效性，处理进展单独记录。
+
+```markdown
+## YYYY-MM-DD 一句话反馈标题
+<a id="fb-YYYYMMDD-01"></a>
+
+- **状态**：有效
+- **范围**：涉及的 skill / 路径 / 使用场景
+- **来源**：用户反馈日期与内容 / 相关文档或 commit
+- **标签**：#feedback #module-name
+
+### 场景
+### 不爽点
+### 我的规则
+### 处理状态
+```
 
 ---
 
+<!-- 条目：新条目插在此行下方，最新在上 -->
+
 ## 2026-09-02 技术评审材料难以让非作者快速理解
+<a id="fb-20260902-01"></a>
+
+- **状态**：有效
+- **范围**：skills/preparing-technical-review/SKILL.md；技术评审材料
+- **来源**：迁移前记录：本仓库 commit `94bb0264f83a54d6b5f31af25ebdf433d14f7fc5` 中 `.ai/memory/feedback.md` 的同名条目；原始对话链接未附。
+- **标签**：#feedback #technical-review #readability #feasibility
 
 ### 场景
 
@@ -44,6 +68,12 @@
 ---
 
 ## 2026-08-27 提交请求可能绕过独立 Review
+<a id="fb-20260827-01"></a>
+
+- **状态**：有效
+- **范围**：skills/requesting-code-review/、skills/finishing-a-development-branch/；必要独立审查
+- **来源**：迁移前记录：本仓库 commit `94bb0264f83a54d6b5f31af25ebdf433d14f7fc5` 中 `.ai/memory/feedback.md` 的同名条目；原始对话链接未附。
+- **标签**：#feedback #independent-review
 
 ### 场景
 
@@ -67,6 +97,12 @@
 ---
 
 ## 2026-08-26 上下文压缩后漏读 PR action recipe
+<a id="fb-20260826-01"></a>
+
+- **状态**：有效
+- **范围**：skills/finishing-a-development-branch/；Git action 执行与上下文恢复
+- **来源**：迁移前记录：本仓库 commit `94bb0264f83a54d6b5f31af25ebdf433d14f7fc5` 中 `.ai/memory/feedback.md` 的同名条目；原始对话链接未附。
+- **标签**：#feedback #git #gitlab #handoff
 
 ### 场景
 
@@ -91,6 +127,12 @@
 ---
 
 ## 2026-08-24 含 submodule 的干净 worktree 被误判为不可清理
+<a id="fb-20260824-01"></a>
+
+- **状态**：有效
+- **范围**：skills/finishing-a-development-branch/；含 submodule 的 worktree 清理
+- **来源**：迁移前记录：本仓库 commit `94bb0264f83a54d6b5f31af25ebdf433d14f7fc5` 中 `.ai/memory/feedback.md` 的同名条目；原始对话链接未附。
+- **标签**：#feedback #worktree #submodule
 
 ### 场景
 
@@ -115,6 +157,12 @@ MERGE/DISCARD 共用的清理说明已增加受控 fallback，版本为 `5.4.14`
 ---
 
 ## 2026-08-22 提交阶段重复运行已完成的验证
+<a id="fb-20260822-01"></a>
+
+- **状态**：有效
+- **范围**：skills/verification-before-completion/、skills/finishing-a-development-branch/；证据复用
+- **来源**：迁移前记录：本仓库 commit `94bb0264f83a54d6b5f31af25ebdf433d14f7fc5` 中 `.ai/memory/feedback.md` 的同名条目；原始对话链接未附。
+- **标签**：#feedback #verification #performance
 
 ### 场景
 
@@ -142,6 +190,12 @@ diff 的新鲜证据，不因暂存或提交重复运行编译和测试。版本
 ---
 
 ## 2026-08-22 纯日志改动被过度工程化
+<a id="fb-20260822-02"></a>
+
+- **状态**：有效
+- **范围**：skills/using-superpowers/、skills/type-driven-verification/、skills/requesting-code-review/；纯研发日志修改
+- **来源**：迁移前记录：本仓库 commit `94bb0264f83a54d6b5f31af25ebdf433d14f7fc5` 中 `.ai/memory/feedback.md` 的同名条目；原始对话链接未附。
+- **标签**：#feedback #logging #verification
 
 ### 场景
 

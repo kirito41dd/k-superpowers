@@ -27,6 +27,9 @@ environment, or the claim changed enough to make prior evidence stale.
 Examples:
 
 - “Tests pass” requires the named test command to pass.
+- “Code supports these cases” may use `k-superpowers:reasoning-based-testing`
+  with source identity, per-case traces, and explicit limits; it does not mean
+  the cases ran or runtime verification can be skipped.
 - “Build/lint succeeds” requires that command to complete successfully.
 - “Bug fixed” requires the symptom or a reliable proxy to stop reproducing.
 - “Requirements met” requires implementation/evidence covering each material
