@@ -63,8 +63,8 @@ file:line when applicable
 issue, impact, required fix
 ```
 
-Critical means unsafe to continue. Important requires a concrete reason the
-approved change cannot be trusted. Minor is optional polish or follow-up and
+Critical means accepting the change risks severe harm. Important requires a
+concrete reason the approved change cannot be trusted. Minor is optional polish or follow-up and
 never fails an axis. Derive locations from source files or diff coordinates,
 not artifact-reader line numbers.
 
@@ -78,14 +78,19 @@ Do not reopen rejected findings, reinterpret requirements, or restart broad
 Discovery. Classify any new observation as fix-induced, pre-existing missed,
 unrelated, or material scope change. Only an unresolved original blocker,
 fix-induced Critical/Important regression, severe security/data-loss/
-authorization defect, or material decision blocks. Defer other observations.
+authorization defect, or material decision blocks acceptance. Defer other
+observations.
 
 ## Result
 
 Report independent Spec and Standards verdicts plus one lifecycle result:
 `PASS`, `PASS_WITH_FOLLOWUPS`, `FIX_REQUIRED`, `CANNOT_VERIFY`, or
-`STOPPED_BLOCKED`. Name the smallest missing evidence or user decision when not
-passing.
+`STOPPED_BLOCKED`. In either phase, use `FIX_REQUIRED` for repairable blockers
+and `CANNOT_VERIFY` for missing evidence. An open finding alone does not require
+`STOPPED_BLOCKED`: reserve that for a material user decision, missing authority,
+essential evidence/access unavailable within that authority, or repeated
+attempts without new evidence or progress. Name the obstacle when stopping;
+otherwise keep corrections within the same review record and scope.
 
 Use a concise readable structure. The information contract is important; exact
 line counts, output encoding, prose wording, and tool-call order are not.

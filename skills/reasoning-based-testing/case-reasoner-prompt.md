@@ -66,5 +66,9 @@ material regression. Validate the cited code and supplied execution results
 against their versions and cases; distinguish inspected logs from tests you ran.
 Keep rejected or deferred findings visible and retain earlier uncertainty unless
 new evidence resolves it. Mark each accepted finding closed, still open, or
-unable to confirm, with evidence. Stop after this recheck; unrelated observations
-are follow-ups, not a new discovery cycle.
+unable to confirm, with evidence. Unresolved blockers prevent acceptance, not further
+authorized repair. The controller may request additional focused rechecks while
+scope and authority are unchanged and new code or evidence shows progress.
+Report material decisions, missing authority, unavailable essential evidence,
+or repeated lack of progress as obstacles; unrelated observations are follow-ups,
+not a new discovery cycle.

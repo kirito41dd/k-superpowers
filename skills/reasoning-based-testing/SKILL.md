@@ -122,12 +122,13 @@ the fix and success afterward. If execution is unavailable, record the precise
 gap; a persuasive trace alone does not justify claiming the bug fixed. Test
 selection remains owned by `k-superpowers:type-driven-verification`.
 
-After one coherent fix batch, resume the same independent agent with the frozen
+After a coherent fix batch, resume the same independent agent with the frozen
 record, accepted findings, final source/delta, and execution evidence. A
 replacement receives that complete record without the main conversation.
 Recheck accepted findings and directly caused regressions only; do not restart
-discovery. If a blocker or material decision remains, report it and return
-control to the user rather than starting another autonomous fix/review cycle.
+discovery. Unresolved blockers prevent acceptance, not authorized repair. Continue
+focused correction and rechecks while making progress; apply
+`k-superpowers:requesting-code-review`'s continuation and stopping rules.
 Preserve original uncertainty unless new evidence specifically resolves it.
 
 ## Completion And Other Workflows

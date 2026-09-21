@@ -55,7 +55,7 @@ expand the requested change, or turn unrelated observations into blockers.
 ## Bounded Lifecycle
 
 ```text
-Discovery -> frozen finding ledger -> one coherent fix batch -> Closure
+Discovery -> frozen finding ledger -> focused fixes <-> Closure
           -> PASS | PASS_WITH_FOLLOWUPS | STOPPED_BLOCKED
 ```
 
@@ -73,7 +73,7 @@ deferred observations before editing.
 
 ### Closure
 
-After at most one coherent fix batch, give the same logical reviewer the frozen
+After a coherent fix batch, give the same logical reviewer the frozen
 record, final diff/snapshot, fix delta, and evidence. Prefer resuming the same
 reviewer; a replacement must receive the complete record.
 
@@ -86,19 +86,31 @@ Closure checks only:
 Do not restart Discovery or introduce new preferences. Unresolved original
 blockers, fix-induced Critical/Important regressions, severe security/data-loss/
 authorization defects, or a material scope/architecture/dependency/public
-contract decision block Closure. Other new observations become follow-ups.
+contract decision block acceptance. Other new observations become follow-ups.
+
+An unresolved blocker prevents acceptance, not already-authorized repair. Continue
+focused fixes and Closure within the same record when scope and authority are
+unchanged, the next step is clear, and code or evidence shows progress. Do not
+restart Discovery or re-ask permission merely because a recheck did not pass.
+Pause affected work only for a material user decision or missing authority,
+essential evidence/access that cannot be obtained within existing authority,
+or repeated attempts without new evidence or progress. Report the concrete
+obstacle; do not treat minor follow-ups as blockers.
 
 ## Results
 
 - `PASS`: safe to proceed with no deferred issue;
 - `PASS_WITH_FOLLOWUPS`: safe to proceed with named nonblocking observations;
-- `FIX_REQUIRED`: Discovery has accepted blockers;
-- `CANNOT_VERIFY`: Discovery names the smallest missing evidence;
-- `STOPPED_BLOCKED`: Closure cannot safely finish or needs a user decision.
+- `FIX_REQUIRED`: either phase has blockers that can be corrected within
+  existing authority;
+- `CANNOT_VERIFY`: either phase names the smallest missing evidence; gather it
+  within existing authority when possible;
+- `STOPPED_BLOCKED`: continuation meets a stopping condition above; name what
+  must change before work can resume.
 
 A binding/evidence mistake may be corrected once before Discovery completes.
-Closure failure returns control to the user and never starts another autonomous
-fix/review cycle.
+`FIX_REQUIRED` or `CANNOT_VERIFY` alone does not revoke implementation authority
+or permit claiming completion.
 
 Use `code-reviewer.md` as adaptable reviewer guidance. Stable IDs and required
 information matter; exact line counts, first characters, wording, and tool-call

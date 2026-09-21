@@ -54,7 +54,7 @@ or reinterpret the approved task. Mark each original finding `CLOSED`, `OPEN`,
 or `CANNOT_VERIFY` with evidence. Classify new observations as fix-induced,
 pre-existing missed, unrelated, or material scope change. Only unresolved
 original blockers, fix-induced Critical/Important regressions, severe security/
-data-loss/authorization defects, or a material decision block Closure. Defer
+data-loss/authorization defects, or a material decision block acceptance. Defer
 everything else.
 
 ## Result
@@ -63,9 +63,15 @@ Report both Spec and Standards verdicts and one result:
 
 - `PASS`: no blocker or follow-up;
 - `PASS_WITH_FOLLOWUPS`: safe to proceed with deferred observations;
-- `FIX_REQUIRED`: Discovery found accepted blockers;
-- `CANNOT_VERIFY`: Discovery lacks the smallest named evidence;
-- `STOPPED_BLOCKED`: Closure cannot safely finish or requires a user decision.
+- `FIX_REQUIRED`: either phase has blockers repairable within existing authority;
+- `CANNOT_VERIFY`: either phase lacks the smallest named evidence;
+- `STOPPED_BLOCKED`: a material user decision or additional authority is needed,
+  essential evidence/access is unavailable within existing authority, or
+  repeated attempts bring no new evidence or progress. Name the obstacle.
+
+Unresolved blockers prevent acceptance, not authorized repair. Further focused fixes
+and rechecks may continue within the same record while making progress; do not
+restart Discovery or stop merely because a recheck found an open item.
 
 Use a concise, readable structure. Stable IDs and required information matter;
 exact line counts, first characters, prose wording, and tool-call shape do not.

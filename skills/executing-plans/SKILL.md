@@ -31,9 +31,9 @@ low-risk exclusions defined by that owner.
 When review is required, follow `k-superpowers:requesting-code-review`'s bounded
 Discovery/Closure lifecycle. Same-controller review may inspect requirements,
 the current diff, relevant context, and evidence directly. Use a frozen package
-when crossing contexts or stabilizing a moving working tree is useful. A
-stopped closure returns control to the user and does not start another
-autonomous cycle.
+when crossing contexts or stabilizing a moving working tree is useful. Follow
+that owner's continuation and stopping rules for unresolved findings; an
+unsuccessful recheck alone does not require renewed implementation permission.
 
 Before claiming the whole change complete, use
 `k-superpowers:verification-before-completion` with evidence proportionate to

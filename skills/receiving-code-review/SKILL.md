@@ -43,10 +43,11 @@ nonblocking follow-up. An unclear finding blocks only work that depends on its
 resolution; it does not stop unrelated clear work.
 
 Freeze the adjudication in the review record before edits. Apply accepted
-findings as one coherent batch with focused verification.
+findings in coherent batches with focused verification.
 Send the frozen record, fix delta/report, and evidence to the same logical
-reviewer for Closure. `STOPPED_BLOCKED` returns control to the user; do not start
-another autonomous cycle.
+reviewer for Closure. Follow the owning skill's continuation and stopping rules:
+unresolved blockers prevent acceptance, not authorized fixes making progress.
+Keep the same record and do not restart Discovery.
 
 ## External Feedback
 

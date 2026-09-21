@@ -37,7 +37,7 @@ Skill 文本是给持续进化的智能体使用的行为指导，不以固定�
 - `type-driven-verification`：采用类型优先、风险驱动验证，并单一拥有测试准入、核心代码与核心测试说明合同。测试优先覆盖稳定领域不变量和不同失败类型，合并等价排列、避免跨层重复与偶然实现耦合；保留的核心测试靠行为化命名和结构表达契约，只为非显然不变量、回归背景、特殊 fixture/顺序或关键断言后果补充说明。
 - `reasoning-based-testing`：对关键业务的事件历史、状态转换和多条读写路径，推荐运行测试与独立代码推演配合使用；跨月、到期、迁移、重试等难验证逻辑尤其适合。先按业务意图定义用例，再由不继承主会话的 Agent 沿真实调用链推演；初轮隔离测试结论，之后逐例对照证据，复现、修复并定向复核，推演不能替代运行测试。
 - `subagent-driven-development`：只在独立任务且委派收益明确、用户授权本 plan checkpoint commits 时使用。Low 由 controller 处理，medium/high 均有 independent reviewer；final review 只保护真实跨任务 integration risk。
-- `requesting-code-review`：所有改动做 controller Spec/Standards 自审；除纯文档/注释/格式、机械 rename/config 和简单 glue 外，非平凡行为与 bug fix 默认触发独立双轴 review，并保持一次 Discovery、一次批量修复、一次 Closure。
+- `requesting-code-review`：所有改动做 controller Spec/Standards 自审；除纯文档/注释/格式、机械 rename/config 和简单 glue 外，非平凡行为与 bug fix 默认触发独立双轴 review。一次 Discovery 固定问题清单，授权范围内持续有进展的修复可继续定向 Closure；未关闭的阻断项阻止验收，不自动要求再次授权。
 - `receiving-code-review`：普通反馈核实后按授权修改、验证和反馈，不因收到建议而新建 finding ledger 或 Closure；已有正式 Review 继承原生命周期，修复本身仍按独立 Review trigger 判断。
 - `systematic-debugging`：优先建立 feedback loop，在拥有不变量的边界修复，额外防护只针对独立的剩余风险；无法复现的生产/外部问题允许证据化、带置信度诊断，无验证不声称 fixed，按信息增益而非固定次数停止。
 - `writing-skills`：以真实使用反馈驱动最小修改；不创建持久化测试、eval matrix 或模型 golden output，也不默认调用模型做验证。单次随机输出只作观察，新改进不反复 reopen 当前迭代。
@@ -130,7 +130,7 @@ codex plugin list | grep k-superpowers
 预期能看到：
 
 ```text
-k-superpowers@k-superpowers-dev  installed, enabled  5.4.21
+k-superpowers@k-superpowers-dev  installed, enabled  5.4.22
 ```
 
 本地 marketplace 的结构是：

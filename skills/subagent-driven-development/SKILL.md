@@ -98,10 +98,11 @@ into ceremony. Never skip a blocked task to continue dependent work.
 
 For medium and high tasks, use `k-superpowers:requesting-code-review` once in
 Discovery mode. Freeze stable findings, adjudicate them through
-`k-superpowers:receiving-code-review`, apply at most one coherent fix batch, and
+`k-superpowers:receiving-code-review`, apply focused fixes, and
 return to the same logical reviewer for Closure. Record nonblocking follow-ups.
-`STOPPED_BLOCKED` returns control to the user; it does not trigger another
-autonomous fix/review loop.
+Follow the review owner's continuation and stopping rules; authorized repairs
+may continue within the same record while making progress, without restarting
+Discovery or requesting checkpoint permission again.
 
 Run a final whole-change review only when multiple tasks create a real
 shared-interface, shared-state, or unverified composition risk. A single medium
