@@ -5,9 +5,10 @@ description: Use when executing an approved implementation plan inline or when a
 
 # Executing Plans
 
-Execute the approved behavior with one agent. The safe default is the current
-workspace with no implementation commit; use a selected worktree when the user
-or approved handoff requests it.
+Execute the approved behavior with one implementation owner, including staged
+or tightly coupled plans. The safe default is the current workspace with no
+implementation commit; use a selected worktree when the user or approved
+handoff requests it.
 
 Before edits, read the useful plan/spec and relevant project instructions.
 Detect overlap with pre-existing user changes. Stop for a real conflict,

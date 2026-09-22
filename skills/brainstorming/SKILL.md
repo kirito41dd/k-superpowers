@@ -27,8 +27,9 @@ without another approval. For design work, present the recommendation and real
 trade-offs concisely; obtain approval only for decisions not already settled.
 Implement only when the original request or a later response asks to implement;
 a design-only request ends after the design. Use the current workspace with no
-commit by default. Do not create a spec or plan artifact unless it has real
-handoff value or the user requests it.
+commit by default. Clear requirements still need a planning assessment: use
+`k-superpowers:writing-plans` when staged execution or handoff benefits from a
+persistent plan.
 
 ### Compact
 
@@ -37,8 +38,8 @@ shared design. Ask only questions whose answers materially affect the result.
 Present the coherent design once: goal, affected boundaries, behavior, material
 failure paths, and verification. After approval, when implementation is already
 authorized, assess execution topology once. Use `k-superpowers:writing-plans`
-when independently deliverable tasks make delegation or durable execution
-handoff useful; otherwise implement Inline. Without an implementation request,
+when staged execution, continuity, or delegation makes a persistent plan
+useful; otherwise implement Inline. Without an implementation request,
 stop after the approved design.
 
 ### Full

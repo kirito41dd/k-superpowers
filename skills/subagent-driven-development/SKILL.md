@@ -1,26 +1,30 @@
 ---
 name: subagent-driven-development
-description: Use when an approved plan has genuinely independent tasks, delegation has material latency or context benefit, execution stays in the current session, and local checkpoint commits are explicitly authorized
+description: Use when executing an approved staged plan with clear task boundaries, useful delegation in the current session, and authorized local checkpoint commits
 ---
 
 # Subagent-Driven Development
 
-Use delegation only when it is faster or safer than one-agent execution. SDD is
-not a quality ritual and is not the default for tightly coupled work.
+Advance an approved plan in stages, delegating bounded tasks when that reduces
+context load or execution cost. The controller owns decomposition, shared
+contracts, sequencing, and integration, and may implement tasks directly.
 
 ## Entry
 
-Enter only when:
+Use `k-superpowers:writing-plans` for the execution choice and any missing
+checkpoint authorization. Start SDD only with an approved plan, supported and
+useful delegation, and explicit authorization for this plan's local checkpoint
+commits.
 
-- the behavior and persistent plan are approved;
-- tasks can be understood and completed independently;
-- the current session supports delegated agents;
-- delegation has a concrete benefit; and
-- the user explicitly authorizes this plan's local checkpoint commits.
+Tasks are independently executable once their required contracts or upstream
+results are ready. For example, an agreed interface can let a module proceed
+with only its local context while another module supplies the implementation
+later. Sequence dependent tasks; parallelize only when inputs and write
+ownership allow it.
 
-Otherwise use Inline. Checkpoint authorization covers approved implementation
-and review-fix commits only. It never includes push, merge, PR, amend, force,
-unrelated work, or separate spec/plan commits.
+Checkpoint authorization covers approved implementation and review-fix commits
+only. It never includes push, merge, PR, amend, force, unrelated work, or
+separate spec/plan commits.
 
 Use the selected current workspace or worktree. Before dispatch, inspect project
 instructions, the plan, task dependencies, existing changes, and verification
@@ -42,20 +46,20 @@ revert, absorb, or manufacture ownership of pre-existing changes.
 
 ## Risk And Delegation
 
-Use effect-based judgment rather than mandatory metadata:
+Choose the executor by task boundaries and context benefit; use consequences
+to set review depth:
 
 - **Low:** docs, comments, formatting, or mechanical work. Controller implements,
   verifies, inspects the diff across Spec and Standards, and checkpoints
   directly.
 - **Medium:** bounded behavior with no material public, security, persistence,
-  concurrency, protocol, or integration risk. One implementer executes;
-  controller reads the report, actual diff, and evidence and performs a
+  concurrency, protocol, or integration risk. Controller inspects the actual
+  diff, evidence, and any delegate report and performs a
   two-axis Spec/Standards self-review, then one independent reviewer uses the
   bounded review lifecycle.
 - **High:** consequential public contract, security, persisted data, migration,
   concurrency, protocol, state-machine, or similarly costly failure. One
-  implementer executes and one independent reviewer uses the bounded review
-  lifecycle.
+  independent reviewer uses the bounded review lifecycle after implementation.
 
 Runtime evidence may raise or lower the needed verification/review effort when
 the controller explains the concrete effect. A task that reveals an unapproved
@@ -63,7 +67,7 @@ material decision stops for the user; local implementation choices do not.
 
 ## Delegated Brief
 
-Give each agent a self-contained semantic brief containing:
+Give each delegate a focused, self-contained brief with task-relevant context:
 
 ```text
 goal and approved task

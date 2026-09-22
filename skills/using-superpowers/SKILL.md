@@ -26,8 +26,8 @@ useful later, and do not load mutually exclusive execution paths together.
 | Familiarize, inspect, explain, review, or report status | Perform only the requested non-mutating work, then stop |
 | Bug or unexpected behavior | `k-superpowers:systematic-debugging` |
 | Design request or behavior change with unresolved material decisions | `k-superpowers:brainstorming` |
-| Clear, bounded behavior and scope with implementation requested | Direct implementation in the current workspace, no commit |
-| Approved multi-step change whose independent slices make durable handoff or delegation useful | `k-superpowers:writing-plans` |
+| Approved implementation needing a persistent plan for staged execution, continuity, or delegation | `k-superpowers:writing-plans` |
+| Clear, simple implementation with no useful persistent plan | Direct implementation in the current workspace, no commit |
 | Approved persistent plan without an execution choice | `k-superpowers:writing-plans` for handoff |
 | Approved plan with Inline selected | `k-superpowers:executing-plans` |
 | Approved plan with SDD selected and checkpoint commits authorized | `k-superpowers:subagent-driven-development` |
@@ -49,9 +49,10 @@ and scope supplies approval for that bounded change. Do not require a separate
 design approval or turn ordinary local implementation choices into an approval
 gate. A design-only request does not authorize implementation.
 
-Before choosing Direct, check once whether independently deliverable scopes and
-a concrete delegation benefit make a persistent plan useful. If so, use
-`k-superpowers:writing-plans` instead.
+Clear requirements still need an execution assessment. Before choosing Direct,
+consider complexity, dependencies, and whether staged execution, continuity,
+or bounded delegation makes a persistent plan useful. If so, use
+`k-superpowers:writing-plans` to plan and choose Inline or SDD.
 
 The safe default is:
 

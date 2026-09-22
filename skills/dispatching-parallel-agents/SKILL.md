@@ -9,7 +9,7 @@ Parallelize when expected latency or context benefit exceeds delegation and
 integration cost. Shared read-only files and context are allowed.
 
 This skill owns parallel investigation, analysis, diagnosis, and other general
-workstreams. For an approved implementation plan with independent repository
+workstreams. For an approved implementation plan with bounded repository
 tasks, durable handoff, and checkpoint ownership, use
 `k-superpowers:subagent-driven-development`. Do not use generic parallel edits
 to bypass its plan or commit authorization.

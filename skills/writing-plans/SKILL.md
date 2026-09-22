@@ -25,10 +25,11 @@ Capture, as applicable:
 - material execution/review risk;
 - focused verification that supports the intended claims.
 
-Prefer independently deliverable vertical slices. Do not create empty contract
-fields, invent tests, or expand project verification. Risk labels are useful
-only when they affect delegation, review, permissions, or evidence. Obvious
-docs/mechanical work does not block because a `low` label is absent.
+Choose verifiable stages with clear boundaries and dependency order; slices or
+layers may fit the work. Do not create empty contract fields, invent tests, or
+expand project verification. Risk labels are useful only when they affect
+delegation, review, permissions, or evidence. Obvious docs/mechanical work does
+not block because a `low` label is absent.
 
 `k-superpowers:type-driven-verification` owns implementation design guidance;
 reference its applicable questions rather than copying a mandatory form.
@@ -47,23 +48,20 @@ A faithful plan that adds no material decision needs no separate approval when
 implementation is already authorized. Otherwise obtain approval before
 execution.
 
-When the plan contains genuinely independent tasks and delegation has a
-concrete latency, context, safety, or recovery benefit, ask one concise choice:
+Assess SDD suitability before checking commit authorization. When bounded tasks
+can proceed from agreed interfaces or earlier-stage results, and supported
+current-session delegation saves context, time, or coordination, recommend SDD
+with a brief reason. The controller can implement some stages directly.
 
-- SDD in the selected workspace, explicitly authorizing this plan's local
-  checkpoint commits; or
-- Inline in the selected workspace with no implementation commits.
-
-SDD also requires current-session delegation support. If those conditions do
-not apply, use the safe default:
-
-```text
-Inline + current workspace + no implementation commit
-```
+Reuse the existing execution choice and this plan's checkpoint authorization.
+Ask only for a missing choice or authority before starting SDD; missing
+authorization alone is not a reason to silently select Inline. If delegation
+has no useful boundary or benefit, is unavailable, or the user chooses Inline,
+execute Inline, including in stages when useful. Its default is the current
+workspace with no implementation commits.
 
 Ask about worktree isolation separately only when it materially improves safety
-or recovery. Do not present SDD merely as ceremony, but do not hide a qualified
-SDD candidate behind the Inline default.
+or recovery.
 
 No plan approval authorizes push, merge, PR, amend, force, destructive cleanup,
 unrelated work, or a separate documentation commit. Ask separately for those

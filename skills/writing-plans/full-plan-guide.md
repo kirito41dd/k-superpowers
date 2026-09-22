@@ -1,8 +1,8 @@
 # Full Plan Guide
 
 A Full plan should let another skilled agent continue without rediscovering
-material decisions. Organize it around independently deliverable behavior, not
-horizontal layers or fixed step counts.
+material decisions. Organize verifiable stages by boundaries and dependency
+order; choose slices or layers that fit the change.
 
 For each meaningful slice, include the files/boundary, approved behavior,
 interfaces or dependencies, consequential design constraints, and the smallest

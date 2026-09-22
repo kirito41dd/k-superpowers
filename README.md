@@ -32,11 +32,11 @@ Skill 文本是给持续进化的智能体使用的行为指导，不以固定�
 
 ## 当前定制重点
 
-- `using-superpowers`：普通问答直接回答；明确行为和范围的实现请求走 Direct，不要求另行批准设计，安全默认是 current workspace + Inline + no commit；显式 local commit 或集成请求交给 `finishing-a-development-branch`；独立多任务先完成一次 execution handoff，不强制无价值 ceremony。
-- `brainstorming` / `writing-plans`：只有真实取舍才列方案，只有交接价值才落持久 spec/plan；Full 保护 material decision，而不是逐章节审批；符合条件的 plan 主动给出 SDD checkpoint 授权与 Inline no-commit 选择。
+- `using-superpowers`：普通问答直接回答；需求明确仍评估复杂度、依赖和分阶段推进的价值，简单改动走 Direct，需要持久计划时再选 Inline / SDD；安全默认是当前工作区、不提交，显式 commit 或集成请求交给 `finishing-a-development-branch`。
+- `brainstorming` / `writing-plans`：只有真实取舍才列方案，有分阶段执行或交接价值才落持久计划；Full 保护重要决定，不逐章节审批；先判断 SDD 收益，再申请尚缺的选择和 checkpoint 授权，已有授权复用。
 - `type-driven-verification`：采用类型优先、风险驱动验证，并单一拥有测试准入、核心代码与核心测试说明合同。测试优先覆盖稳定领域不变量和不同失败类型，合并等价排列、避免跨层重复与偶然实现耦合；保留的核心测试靠行为化命名和结构表达契约，只为非显然不变量、回归背景、特殊 fixture/顺序或关键断言后果补充说明。
 - `reasoning-based-testing`：对关键业务的事件历史、状态转换和多条读写路径，推荐运行测试与独立代码推演配合使用；跨月、到期、迁移、重试等难验证逻辑尤其适合。先按业务意图定义用例，再由不继承主会话的 Agent 沿真实调用链推演；初轮隔离测试结论，之后逐例对照证据，复现、修复并定向复核，推演不能替代运行测试。
-- `subagent-driven-development`：只在独立任务且委派收益明确、用户授权本 plan checkpoint commits 时使用。Low 由 controller 处理，medium/high 均有 independent reviewer；final review 只保护真实跨任务 integration risk。
+- `subagent-driven-development`：按阶段和依赖推进，在明确接口与边界下委派任务以节省上下文，主 Agent 也可直接实现；执行前取得本计划 checkpoint 授权。Medium/high 保留独立 Review，最终 Review 只保护真实集成风险。
 - `requesting-code-review`：所有改动做 controller Spec/Standards 自审；除纯文档/注释/格式、机械 rename/config 和简单 glue 外，非平凡行为与 bug fix 默认触发独立双轴 review。一次 Discovery 固定问题清单，授权范围内持续有进展的修复可继续定向 Closure；未关闭的阻断项阻止验收，不自动要求再次授权。
 - `receiving-code-review`：普通反馈核实后按授权修改、验证和反馈，不因收到建议而新建 finding ledger 或 Closure；已有正式 Review 继承原生命周期，修复本身仍按独立 Review trigger 判断。
 - `systematic-debugging`：优先建立 feedback loop，在拥有不变量的边界修复，额外防护只针对独立的剩余风险；无法复现的生产/外部问题允许证据化、带置信度诊断，无验证不声称 fixed，按信息增益而非固定次数停止。
@@ -130,7 +130,7 @@ codex plugin list | grep k-superpowers
 预期能看到：
 
 ```text
-k-superpowers@k-superpowers-dev  installed, enabled  5.4.22
+k-superpowers@k-superpowers-dev  installed, enabled  5.4.23
 ```
 
 本地 marketplace 的结构是：
