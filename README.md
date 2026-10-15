@@ -33,7 +33,7 @@ Skill 文本是给持续进化的智能体使用的行为指导，不以固定�
 ## 当前定制重点
 
 - `using-superpowers`：普通问答直接回答；需求明确仍评估复杂度、依赖和分阶段推进的价值，简单改动走 Direct，需要持久计划时再选 Inline / SDD；安全默认是当前工作区、不提交，显式 commit 或集成请求交给 `finishing-a-development-branch`。
-- `brainstorming` / `writing-plans`：设计默认短版，先讲目标、选定方案和推进顺序；各阶段明确改动、交付及完成条件，证据引用已有文档，关键安全、迁移与恢复边界留在正文。只讨论未决取舍，有执行或交接价值才落持久计划；先判断 SDD 收益，再申请尚缺的选择和 checkpoint 授权，已有授权复用。
+- `brainstorming` / `writing-plans`：spec 面向研发理解、确认和维护，先讲目标、方案与推进顺序，再讲清机制；正文默认几分钟读完，读者能复述关键取舍及失败边界，短摘要不能掩盖冗长正文。各阶段有交付和完成条件，关键安全、迁移与恢复边界留在正文，证据引用已有文档。只讨论未决取舍，有执行或交接价值才落持久计划；先判断 SDD 收益，再申请尚缺的选择和 checkpoint 授权，已有授权复用。
 - `type-driven-verification`：采用类型优先、风险驱动验证，并单一拥有测试准入、核心代码与核心测试说明合同。测试优先覆盖稳定领域不变量和不同失败类型，合并等价排列、避免跨层重复与偶然实现耦合；保留的核心测试靠行为化命名和结构表达契约，只为非显然不变量、回归背景、特殊 fixture/顺序或关键断言后果补充说明。
 - `reasoning-based-testing`：对关键业务的事件历史、状态转换和多条读写路径，推荐运行测试与独立代码推演配合使用；跨月、到期、迁移、重试等难验证逻辑尤其适合。先按业务意图定义用例，再由不继承主会话的 Agent 沿真实调用链推演；初轮隔离测试结论，之后逐例对照证据，复现、修复并定向复核，推演不能替代运行测试。
 - `subagent-driven-development`：按阶段和依赖推进，在明确接口与边界下委派任务以节省上下文，主 Agent 也可直接实现；执行前取得本计划 checkpoint 授权。Medium/high 保留独立 Review，最终 Review 只保护真实集成风险。
@@ -130,7 +130,7 @@ codex plugin list | grep k-superpowers
 预期能看到：
 
 ```text
-k-superpowers@k-superpowers-dev  installed, enabled  5.4.24
+k-superpowers@k-superpowers-dev  installed, enabled  5.4.25
 ```
 
 本地 marketplace 的结构是：
