@@ -45,28 +45,20 @@ identifiers, official product or standard names, or disambiguation.
 
 ## Meeting Narrative
 
-Build shared understanding before asking reviewers to judge the proposal. Use
-the smallest narrative that supports the required decisions. A common order is:
+Open with a brief orientation: what is under review, the recommended direction,
+and what participants need to decide. If no recommendation is defensible yet,
+state the unresolved choice and evidence gap.
 
-1. **Background and current situation:** what led to the review, what exists
-   today, the concrete problem and impact, and why it matters now.
-2. **Goals, scope, and review focus:** what the proposal aims to achieve, its
-   high-level direction, current/proposed/later boundaries, non-goals, and the
-   questions that need agreement.
-3. **Proposed approach and critical mechanism:** the target user or system flow,
-   overall design, how the key mechanism works, and evidence that makes the
-   central technical bet credible.
-4. **Choices and trade-offs:** why this approach is recommended, viable
-   alternatives, costs and limits, revisit conditions, and impact of rejection.
-5. **Validation, delivery constraints, and risk:** available and missing
-   evidence, acceptance conditions, decision-relevant dependencies, failure
-   behavior, mitigation, and degradation; cover rollback only when a concrete
-   operational rollback path exists.
-6. **Decisions and follow-up:** meaningful decision names, actual outcomes and
-   conditions, and follow-up actions once known.
+Then give enough current context, problem, and impact to understand the proposal.
+Follow a concrete scenario or coherent flow through the key mechanism, its
+evidence, and consequential trade-offs. Connect the reasoning to the decisions
+requested; choose sections that serve it rather than a chapter for every topic.
+Build shared understanding before asking for a judgment.
 
-Combine, rename, or omit sections freely; this is a narrative guide, not a
-template. Use an appendix for relevant detail outside the main reasoning path.
+Keep scope, capability limits, decision-relevant dependencies, and acceptance
+conditions clear. Preserve safety, migration, failure, and recovery boundaries
+that affect the decision; cover rollback only when a concrete operational path
+exists. Record actual decisions, conditions, and follow-up actions once known.
 
 Keep facilitation separate from technical content. Add status, owner, or source
 links when useful, but include attendee lists, duration, minute-by-minute
@@ -78,6 +70,10 @@ fields blank; do not invent owners, deadlines, or an implementation backlog.
 
 A real decision has credible alternatives or materially different consequences.
 Treat facts, constraints, and uncontested implementation details as context.
+Distinguish decisions requested now from settled choices. Briefly retain the
+known rationale, accepted costs, and limits of settled choices; reopen them
+only when requested or new conflicting evidence warrants it. Compare credible
+alternatives for unresolved choices, without inventing options to fill a table.
 Use stable IDs only when cross-document traceability helps. Never use a bare code
 such as `D1`, `G2`, or `A1` as reader-facing shorthand; every reference must
 retain the meaningful decision, acceptance condition, risk, or action name. If
@@ -92,29 +88,38 @@ When feasibility depends on a self-built or uncertain mechanism, keep its
 minimal working model in the main path: inputs, major steps, acceptance or
 degradation boundaries, relevant precedent or prototype, why it is buildable,
 and remaining evidence gaps. If evidence is missing, make approval conditional
-on a spike or validation result rather than assert confidence; leave code and
-per-language detail in the source spec.
+on a spike or validation result rather than assert confidence. Link existing
+implementation evidence for supporting detail.
 
 Label exact thresholds as measured facts or proposed acceptance conditions and
 keep them consistent with their source.
 
 ## Compression And Source Of Truth
 
-The main body contains only what participants need to understand and decide.
-Give each fact one primary explanatory home; summaries may signpost rather than
-repeat full decision tables, acceptance conditions, evidence gaps, or dependency
-matrices.
-Keep DTOs, API fields, SQL/indexes, code structures, per-language mechanics,
-full test matrices, benchmark procedures, and research notes in the source spec
-or appendix unless one changes an architectural choice. Prefer a few purposeful
-diagrams where boundaries, flow, state, or sequence would otherwise be unclear.
+Default to a main body colleagues can read in a few minutes before discussion.
+Adapt to the audience and decision complexity; reading time is guidance, not a
+quota. A short summary cannot compensate for an unreadable body, and dense
+jargon or compressed sentences do not reduce the effort of understanding.
+Cut repetition, superseded debate, and detail that does not help readers
+understand or decide. Give each fact one primary explanatory home. A request
+for brevity calls for substantive cuts and clearer narrative, not just new
+headings or shorter phrasing.
+
+Link existing designs, implementation evidence, experiments, and test results;
+keep the conclusions and boundaries needed for the decision in the main body.
+Do not dump supporting detail into the source spec or manufacture appendices
+and documents just to shorten the main text. Add reference material only when
+it has a real use. Use a diagram when it explains a mechanism or boundary more
+clearly than prose.
 
 ## Completion
 
-The material is ready when participants can quickly explain the problem,
-recommendation, value, cost, viable alternatives, capability boundaries, and
-critical-mechanism feasibility and evidence gaps, and required decisions within
-the stated meeting time.
+The material is ready when a reviewer can independently explain how the proposal
+works, why it is recommended, what remains to be decided, and the costs, risks,
+and evidence gaps they would accept. The opening should orient them quickly;
+the body should make that judgment possible without a live explanation. Leave
+room for discussion within the meeting time. If the reasoning is buried,
+rewrite and cut while preserving the mechanism and material boundaries.
 
 Detailed design remains authoritative. Treat recording meeting outcomes and
 reconciling material changes into it as a separate authorized follow-up before
