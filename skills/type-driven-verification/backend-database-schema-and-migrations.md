@@ -85,11 +85,29 @@ keep them; do not remove established constraints merely to appear shard-ready.
 
 ## Data Semantics And Indexes
 
-Persist absolute instants in UTC. For MySQL business data, `DATETIME(3)` is a
-useful default; use `DATE` for civil dates, preserve an IANA time-zone ID for
-user-local schedules, and store durations as numeric units. Use exact numeric
-representations such as integer minor units or `DECIMAL` for money, never
-floating point.
+Distinguish absolute instants, civil dates, local schedules, and durations.
+Specify units, precision, null/zero meaning, and clock source. Represent absolute
+instants as Unix integers with explicit units or temporal columns with an
+explicit UTC encoding/decoding contract. Use `DATE` for civil dates, preserve an
+IANA time-zone ID for local schedules, and store durations as numeric units.
+Keep storage representation separate from display and business-calendar zones.
+
+Treat column values, encoded write/query parameters, read decoding, and SQL
+time expressions as one contract, including ORM-generated fields and raw SQL.
+Reuse the project's established time codecs and helpers. For MySQL, `DATETIME(3)`
+does not carry a time zone, and `UTC_TIMESTAMP()` returns UTC calendar fields,
+not epoch seconds. Driver location and database session time zone are separate
+settings; an application-side `.UTC()` call alone does not guarantee UTC storage
+or correct comparisons. Make these dependencies explicit rather than relying
+on connection defaults.
+
+For cross-instance leases and deadlines, choose an authoritative clock and
+evaluate against a fresh value at the decision point, including after lock
+waits. Matching time zones does not remove clock skew or replace ownership,
+fencing, and conditional updates.
+
+Use exact numeric representations such as integer minor units or `DECIMAL` for
+money, never floating point.
 
 Derive indexes from real filtering, joining, ordering, and pagination paths.
 Include tenant/shard scope where the access path requires it, and validate
