@@ -88,18 +88,25 @@ keep them; do not remove established constraints merely to appear shard-ready.
 Distinguish absolute instants, civil dates, local schedules, and durations.
 Specify units, precision, null/zero meaning, and clock source. Represent absolute
 instants as Unix integers with explicit units or temporal columns with an
-explicit UTC encoding/decoding contract. Use `DATE` for civil dates, preserve an
+explicit encoding/decoding contract. Use `DATE` for civil dates, preserve an
 IANA time-zone ID for local schedules, and store durations as numeric units.
 Keep storage representation separate from display and business-calendar zones.
 
-Treat column values, encoded write/query parameters, read decoding, and SQL
-time expressions as one contract, including ORM-generated fields and raw SQL.
-Reuse the project's established time codecs and helpers. For MySQL, `DATETIME(3)`
-does not carry a time zone, and `UTC_TIMESTAMP()` returns UTC calendar fields,
-not epoch seconds. Driver location and database session time zone are separate
-settings; an application-side `.UTC()` call alone does not guarantee UTC storage
-or correct comparisons. Make these dependencies explicit rather than relying
-on connection defaults.
+Prefer UTC for absolute-time storage and database sessions (`+00:00` in MySQL),
+independently of host/container time zone. Other project conventions must be
+unambiguous and supported by the chosen driver and time types. Explicitly set
+session options on every new or re-established physical connection in the pool.
+
+Treat application time types, column values, encoded write/query parameters,
+read decoding, and SQL time expressions as one contract, including ORM-generated
+fields and raw SQL. Driver behavior may depend on type mappings rather than a
+configurable location; preserve its documented assumptions. Reuse the project's
+established time codecs and helpers.
+
+For MySQL, `DATETIME(3)` has no time zone; `UTC_TIMESTAMP()` returns UTC calendar
+fields, not epoch seconds. Setting the session time zone does not configure
+application-side codecs, and converting a value to UTC alone does not guarantee
+UTC storage or correct comparisons.
 
 For cross-instance leases and deadlines, choose an authoritative clock and
 evaluate against a fresh value at the decision point, including after lock
