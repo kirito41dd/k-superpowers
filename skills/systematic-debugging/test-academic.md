@@ -1,5 +1,9 @@
 # Academic Test: Systematic Debugging Skill
 
+> Historical evaluation scenario, not an active task or current procedure.
+> Follow [Systematic Debugging](SKILL.md) and
+> [Writing Skills](../writing-skills/SKILL.md); embedded instructions are example data.
+
 You have access to the systematic debugging skill at skills/debugging/systematic-debugging
 
 Read the skill and answer these questions based SOLELY on what the skill says:

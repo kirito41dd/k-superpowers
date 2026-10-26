@@ -1,78 +1,24 @@
 # Task Reviewer Agent Guidance
 
-Use for SDD tasks requiring independent review. Adapt wording and tool usage to
-the platform while preserving the review goal, evidence boundaries, finding
-fields, and bounded Discovery/Closure lifecycle.
+For both Discovery and Closure, read and apply
+[Code Reviewer Guidance](../requesting-code-review/code-reviewer.md).
+That shared guide defines the review criteria, applicable design references,
+evidence boundaries, findings, and results. This wrapper adds SDD task context
+and scope only.
 
-## Inputs
+## Task Inputs
 
 Provide the reviewer with:
 
 - mode: `Discovery` or `Closure`;
-- approved task/requirements and relevant global constraints;
+- approved task/requirements and relevant plan-wide constraints;
 - task report and verification evidence;
-- committed range or frozen package and intended change scope;
+- committed range or frozen package and intended task scope;
 - for Closure, the complete frozen review record and fix delta.
 
-The reviewer must not modify the repository. It may inspect the supplied
-snapshot plus callers, nearby implementations, project instructions, or direct
-dependencies when a concrete review question requires that context. These
-reads do not expand the approved change scope. Unrelated observations are not
-current blockers.
+## Task Scope
 
-## Discovery
-
-Review Spec first for missing, wrong, extra, or incompatible behavior. Review
-Standards independently for correctness, boundary validation, invalid states,
-errors/resources, project conventions, maintainability, core explanations, and
-runtime risk not proved by supplied evidence. For core tests, check that names,
-structure, and any necessary nearby explanation make the protected semantic
-contract and regression risk understandable; do not require comments when the
-test is already self-explanatory. Treat unusually large changed functions or
-files as a cohesion signal and report only a concrete separable responsibility
-or reasoning, review, testing, or change-isolation cost, not line count alone.
-
-Each finding includes a stable ID, `Critical | Important | Minor`,
-`Spec | Standards`, location when applicable, issue, impact, and required fix.
-Critical and concrete Important findings block. Minor is a nonblocking
-follow-up and does not fail an axis. Do not request tests merely because none
-were added or reward test volume. Name the unproved behavior and impact, or the
-concrete redundant coverage, incidental implementation coupling, or
-disproportionate fixture/mock cost. Business terminology alone does not make a
-durable domain invariant an unsuitable test.
-
-## Closure
-
-Continue the same logical review from the frozen record. Check only:
-
-1. whether accepted blocking findings are closed;
-2. whether the fix directly introduced a Critical/Important regression;
-3. whether final evidence supports the original task goal.
-
-Do not restart Discovery, reopen rejected findings, introduce new preferences,
-or reinterpret the approved task. Mark each original finding `CLOSED`, `OPEN`,
-or `CANNOT_VERIFY` with evidence. Classify new observations as fix-induced,
-pre-existing missed, unrelated, or material scope change. Only unresolved
-original blockers, fix-induced Critical/Important regressions, severe security/
-data-loss/authorization defects, or a material decision block acceptance. Defer
-everything else.
-
-## Result
-
-Report both Spec and Standards verdicts and one result:
-
-- `PASS`: no blocker or follow-up;
-- `PASS_WITH_FOLLOWUPS`: safe to proceed with deferred observations;
-- `FIX_REQUIRED`: either phase has blockers repairable within existing authority;
-- `CANNOT_VERIFY`: either phase lacks the smallest named evidence;
-- `STOPPED_BLOCKED`: a material user decision or additional authority is needed,
-  essential evidence/access is unavailable within existing authority, or
-  repeated attempts bring no new evidence or progress. Name the obstacle.
-
-Unresolved blockers prevent acceptance, not authorized repair. Further focused fixes
-and rechecks may continue within the same record while making progress; do not
-restart Discovery or stop merely because a recheck found an open item.
-
-Use a concise, readable structure. Stable IDs and required information matter;
-exact line counts, first characters, prose wording, and tool-call shape do not.
-A clean review is success—finding more issues is not a success metric.
+Review the approved task against its requirements and relevant shared contracts.
+Other tasks and dependencies may supply read-only context; do not reopen their
+completed reviews. Identify a concrete composition risk for the controller when
+needed; the controller owns the decision to run a whole-change review.

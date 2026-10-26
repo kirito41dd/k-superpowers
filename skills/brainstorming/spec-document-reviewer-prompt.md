@@ -1,49 +1,22 @@
-# Spec Document Reviewer Prompt Template
+# Spec Document Reviewer Guidance
 
-Use this template when dispatching a spec document reviewer subagent.
+Use when a separate spec review is requested or justified by material risk.
+[Brainstorming](SKILL.md) owns the design criteria and default single self-review;
+this reference does not add a routine dispatch or approval step.
 
-**Purpose:** Verify the spec is complete, consistent, and ready for implementation planning.
+Give the reviewer the spec, requested goals, settled decisions, and relevant
+project constraints. Review the document without modifying it.
 
-**Dispatch after:** Spec document is written to docs/superpowers/specs/
+Apply the current design criteria: can an engineer understand the selected
+mechanism, consequential choices, execution order, acceptance conditions, and
+failure/recovery boundaries without the author translating them? Identify
+material contradictions, unsupported assumptions, omitted constraints, scope
+expansion, or reading burden that prevents informed confirmation or planning.
 
-```
-Task tool (general-purpose):
-  description: "Review spec document"
-  prompt: |
-    You are a spec document reviewer. Verify this spec is complete and ready for planning.
+Preserve settled decisions unless new conflicting evidence warrants revisiting
+them. Do not demand fixed sections, more alternatives, exhaustive detail, or
+source inventories. Keep supporting detail linked where it already exists.
 
-    **Spec to review:** [SPEC_FILE_PATH]
-
-    ## What to Check
-
-    | Category | What to Look For |
-    |----------|------------------|
-    | Completeness | TODOs, placeholders, "TBD", incomplete sections |
-    | Consistency | Internal contradictions, conflicting requirements |
-    | Clarity | Requirements ambiguous enough to cause someone to build the wrong thing |
-    | Scope | Focused enough for a single plan — not covering multiple independent subsystems |
-    | YAGNI | Unrequested features, over-engineering |
-
-    ## Calibration
-
-    **Only flag issues that would cause real problems during implementation planning.**
-    A missing section, a contradiction, or a requirement so ambiguous it could be
-    interpreted two different ways — those are issues. Minor wording improvements,
-    stylistic preferences, and "sections less detailed than others" are not.
-
-    Approve unless there are serious gaps that would lead to a flawed plan.
-
-    ## Output Format
-
-    ## Spec Review
-
-    **Status:** Approved | Issues Found
-
-    **Issues (if any):**
-    - [Section X]: [specific issue] - [why it matters for planning]
-
-    **Recommendations (advisory, do not block approval):**
-    - [suggestions for improvement]
-```
-
-**Reviewer returns:** Status, Issues (if any), Recommendations
+Return a concise readiness judgment and any material issues with locations,
+impact, and the clarification or correction needed. Separate optional advice
+from issues that prevent informed approval or a sound implementation plan.

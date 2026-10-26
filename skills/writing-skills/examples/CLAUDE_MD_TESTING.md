@@ -1,5 +1,8 @@
 # Testing CLAUDE.md Skills Documentation
 
+> Historical evaluation example, not a required or currently validated workflow.
+> Follow [Writing Skills](../SKILL.md) for current authoring and verification rules.
+
 Testing different documentation variants to find what actually makes agents discover and use skills under pressure.
 
 ## Test Scenarios

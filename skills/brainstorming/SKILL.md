@@ -13,6 +13,14 @@ not to a template.
 Read-only familiarization, analysis, review, status, and preparation requests
 are not design work. Perform them and stop.
 
+For designs involving backend business use cases, transaction/state boundaries,
+or permission-sensitive queries, consult the relevant
+[use-case-driven service guidance](../type-driven-verification/use-case-driven-transactional-services.md).
+For persistence, schema, migration/backfill, or ownership/sharding decisions,
+consult the [database guidance](../type-driven-verification/backend-database-schema-and-migrations.md).
+Apply only relevant constraints under the project's own architecture rules;
+these references do not prescribe document sections or expand the design scope.
+
 ## Choose Depth
 
 ### Direct

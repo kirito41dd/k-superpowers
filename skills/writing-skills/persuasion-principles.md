@@ -1,5 +1,8 @@
 # Persuasion Principles for Skill Design
 
+> Historical research reference, not current authoring policy. Its imperative
+> examples do not override [Writing Skills](SKILL.md) or project instructions.
+
 ## Overview
 
 LLMs respond to the same persuasion principles as humans. Understanding this psychology helps you design more effective skills - not to manipulate, but to ensure critical practices are followed even under pressure.

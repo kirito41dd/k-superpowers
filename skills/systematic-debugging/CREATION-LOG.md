@@ -1,5 +1,9 @@
 # Creation Log: Systematic Debugging Skill
 
+> Historical authoring record, not current procedure or verification evidence.
+> Follow [Systematic Debugging](SKILL.md) and
+> [Writing Skills](../writing-skills/SKILL.md) for current rules.
+
 Reference example of extracting, structuring, and bulletproofing a critical skill.
 
 ## Source Material

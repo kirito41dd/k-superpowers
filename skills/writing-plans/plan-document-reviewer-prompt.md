@@ -1,49 +1,22 @@
-# Plan Document Reviewer Prompt Template
+# Plan Document Reviewer Guidance
 
-Use this template when dispatching a plan document reviewer subagent.
+Use when a separate plan review is requested or justified by material risk.
+[Writing Plans](SKILL.md) owns plan content and the default single self-review;
+this reference does not add a routine dispatch or approval step.
 
-**Purpose:** Verify the plan is complete, matches the spec, and has proper task decomposition.
+Give the reviewer the plan, approved requirements or spec when one exists,
+relevant project constraints, and known execution authority. Review the plan
+without modifying it.
 
-**Dispatch after:** The complete plan is written.
+Apply the current planning criteria: could a skilled engineer execute the
+stages, respect dependencies and scope, and establish completion with the
+specified evidence? Identify missing approved behavior, contradictory steps,
+undefined material interfaces, ownership conflicts, or verification gaps that
+would cause implementation to fail or build the wrong thing.
 
-```
-Task tool (general-purpose):
-  description: "Review plan document"
-  prompt: |
-    You are a plan document reviewer. Verify this plan is complete and ready for implementation.
+Do not invent tasks, tests, documents, fixed step counts, or additional Git
+authority. Preserve local implementation choices that the executor can safely
+make from project patterns.
 
-    **Plan to review:** [PLAN_FILE_PATH]
-    **Spec for reference:** [SPEC_FILE_PATH]
-
-    ## What to Check
-
-    | Category | What to Look For |
-    |----------|------------------|
-    | Completeness | TODOs, placeholders, incomplete tasks, missing steps |
-    | Spec Alignment | Plan covers spec requirements, no major scope creep |
-    | Task Decomposition | Tasks have clear boundaries, steps are actionable |
-    | Buildability | Could an engineer follow this plan without getting stuck? |
-
-    ## Calibration
-
-    **Only flag issues that would cause real problems during implementation.**
-    An implementer building the wrong thing or getting stuck is an issue.
-    Minor wording, stylistic preferences, and "nice to have" suggestions are not.
-
-    Approve unless there are serious gaps — missing requirements from the spec,
-    contradictory steps, placeholder content, or tasks so vague they can't be acted on.
-
-    ## Output Format
-
-    ## Plan Review
-
-    **Status:** Approved | Issues Found
-
-    **Issues (if any):**
-    - [Task X, Step Y]: [specific issue] - [why it matters for implementation]
-
-    **Recommendations (advisory, do not block approval):**
-    - [suggestions for improvement]
-```
-
-**Reviewer returns:** Status, Issues (if any), Recommendations
+Return a concise readiness judgment and any material issues with locations,
+impact, and the correction needed. Keep optional improvements nonblocking.
