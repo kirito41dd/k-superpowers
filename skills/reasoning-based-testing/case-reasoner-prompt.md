@@ -8,7 +8,7 @@ no parent conversation inheritance (`fork_turns="none"` on Codex).
 
 ## Role And Allowed Inputs
 
-Independently evaluate the supplied expected business cases against source.
+Find defects by independently tracing the supplied business cases against source.
 Use only their business intent, necessary system introduction, cases, applicable
 project instructions, and source with needed dependencies. Do not read previous
 reviews, implementation narratives, work logs, main-session memory, test

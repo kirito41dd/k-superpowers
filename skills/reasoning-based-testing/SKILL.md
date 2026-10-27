@@ -1,21 +1,20 @@
 ---
 name: reasoning-based-testing
-description: Use when consequential business cases benefit from independent source-level testing alongside runtime tests, especially across time, state, migration, retry, recovery, or multiple read/write paths
+description: Use when consequential business scenarios benefit from independent source-level reasoning to find defects, especially across time, state, migration, retry, recovery, or multiple read/write paths
 ---
 
 # Reasoning-Based Testing
 
-Write expected behavior from business intent, then give a context-isolated agent
-the cases and a fixed source snapshot to trace. This catches contradictions
-between intended outcomes and real execution paths, especially across time,
-state, and module boundaries. It supplements running tests; it cannot prove
-that unexecuted tests or real environments work.
+Find defects by giving a context-isolated agent business expectations and a
+fixed source snapshot to trace. Compare intended outcomes with real execution
+paths, especially across time, state, and module boundaries. The result is
+source-backed findings, supported cases, and explicit uncertainty. Generating
+unit tests or increasing test coverage is not the goal.
 
-Recommend pairing it with runtime tests for consequential scenarios involving
+Recommend pairing it with focused runtime verification for consequential scenarios involving
 nontrivial event histories, state transitions, or interacting read/write paths,
-even when those scenarios are straightforward to execute. The two methods can
-expose different gaps in the implementation, test setup, or assertions; a passing
-test does not make independent reasoning redundant. Costly future-time or
+even when those scenarios are straightforward to execute. Independent reasoning
+can find defects despite passing tests. Costly future-time or
 hard-to-reproduce behavior is especially useful territory, not a prerequisite.
 Use a bounded set of cases, or the user's requested scope; do not add it to every
 small change or turn it into a whole-repository review.
@@ -110,17 +109,17 @@ results or repair material. The controller independently checks each finding
 against requirements and code, accepts it, rejects it with evidence, defers it,
 or identifies a needed user decision. Preserve the initial report and disposition.
 
-Compare runtime results and reasoning case by case once the initial report is
-saved. If they disagree, inspect the expected outcome, source versions, setup,
-assertions, and traced path; neither a green test nor an agent verdict settles
-the disagreement by itself. Record the gap and obtain focused evidence.
+Where runtime evidence covers the same cases, compare it with reasoning once
+the initial report is saved. If they disagree, inspect the expected outcome,
+source versions, setup, assertions, and traced path; neither a green test nor an
+agent verdict settles the disagreement by itself. Record the gap and obtain
+focused evidence.
 
 For accepted defects, use `k-superpowers:systematic-debugging` to reproduce the
 failure through the real entry path or a reliable proxy, then make an authorized
 in-scope fix and run focused verification. Prefer an observed failure before
 the fix and success afterward. If execution is unavailable, record the precise
-gap; a persuasive trace alone does not justify claiming the bug fixed. Test
-selection remains owned by `k-superpowers:type-driven-verification`.
+gap; a persuasive trace alone does not justify claiming the bug fixed.
 
 After a coherent fix batch, resume the same independent agent with the frozen
 record, accepted findings, final source/delta, and execution evidence. A
@@ -136,7 +135,11 @@ Preserve original uncertainty unless new evidence specifically resolves it.
 Report case coverage, accepted/rejected/deferred findings, fix and recheck
 outcomes, commands actually run, source identity, and remaining uncertainty.
 Keep source-derived conclusions separate from measured execution results.
-Run applicable tests even when reasoning supports every case; controlled-clock
+A reasoning-only request can finish with findings and stated limits. When
+claiming implementation or fix completion, obtain focused runtime evidence even
+when reasoning supports every case. Existing tests or bounded temporary
+reproducers may supply that evidence. Whether to retain a test is a separate
+decision owned by `k-superpowers:type-driven-verification`. Controlled-clock
 local service exercises can complement difficult future-time scenarios without
 introducing production clock backdoors or acquiring environment access.
 
