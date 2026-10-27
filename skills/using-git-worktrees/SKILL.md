@@ -59,8 +59,13 @@ another location.
 
 Only a newly created worktree gets project-specific dependency setup and the
 project's existing baseline verification command. Do not invent a broader test
-matrix. A failing baseline blocks implementation until the user decides how to
-proceed.
+matrix. If the baseline fails, distinguish routine setup problems, pre-existing
+failures, and failures relevant to the approved change. Resolve routine setup
+within existing authority. Continue when the failure is unrelated and focused
+evidence can still establish the changed behavior. Pause affected work only when
+meaningful verification is blocked or a material user decision is needed.
+Report the baseline failure and evidence limits; do not silently repair
+unrelated code or present a failing baseline as passing.
 
 ## Cleanup Handoff
 

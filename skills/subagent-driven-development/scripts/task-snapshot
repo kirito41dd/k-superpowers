@@ -42,7 +42,8 @@ validate_scope() {
   [ "$last" = 0 ] || { echo "scope must end with NUL" >&2; return 2; }
   while IFS= read -r -d '' path; do
     [ -n "$path" ] || { echo "empty scope entry" >&2; return 2; }
-    case "$path" in /*|..|../*|*/../*|*/..) echo "unsafe scope path" >&2; return 2;; esac
+    # Match Git's path spelling so aliases cannot bypass dirty-path comparisons.
+    case "$path" in /*|.|./*|*/./*|*/.|..|../*|*/../*|*/..|*/|*//*) echo "unsafe or noncanonical scope path" >&2; return 2;; esac
     [ "$path" != "$previous" ] || { echo "duplicate scope path" >&2; return 2; }
     if [ -n "$previous" ] && [[ "$path" < "$previous" ]]; then echo "scope not sorted" >&2; return 2; fi
     previous=$path

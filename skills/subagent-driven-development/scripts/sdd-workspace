@@ -11,5 +11,16 @@ set -euo pipefail
 root=$(git rev-parse --show-toplevel)
 dir="$root/.superpowers/sdd"
 mkdir -p "$dir"
-printf '*\n' > "$dir/.gitignore"
+if [ ! -e "$dir/.gitignore" ] && [ ! -L "$dir/.gitignore" ]; then
+  (
+    set -o noclobber
+    # Tolerate a competing creator, but do not swallow failures writing our file.
+    if { exec 3> "$dir/.gitignore"; } 2>/dev/null; then
+      printf '*\n' >&3
+    elif [ ! -e "$dir/.gitignore" ] && [ ! -L "$dir/.gitignore" ]; then
+      echo "cannot create SDD ignore file: $dir/.gitignore" >&2
+      exit 1
+    fi
+  )
+fi
 cd "$dir" && pwd

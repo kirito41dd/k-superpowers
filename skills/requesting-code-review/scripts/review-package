@@ -34,7 +34,7 @@ last_byte=$(tail -c 1 "$scope_file" | od -An -t u1 | tr -d ' ')
 scope=(); previous=
 while IFS= read -r -d '' path; do
   [ -n "$path" ] || { echo "empty scope entry" >&2; exit 2; }
-  case "$path" in /*|..|../*|*/../*|*/..) echo "unsafe scope: $path" >&2; exit 2;; esac
+  case "$path" in /*|.|./*|*/./*|*/.|..|../*|*/../*|*/..|*/|*//*) echo "unsafe or noncanonical scope: $path" >&2; exit 2;; esac
   [ "$path" != "$previous" ] || { echo "duplicate scope: $path" >&2; exit 2; }
   if [ -n "$previous" ] && [[ "$path" < "$previous" ]]; then echo "scope not sorted" >&2; exit 2; fi
   scope+=("$path"); previous=$path

@@ -45,6 +45,8 @@ K Superpowers 希望让 Coding Agent 像有判断力的工程师一样工作：�
 
 Worktree 是独立的工作区选择，只有你明确要求或隔离确有价值时才创建。Git 提交和
 MR/PR 各需相应授权；SDD 获得 checkpoint 授权后，在推进过程中按任务提交。
+新 worktree 的基线失败会先判断原因和影响：无关的已有失败不自动停工，真正阻碍当前
+验证或涉及重要决定时才暂停受影响部分，并如实保留证据缺口。
 
 ## Direct、Inline 与 SDD 的区别
 

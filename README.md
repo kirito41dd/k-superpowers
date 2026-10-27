@@ -130,7 +130,7 @@ codex plugin list | grep k-superpowers
 预期能看到：
 
 ```text
-k-superpowers@k-superpowers-dev  installed, enabled  5.4.31
+k-superpowers@k-superpowers-dev  installed, enabled  5.4.32
 ```
 
 本地 marketplace 的结构是：
@@ -141,6 +141,9 @@ plugins/k-superpowers -> ..
 .codex-plugin/plugin.json
 skills/
 ```
+
+修改仓库后，已安装插件仍可能使用旧缓存。版本不一致时，重新运行
+`codex plugin add k-superpowers@k-superpowers-dev`，再重启应用并开启新会话。
 
 如果 Codex app 显示市场已添加但列表为空，先重启 Codex app，再搜索 `k-superpowers` 或 `K Superpowers`。也可以直接运行：
 

@@ -118,7 +118,9 @@ final review.
 Record completed tasks and unresolved follow-ups in the progress artifact when
 recovery needs it. After all tasks and any required integration review, invoke
 `k-superpowers:verification-before-completion` for bounded whole-change evidence.
-Only then clean owned SDD artifacts and report completion.
+Only then report completion. Cleanup is optional: remove only artifacts known
+to belong to this run, and retain useful recovery material. A shared directory
+does not establish ownership of its contents.
 
 Authorized SDD checkpoint commits remain owned here. Use
 `finishing-a-development-branch` only for a separately requested post-execution
