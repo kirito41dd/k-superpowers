@@ -30,11 +30,17 @@ Do not request tests merely because none were added or reward test volume.
 Identify the exact unproved behavior and its impact. Report excessive-test
 findings only for concrete redundancy, incidental implementation coupling, or
 disproportionate fixture/mock maintenance cost; business terminology alone does
-not make a durable domain invariant an unsuitable test. For non-self-explanatory
-core code, name the specific missing purpose, caller use, invariant,
-lifecycle/resource rule, protocol/state transition, or established
-comment-language requirement. Do not count comments or demand restatements of
-obvious code. For a core test, report an explanation gap only when its protected
+not make a durable domain invariant an unsuitable test.
+
+For non-self-explanatory core code, name the specific missing purpose, caller
+use, invariant, design rationale, lifecycle/resource rule, protocol/state
+transition, or established comment-language requirement. Judge clarity from
+names, types, and source context together. Essential explanations belong at the
+relevant source declaration or decision point. Flag stale or misleading comments
+when changed behavior contradicts them. Do not count comments or demand
+restatements of obvious code.
+
+For a core test, report an explanation gap only when its protected
 contract, regression purpose, unusual fixture/order, or critical assertion
 consequence remains unclear after reading its name and structure. Treat
 unusually large changed functions or files as a cohesion signal: report a

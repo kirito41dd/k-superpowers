@@ -98,6 +98,17 @@ rules, and protocol boundaries or state transitions. Treat a factory as part of
 the abstraction callers obtain. Follow project and nearby-file comment language
 and style; do not restate obvious code.
 
+Judge self-explanation from names, types, and nearby context together. A readable
+name alone may leave transaction, idempotency, or recovery contracts unexplained.
+
+Keep explanations at the relevant declaration or decision point in source.
+Explain business meaning, consequential design choices, and constraints a
+maintainer must preserve where the code does not convey them. These are
+judgment aids, not required comment fields.
+
+When changing behavior, update or remove related comments that would become
+stale or misleading.
+
 ## Core Test Explanations
 
 Make core tests reveal the semantic contract and regression risk they protect.

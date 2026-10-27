@@ -31,8 +31,13 @@ human-readable summary and body to the repository's prose language.
   significant error boundaries, or unusually large or multi-responsibility code.
 - For a non-self-explanatory core structure, function, or abstraction, explain
   its purpose, caller use, important invariants, lifecycle/resource rules, and
-  protocol/state transitions as applicable. Follow project and nearby-file
-  comment language/style; do not restate obvious code.
+  protocol/state transitions as applicable. Judge clarity from names, types,
+  and nearby context together; a readable name alone does not explain the
+  contract. Keep needed business rationale, design choices, and maintenance
+  constraints at the relevant source declaration or decision point, without
+  turning these dimensions into required comment fields. Follow project and
+  nearby-file comment language/style; do not restate obvious code. Update or
+  remove related stale or misleading comments when changing behavior.
 - Add only the smallest set of persistent tests needed for stable, consequential
   risks not proved by types, boundary validation, or existing evidence. Prefer a
   narrow stable boundary, consolidate equivalent cases, and avoid duplicate
