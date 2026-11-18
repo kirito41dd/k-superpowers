@@ -1,17 +1,27 @@
 ---
 name: writing-plans
-description: Use when approved requirements or a spec need a persistent multi-step implementation plan, or an approved plan needs execution handoff before code changes
+description: Use when the user requests an implementation plan, approved work needs a persistent multi-step plan, or an approved plan needs an execution handoff
 ---
 
 # Writing Plans
 
-Write a persistent plan only when it improves cross-session continuity,
-delegation, review, or execution of a genuinely multi-step change. Direct and
-simple Compact work may use an internal todo and skip this skill.
+Use the format and destination the user requests. A persistent plan is useful
+when requested or when it improves cross-session continuity, delegation,
+review, or multi-step execution. Simple implementation work can proceed
+directly with an internal todo when useful.
 
-Save useful plans to `docs/superpowers/plans/YYYY-MM-DD-<topic>.md`. Write for a
-skilled engineer with little project context, but include only information that
-changes implementation decisions.
+Write for the agent that will resume execution. Give it the dependencies,
+next actions and checks it needs. Link the relevant spec when one exists.
+If planning exposes a new compatibility, behavior or architecture decision,
+resolve it with the user and record the outcome in the
+[owning spec](../brainstorming/SKILL.md#maintaining-a-spec) within the
+authorized scope. When only a plan was requested, identify the required
+spec update in the handoff. The agent can adjust task order
+and other local execution details itself.
+
+Keep short-lived plans in the conversation. For a durable handoff, the default
+path is `docs/superpowers/plans/YYYY-MM-DD-<topic>.md`. Treat it as a working
+artifact unless the user or project explicitly includes plans in delivery.
 
 ## Plan Content
 
@@ -44,28 +54,15 @@ ownership/sharding boundaries, apply the
 
 ## Handoff
 
-A faithful plan that adds no material decision needs no separate approval when
-implementation is already authorized. Otherwise obtain approval before
-execution.
+For a plan-only request, deliver the plan and finish. When implementation is
+already authorized, proceed without another approval if the plan faithfully
+implements the agreed behavior. Resolve any new material decision first.
 
-Assess SDD suitability before checking commit authorization. When bounded tasks
-can proceed from agreed interfaces or earlier-stage results, and supported
-current-session delegation saves context, time, or coordination, recommend SDD
-with a brief reason. The controller can implement some stages directly.
-
-Reuse the existing execution choice and this plan's checkpoint authorization.
-Ask only for a missing choice or authority before starting SDD; missing
-authorization alone is not a reason to silently select Inline. If delegation
-has no useful boundary or benefit, is unavailable, or the user chooses Inline,
-execute Inline, including in stages when useful. Its default is the current
-workspace with no implementation commits.
-
-Ask about worktree isolation separately only when it materially improves safety
-or recovery.
-
-No plan approval authorizes push, merge, PR, amend, force, destructive cleanup,
-unrelated work, or a separate documentation commit. Ask separately for those
-actions.
+Carry forward the user's execution choice. Use Inline for tightly coupled
+work. Delegate when another agent can work from an agreed contract and the
+handoff saves time or context. Identify any dependency that must settle first.
+Choose workspace isolation separately when it makes independent verification
+or recovery worthwhile. Both routes can deliver uncommitted work.
 
 For unusually detailed Full plans, use `full-plan-guide.md` as guidance, not a
 required template. Self-review once for coverage, contradictions, material gaps,

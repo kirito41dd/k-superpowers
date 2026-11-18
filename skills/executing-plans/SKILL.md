@@ -1,44 +1,20 @@
 ---
 name: executing-plans
-description: Use when executing an approved implementation plan inline or when a bounded approved change benefits from one-agent execution
+description: Use when an approved implementation plan will be executed inline by one implementation owner
 ---
 
-# Executing Plans
+# Executing a plan inline
 
-Execute the approved behavior with one implementation owner, including staged
-or tightly coupled plans. The safe default is the current workspace with no
-implementation commit; use a selected worktree when the user or approved
-handoff requests it.
+Resume from the last stage whose result still matches the workspace. Read the
+agreed outcome, dependencies and acceptance conditions, and check for overlap
+with existing edits. Reuse evidence for stages that remain current.
 
-Before edits, read the useful plan/spec and relevant project instructions.
-Detect overlap with pre-existing user changes. Stop for a real conflict,
-missing material decision, authorization gap, or design delta; record
-nonblocking observations and continue.
+Adapt order and local implementation details as dependencies become clear.
+Return to the user for a change to scope, behavior, authority or a consequential
+design decision. Continue independent stages when one is blocked.
 
-Use internal todos proportional to the work. Follow the approved slices, but
-adapt local ordering when evidence or dependencies make another order safer or
-faster. Load `k-superpowers:type-driven-verification` when consequential domain
-logic, public APIs, parsers, protocols, state, resources, or non-self-explanatory
-core structures, functions, or abstractions, or unusually large or
-multi-responsibility code need its design and explanation guidance.
-
-Run focused verification as the work progresses. Before completion, inspect the
-actual diff once across Spec and Standards. Use an independent reviewer when the
-completed change matches `k-superpowers:requesting-code-review`'s trigger, the
-approved plan or user requests one, or concrete new evidence makes independent
-judgment materially valuable. Skip independent review only for the clearly
-low-risk exclusions defined by that owner.
-
-When review is required, follow `k-superpowers:requesting-code-review`'s bounded
-Discovery/Closure lifecycle. Same-controller review may inspect requirements,
-the current diff, relevant context, and evidence directly. Use a frozen package
-when crossing contexts or stabilizing a moving working tree is useful. Follow
-that owner's continuation and stopping rules for unresolved findings; an
-unsuccessful recheck alone does not require renewed implementation permission.
-
-Before claiming the whole change complete, use
-`k-superpowers:verification-before-completion` with evidence proportionate to
-the claim. Current-main work without an explicit local commit or integration
-request reports changes in place; use `finishing-a-development-branch` only for
-a separately authorized local commit or a real branch/worktree integration or
-cleanup decision.
+Apply `k-superpowers:type-driven-verification` to consequential code. Inspect
+the combined diff and verify the remaining risks. Use
+`k-superpowers:requesting-code-review` when its trigger applies, and report
+what the final evidence supports. The default delivery is in the current
+workspace with the changes uncommitted.

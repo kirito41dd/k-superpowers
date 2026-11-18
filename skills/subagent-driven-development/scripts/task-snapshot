@@ -6,6 +6,7 @@ usage() {
   echo "usage: task-snapshot capture OUTDIR" >&2
   echo "       task-snapshot check-scope SNAPSHOT SCOPE" >&2
   echo "       task-snapshot verify SNAPSHOT BASE HEAD SCOPE AUTHORIZED_COMMITS" >&2
+  echo "       task-snapshot {capture-working|verify-working} BASELINE_FILE SCOPE" >&2
   exit 2
 }
 hash_stream() {
@@ -17,13 +18,21 @@ hash_file() { hash_stream < "$1"; }
 root=$(git rev-parse --show-toplevel) || exit 2
 cd "$root"; export GIT_LITERAL_PATHSPECS=1
 
-write_untracked() {
+write_file_states() {
+  local path mode=$1
   while IFS= read -r -d '' path; do
     printf '%s\0' "$path"
-    if [ -L "$path" ]; then printf 'symlink\0'; perl -e '$v=readlink($ARGV[0]); print $v' "$path" | hash_stream
-    elif [ -f "$path" ]; then printf 'regular\0'; wc -c < "$path" | tr -d ' '; printf '\0'; hash_file "$path"
+    if [ -L "$path" ]; then printf 'symlink\0'; perl -e '$v=readlink($ARGV[0]); defined $v or exit 1; print $v' -- "$path" | hash_stream
+    elif [ -f "$path" ]; then
+      printf 'regular\0'
+      # Preserve the legacy checkpoint format. Working baselines also protect mode.
+      if [ "$mode" = working ] && [ -x "$path" ]; then printf 'executable\0'; fi
+      wc -c < "$path" | tr -d ' '; printf '\0'; hash_file "$path"
     else printf 'other\0-\n'; fi
-  done < <(git ls-files --others --exclude-standard -z)
+  done
+}
+write_untracked() {
+  git ls-files --others --exclude-standard -z | write_file_states checkpoint
 }
 write_dirty_paths() {
   git diff --name-only -z
@@ -49,6 +58,60 @@ validate_scope() {
     previous=$path
   done < "$file"
 }
+
+# A dirty gitlink records only that its child changed. Collect the same local
+# evidence inside initialized submodules so a second edit remains observable.
+repository_fingerprint() (
+  set -e
+  {
+    git rev-parse HEAD
+    git symbolic-ref -q HEAD || [ "$?" -eq 1 ]
+    git ls-files -v --stage -z | hash_stream
+    git diff --cached --no-ext-diff --no-textconv --binary HEAD | hash_stream
+    git diff --no-renames --no-ext-diff --no-textconv --ignore-submodules=none --binary -- "$@" | hash_stream
+    {
+      git ls-files --others --exclude-standard -z -- "$@"
+      # Git diff can omit files marked assume-unchanged or skip-worktree.
+      git ls-files -v -z -- "$@" | perl -0ne 'print substr($_, 2) if /^(S|[a-z]) /'
+    } | write_file_states working | hash_stream
+  } | hash_stream
+)
+
+# Only unstaged edits to these exact files may vary. Reject paths whose writes
+# can be redirected outside the owning checkout before recording a baseline.
+working_fingerprint() (
+  set -e
+  export GIT_LITERAL_PATHSPECS=0
+  local path part module key
+  local excludes=()
+  for path in "${working_paths[@]}"; do
+    part=$path
+    while :; do
+      case "${part##*/}" in .[gG][iI][tT]) echo "Git metadata is outside task scope: $path" >&2; exit 2 ;; esac
+      if [ -L "$part" ] || [ -e "$part/.git" ]; then
+        echo "working scope crosses a symlink or nested checkout: $part" >&2
+        exit 2
+      fi
+      [[ "$part" = */* ]] || break
+      part=${part%/*}
+    done
+    [ ! -d "$path" ] || { echo "working scope needs a file: $path" >&2; exit 2; }
+    excludes+=(":(top,exclude,literal)$path")
+  done
+  {
+    printf '%s\0' "$root" "${working_paths[@]}"
+    repository_fingerprint "${excludes[@]}"
+    git submodule foreach --quiet --recursive 'printf "%s\0" "$displaypath"' |
+      while IFS= read -r -d '' module; do
+        printf '%s\0' "$module"
+        (
+          while IFS= read -r key; do unset "$key"; done < <(git rev-parse --local-env-vars)
+          cd "$module"
+          repository_fingerprint
+        )
+      done
+  } | hash_stream
+)
 write_manifest() {
   local dir=$1 file
   : > "$dir/artifacts.sha256"
@@ -75,6 +138,30 @@ validate_snapshot() {
 
 cmd=${1:-}
 case "$cmd" in
+  capture-working|verify-working)
+    [ "$#" -eq 3 ] || usage
+    baseline=$2; scope=$3
+    validate_scope "$scope"
+    working_paths=()
+    while IFS= read -r -d '' path; do working_paths+=("$path"); done < "$scope"
+    if [ "$cmd" = capture-working ]; then
+      # Use porcelain text only as an empty/nonempty signal. Filenames stay literal.
+      dirty=$(git status --porcelain=v1 --no-renames --ignored=matching --untracked-files=all -- "${working_paths[@]}")
+      [ -z "$dirty" ] || { echo "working scope overlaps pre-existing changes" >&2; exit 1; }
+      # These index flags can conceal a local modification even in a clean status.
+      git ls-files -v -z -- "${working_paths[@]}" | while IFS= read -r -d '' entry; do
+        case "$entry" in
+          'S '*|[a-z]' '*) echo "Git hides worktree changes at: ${entry#* }" >&2; exit 1 ;;
+        esac
+      done
+      digest=$(working_fingerprint)
+      (set -o noclobber; printf '%s\n' "$digest" > "$baseline")
+    else
+      [ -f "$baseline" ] || { echo "missing working baseline" >&2; exit 2; }
+      digest=$(working_fingerprint)
+      [ "$(cat "$baseline")" = "$digest" ] || { echo "checkout, index, scope or out-of-scope changes differ from baseline" >&2; exit 1; }
+    fi
+    ;;
   capture)
     [ "$#" -eq 2 ] || usage; out=$2
     [ ! -e "$out" ] || { echo "snapshot exists" >&2; exit 2; }

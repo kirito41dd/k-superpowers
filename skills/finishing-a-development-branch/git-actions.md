@@ -16,6 +16,11 @@ repository evidence is absent.
 
 ## COMMIT
 
+For an authorized implementation commit, include the corresponding spec
+created or updated for that change by default. Check that it describes the
+delivered behavior and honor any narrower file scope the user gave. Leave
+agent execution plans out unless the user or project calls for their delivery.
+
 Inspect staged and unstaged changes before committing. Stage only verified,
 authorized paths, and stop if the resulting commit would absorb pre-existing or
 out-of-scope work. Reuse fresh evidence when the authorized content matches the
@@ -42,24 +47,30 @@ Never force a dirty, locked, unowned, or differently failing worktree.
 
 ## MERGE
 
+Identify the named feature and base before switching branches. Locate their
+checkouts with `git worktree list --porcelain`. If the base has no separate
+checkout, reuse the feature checkout for both roles. Check that switching,
+updating and rebasing will preserve existing work. Substitute the selected
+branch names and absolute paths below.
+
 ```bash
-WORKTREE_PATH=<saved-canonical-worktree-path>
-COMMON_DIR=$(git -C "$WORKTREE_PATH" rev-parse --path-format=absolute --git-common-dir)
-MAIN_ROOT=$(git -C "$COMMON_DIR/.." rev-parse --show-toplevel)
-git -C "$MAIN_ROOT" checkout <base>
-git -C "$MAIN_ROOT" pull
-git -C "$WORKTREE_PATH" rebase <base>
-<project verification command, run from "$WORKTREE_PATH">
-git -C "$MAIN_ROOT" merge --ff-only <feature>
-<project verification command, run from "$MAIN_ROOT">
+git -C "$base_checkout" switch "$base"
+git -C "$base_checkout" pull
+git -C "$feature_checkout" switch "$feature"
+git -C "$feature_checkout" rebase "$base"
+<verify the rebased feature in "$feature_checkout">
+git -C "$base_checkout" switch "$base"
+git -C "$base_checkout" merge --ff-only "$feature"
+<verify the merged result in "$base_checkout">
 ```
 
-After merged-result verification, manual-owned cleanup runs in this order:
+Keep the checkout that now holds the base. When a separate feature checkout
+is eligible for manual cleanup, verify the merged result first, then:
 
 ```bash
-<worktree-provenance> inspect "$WORKTREE_PATH"
-git -C "$MAIN_ROOT" worktree remove "$WORKTREE_PATH"
-git -C "$MAIN_ROOT" branch -d <feature>
+<worktree-provenance> inspect "$feature_checkout"
+git -C "$base_checkout" worktree remove "$feature_checkout"
+git -C "$base_checkout" branch -d "$feature"
 ```
 
 The `git pull` is intentionally retained. Do not clean up if checkout, pull,
@@ -111,8 +122,8 @@ do not guess commands.
 For GitHub:
 
 ```bash
-git push -u origin <feature>
-gh pr create --title "<title>" --body-file <body-file>
+git push -u <source-remote> <feature>
+gh pr create --base <base> --head <published-head> --title "<title>" --body-file <body-file>
 ```
 
 For another or unknown provider, use its known native CLI/API when available;

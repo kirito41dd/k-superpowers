@@ -1,32 +1,21 @@
 ---
 name: dispatching-parallel-agents
-description: Use when two or more non-SDD workstreams can proceed concurrently with meaningful latency benefit and manageable integration risk
+description: Use when deciding which investigations or implementation tasks can make independent progress concurrently
 ---
 
-# Dispatching Parallel Agents
+# Choosing parallel work
 
-Parallelize when expected latency or context benefit exceeds delegation and
-integration cost. Shared read-only files and context are allowed.
+Parallelize when the inputs are ready, each result can be evaluated, and the
+time or context saved outweighs coordination. Independent agents can read the
+same files and can write disjoint paths in the same checkout.
 
-This skill owns parallel investigation, analysis, diagnosis, and other general
-workstreams. For an approved implementation plan with bounded repository
-tasks, durable handoff, and checkpoint ownership, use
-`k-superpowers:subagent-driven-development`. Do not use generic parallel edits
-to bypass its plan or commit authorization.
+Check what each task **reads, writes, and verifies**. A generated type, shared
+fixture, formatter, port, database, or build output can connect tasks that edit
+different source files. If one result determines another task's implementation,
+settle that contract first and parallelize the remaining independent pieces.
+Run shared checks once the inputs they consume are stable.
 
-Keep work sequential when:
-
-- agents would write overlapping files/state or compete for one external
-  resource;
-- one task needs another task's unfinished result;
-- one task's decision may invalidate another's work; or
-- reconciling results costs more than the expected speedup.
-
-Give each agent a clear problem, boundaries, relevant context/evidence,
-authorized actions, and useful result expectations. Agents may inspect shared
-read-only context independently. For edits, assign nonconflicting ownership or
-serialize the mutation phase.
-
-The controller inspects reports and actual changes, reconciles assumptions, and
-obtains combined evidence. Agent success messages are not proof, and delegation
-does not expand mutation or external-action authority.
+Give each delegate the goal, relevant inputs, ownership, authorized actions,
+and expected evidence. Reconcile the results and inspect their combined effect.
+For delegated implementation, `k-superpowers:subagent-driven-development`
+owns the task handoff and acceptance, whether the tasks run together or in sequence.

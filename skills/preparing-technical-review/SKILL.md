@@ -11,7 +11,9 @@ present, discuss, and conclude within the meeting. This skill owns content and
 meeting narrative, not solution discovery, implementation planning, or
 format-specific slide and document production.
 
-A complete proposal need not already exist or be approved. The minimum input is
+For an agreed direction, explain why it was chosen, its accepted costs, and
+what the meeting still needs to confirm. A complete proposal need not already
+exist or be approved. The minimum input is
 a bounded decision problem with plausible options and enough evidence to assess
 them. If that is missing, expose the smallest gap or use
 `k-superpowers:brainstorming`; do not invent capabilities, evidence, or

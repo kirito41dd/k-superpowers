@@ -115,11 +115,10 @@ source versions, setup, assertions, and traced path; neither a green test nor an
 agent verdict settles the disagreement by itself. Record the gap and obtain
 focused evidence.
 
-For accepted defects, use `k-superpowers:systematic-debugging` to reproduce the
-failure through the real entry path or a reliable proxy, then make an authorized
-in-scope fix and run focused verification. Prefer an observed failure before
-the fix and success afterward. If execution is unavailable, record the precise
-gap; a persuasive trace alone does not justify claiming the bug fixed.
+For a reasoning-only request, deliver the findings, evidence, and limits here.
+When repair is authorized, use `k-superpowers:systematic-debugging` on accepted
+defects. Verify the symptom through its real entry point or a reliable proxy,
+preferably before and after the fix. Record any execution gap.
 
 After a coherent fix batch, resume the same independent agent with the frozen
 record, accepted findings, final source/delta, and execution evidence. A
@@ -132,12 +131,12 @@ Preserve original uncertainty unless new evidence specifically resolves it.
 
 ## Completion And Other Workflows
 
-Report case coverage, accepted/rejected/deferred findings, fix and recheck
-outcomes, commands actually run, source identity, and remaining uncertainty.
+Lead with the cases the source supports, the cases that contradict expectations,
+and the cases that still lack evidence. Cite the bound source and decisive
+traces. Include repairs, rechecks and commands only when they took place.
 Keep source-derived conclusions separate from measured execution results.
-A reasoning-only request can finish with findings and stated limits. When
-claiming implementation or fix completion, obtain focused runtime evidence even
-when reasoning supports every case. Existing tests or bounded temporary
+When claiming implementation or fix completion, obtain focused runtime evidence
+even when reasoning supports every case. Existing tests or bounded temporary
 reproducers may supply that evidence. Whether to retain a test is a separate
 decision owned by `k-superpowers:type-driven-verification`. Controlled-clock
 local service exercises can complement difficult future-time scenarios without
@@ -146,9 +145,8 @@ introducing production clock backdoors or acquiring environment access.
 `k-superpowers:verification-before-completion` owns completion claims. This
 focused method does not automatically satisfy the Spec and Standards review
 owned by `k-superpowers:requesting-code-review`; reuse relevant evidence while
-covering any remaining required scope. A reasoning-only request authorizes no
-code repair. Deployment, production access, Git operations, and destructive
-cleanup retain their normal authorization boundaries.
+covering any remaining required scope. Deployment, production access, Git
+operations, and destructive cleanup retain their normal authorization boundaries.
 
 For an illustrative normal timeline and reported real-use findings, read
 [contract-month-example.md](contract-month-example.md). Its known findings are

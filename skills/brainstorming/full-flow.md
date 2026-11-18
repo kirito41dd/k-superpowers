@@ -15,13 +15,10 @@ risk.
    Make consequential architecture, data/control flow, failure, and authorization
    boundaries clear within that short design, not a section for every dimension.
    Obtain approval only for unsettled material decisions.
-5. Record `docs/superpowers/specs/YYYY-MM-DD-<topic>-design.md` when the durable
-   artifact will support cross-session implementation, review, or future
-   decisions. Apply the single self-review described in `SKILL.md`.
-6. Ask separately before committing the document. Design approval can authorize
-   implementation edits when the user explicitly asks to proceed, but it never
-   authorizes a commit or external action.
-7. When implementation is authorized, assess execution topology once before
+5. Record the design for reviewers and future maintainers as described in
+   `SKILL.md`. Apply its single self-review. Keep the spec with the change
+   for delivery when the user authorizes the implementation commit.
+6. When implementation is authorized, assess execution topology once before
    editing. Use `k-superpowers:writing-plans` when staged execution, continuity,
    or delegation makes a persistent plan useful; otherwise use Inline in the
    current workspace with no commit.

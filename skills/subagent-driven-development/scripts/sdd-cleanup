@@ -1,5 +1,5 @@
 #!/usr/bin/env bash
-# Remove an empty SDD artifacts directory; preserve contents of unknown ownership.
+# Remove an empty delegated-task directory; preserve contents of unknown ownership.
 #
 # The controller may remove specific artifacts it knows belong to its run.
 # Directory location alone is not evidence that every file is safe to delete.
@@ -9,12 +9,12 @@ root=$(git rev-parse --show-toplevel)
 dir="$root/.superpowers/sdd"
 
 if [ ! -d "$dir" ]; then
-  echo "no SDD artifacts to clean: $dir"
+  echo "no task artifacts to clean: $dir"
   exit 0
 fi
 
 if rmdir -- "$dir" 2>/dev/null; then
-  echo "removed empty SDD directory: $dir"
+  echo "removed empty task directory: $dir"
 else
-  echo "preserved SDD directory; contents or directory ownership not established: $dir"
+  echo "preserved task directory; contents or directory ownership not established: $dir"
 fi

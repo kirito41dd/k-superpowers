@@ -3,7 +3,7 @@
 For both Discovery and Closure, read and apply
 [Code Reviewer Guidance](../requesting-code-review/code-reviewer.md).
 That shared guide defines the review criteria, applicable design references,
-evidence boundaries, findings, and results. This wrapper adds SDD task context
+evidence boundaries, findings, and results. This wrapper adds delegated task context
 and scope only.
 
 ## Task Inputs
@@ -13,7 +13,7 @@ Provide the reviewer with:
 - mode: `Discovery` or `Closure`;
 - approved task/requirements and relevant plan-wide constraints;
 - task report and verification evidence;
-- committed range or frozen package and intended task scope;
+- stable working diff, committed range, or frozen package and intended task scope;
 - for Closure, the complete frozen review record and fix delta.
 
 ## Task Scope

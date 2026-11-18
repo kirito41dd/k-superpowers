@@ -1,6 +1,6 @@
 # K Superpowers
 
-这是我自用的 Superpowers fork，用来沉淀个人化的 agent 工作流、skills 定制和项目记忆规则。
+这是从 Superpowers 分叉后持续独立迭代的个人研发工作流。这里的 SDD 指规格驱动开发（Spec-Driven Development）。用约定的行为指导实现和验收，按风险选择测试时机与覆盖范围。
 
 本仓库不面向上游贡献，也不使用上游 marketplace 发布链路。默认安装方式以 git 或本地路径为主。
 
@@ -21,26 +21,28 @@ TypeScript、Go 和动态语言按各自能力增加必要的运行时边界校�
 Workflow 工程原则：
 
 - **固定边界，不固定路径**：明确目标、owner、权限、material decision 和成功证据；除真实外部协议外，不冻结 agent 的措辞、tool 顺序或局部判断。
-- **交付速度是一等指标**：默认使用可逆、低权限、低 ceremony 的 Direct/Inline 路径；只有能降低实际风险或总延迟时才增加 plan、worktree、SDD 或 review。
-- **类型优先验证**：用 `type-driven-verification` 取代上游的强制逐测试流程——优先用类型、接口、可见性、所有权表达不变量；持久测试只保护稳定、高影响且现有证据无法证明的合同，不因业务示例或实现分支机械增加测试，也不做覆盖率仪式。计划模板同样按"定类型边界 → 实现 → 只测类型证不了的行为 → 验证"展开。
+- **交付速度是一等指标**：明确的小改动直接做。计划、任务委派、worktree 和独立审查按实际收益选用。
+- **类型与回归保护**：优先用类型、接口和所有权排除非法状态。手工复现可以验收当前修复；对静态约束和已有自动检查拦不住的高代价回归，保留小而稳定的测试。
 - **一个不变量一个 owner**：同一条政策只在一处完整定义，caller 只传播适用结果和边界，避免多副本漂移。
 - **额外权限必须显式**：明确行为和范围的实现请求即可授权当前 scope 的文件编辑，无重要未决事项时不重复审批；commit、push、merge、PR、amend、force、discard 和外部写仍需单独授权。
 - **零成本抽象**：高频注入的内容只留触发条件、不变量和决策点，流程细节放支撑文件按需加载，与 `.ai/memory/` 的渐进披露同构。
 
 Skill 文本是给持续进化的智能体使用的行为指导，不以固定模型输出作为回归合同。
 修改以真实使用反馈为输入，小步迭代并尽快回到实际使用。
+共享工作区验收和审查包的 Git 行为可用 `bash tests/git-workflows.sh` 在临时仓库中复验。
 
 ## 当前定制重点
 
-- `using-superpowers`：普通问答直接回答；需求明确仍评估复杂度、依赖和分阶段推进的价值，简单改动走 Direct，需要持久计划时再选 Inline / SDD；安全默认是当前工作区、不提交，显式 commit 或集成请求交给 `finishing-a-development-branch`。
-- `brainstorming` / `writing-plans`：spec 面向研发理解、确认和维护，先讲目标、方案与推进顺序，再讲清机制；正文默认几分钟读完，读者能复述关键取舍及失败边界，短摘要不能掩盖冗长正文。各阶段有交付和完成条件，关键安全、迁移与恢复边界留在正文，证据引用已有文档。只讨论未决取舍，有执行或交接价值才落持久计划；先判断 SDD 收益，再申请尚缺的选择和 checkpoint 授权，已有授权复用。
+- `using-superpowers` 负责区分问答、设计和实现。需要计划时，可由主 Agent 分阶段执行，也可委派边界清晰的任务。默认在当前工作区交付未提交的改动。
+- `brainstorming` 解决未定设计，`preparing-technical-review` 帮团队理解并决定已有方向。需要分阶段交付时再写清依赖和验收条件。计划可直接在对话中使用，需要交接或用户要求时再落盘。
+- 人通过 spec 评审和维护行为约定，已有文档优先更新，默认随获准提交的实现交付。Agent 通过 plan 接手依赖、步骤和验证。可参见 [5.5.0 研发工作流设计](docs/superpowers/specs/2026-11-18-development-workflow-design.md)。
 - `type-driven-verification`：采用类型优先、风险驱动验证，并单一拥有测试准入、核心代码与核心测试说明合同。测试优先覆盖稳定领域不变量和不同失败类型，合并等价排列、避免跨层重复与偶然实现耦合；保留的核心测试靠行为化命名和结构表达契约，只为非显然不变量、回归背景、特殊 fixture/顺序或关键断言后果补充说明。
 - `reasoning-based-testing`：从业务预期出发，由不继承主会话的 Agent 沿固定源码的真实调用链发现遗漏、矛盾和错误行为，重点关注事件历史、状态转换、多条读写路径及跨月、到期、迁移、重试。可与运行验证配合，初轮隔离已有结论；问题核实后按授权修复并定向复核。目标是发现缺陷，是否保留单测另由测试准入决定。
-- `subagent-driven-development`：按阶段和依赖推进，在明确接口与边界下委派任务以节省上下文，主 Agent 也可直接实现；执行前取得本计划 checkpoint 授权。Medium/high 保留独立 Review，最终 Review 只保护真实集成风险。
-- `requesting-code-review`：所有改动做 controller Spec/Standards 自审；除纯文档/注释/格式、机械 rename/config 和简单 glue 外，非平凡行为与 bug fix 默认触发独立双轴 review。一次 Discovery 固定问题清单，授权范围内持续有进展的修复可继续定向 Closure；未关闭的阻断项阻止验收，不自动要求再次授权。
+- `subagent-driven-development` 默认交付未提交的改动。接口和输入已稳定、读写互不干扰的任务可以在同一工作区并行。主 Agent 统一检查范围、运行集成验证，只有获得授权才提交。独立构建、交付或撤回需要隔离时再用 worktree。
+- `requesting-code-review` 用于明确要求的审查，以及权限、持久化、跨模块契约等失败代价高的变更。可稳定复现、影响局部且已有修复证据的小 bug 可由实现者自审交付。阻断项需要修复时，原 Reviewer 定向复核。
 - `receiving-code-review`：普通反馈核实后按授权修改、验证和反馈，不因收到建议而新建 finding ledger 或 Closure；已有正式 Review 继承原生命周期，修复本身仍按独立 Review trigger 判断。
 - `systematic-debugging`：优先建立 feedback loop，在拥有不变量的边界修复，额外防护只针对独立的剩余风险；无法复现的生产/外部问题允许证据化、带置信度诊断，无验证不声称 fixed，按信息增益而非固定次数停止。
-- `writing-skills`：以真实使用反馈驱动最小修改；不创建持久化测试、eval matrix 或模型 golden output，也不默认调用模型做验证。单次随机输出只作观察，新改进不反复 reopen 当前迭代。
+- `writing-skills` 按真实使用反馈迭代提示词。Git 范围、快照和清理等确定性脚本用可重复的行为检查验证。
 - `CLAUDE.md`：保留项目核心原则和托管记忆入口；记忆操作规则统一维护在 `.ai/memory/policy.md`。
 - `.ai/memory/`：记录本 fork 的长期决策、约定、坑点和术语。
 - `docs/skills-overview.zh.md`：从用户角度介绍整套工作方式、16 个 Skill 分工和权限边界。
@@ -130,7 +132,7 @@ codex plugin list | grep k-superpowers
 预期能看到：
 
 ```text
-k-superpowers@k-superpowers-dev  installed, enabled  5.4.32
+k-superpowers@k-superpowers-dev  installed, enabled  5.5.0
 ```
 
 本地 marketplace 的结构是：

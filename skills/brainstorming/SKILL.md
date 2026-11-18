@@ -29,15 +29,9 @@ Use when the goal is clear, the change is reversible and single-domain, and no
 material architecture, scope, dependency, public contract, compatibility,
 security, migration, or permission choice is unresolved.
 
-If the user already specified the intended behavior and scope and asked to
-implement, inspect relevant context and proceed through Direct implementation
-without another approval. For design work, present the recommendation and real
-trade-offs concisely; obtain approval only for decisions not already settled.
-Implement only when the original request or a later response asks to implement;
-a design-only request ends after the design. Use the current workspace with no
-commit by default. Clear requirements still need a planning assessment: use
-`k-superpowers:writing-plans` when staged execution or handoff benefits from a
-persistent plan.
+For a small design question, give the recommendation and the trade-off that
+matters. A clear request to implement already authorizes its specified behavior
+and scope. Follow the entry router's Direct or planning path as appropriate.
 
 ### Compact
 
@@ -56,6 +50,21 @@ or major public compatibility work. Read `full-flow.md`. Full makes material
 decisions explicit and normally records a durable spec, but it does not require
 longer prose, ceremonial alternatives, or approval after every prose section.
 
+## Maintaining a Spec
+
+Start with the project document that owns the affected behavior or decision.
+For a changed contract, update that document with the agreed outcome and how
+a caller or maintainer can tell it holds. If the project keeps dated decision
+records, follow its convention for superseding them. A fix that restores an
+existing contract can be verified against it as written.
+
+Create a spec when people need to review or retain a consequential decision
+and there is no suitable existing document. A short Compact design can suffice.
+Follow the project's spec location, defaulting to
+`docs/superpowers/specs/YYYY-MM-DD-<topic>-design.md`. Apply settled decisions
+directly. Resolve a material discrepancy between the agreed behavior and the
+implementation before treating either as the new contract.
+
 ## Design Content
 
 A spec primarily helps engineers understand, confirm, and later maintain the
@@ -71,13 +80,12 @@ solve the problem, and what happens on failure. Explain unfamiliar terms in
 plain language; avoid making readers reconstruct the design from component
 lists, state names, or prohibitions.
 
-Default to a main body readable in a few minutes: scope, the key mechanism,
-usually 3–5 implementation stages, critical constraints, and acceptance
-criteria. Each stage says what changes, what it delivers, and how completion is
-established. Reading time and stage count are guides, not quotas. Reduce the
-effort needed to understand the design; dense jargon or compressed sentences
-do not make it concise. Keep paragraphs that explain the mechanism, inform a
-material choice, or expose a critical boundary. Complexity calls for clearer
+For a multi-stage design, keep the main body readable in a few minutes. Cover
+scope, the key mechanism, critical constraints, and acceptance criteria.
+Describe stages where a dependency, rollout boundary, or deliverable makes
+them useful. State what each delivers and how to establish completion.
+Use concrete language. Keep paragraphs that explain the mechanism,
+inform a material choice, or expose a critical boundary. Complexity calls for clearer
 explanation, not exhaustive coverage of every implementation detail.
 
 Preserve settled decisions with their known rationale, accepted costs, and
@@ -103,7 +111,7 @@ Describe unimplemented work as planned, and claim completion only with evidence.
 
 ## Approval Boundary
 
-Approval covers the user-specified bounded change or a design the user approved.
+For a design-only request, deliver the design and finish.
 A later material architecture, scope, dependency, public-contract, compatibility,
 or risk decision returns to the user. Approval plus an explicit implementation
 request authorizes in-scope edits, but never Git publication, commits,

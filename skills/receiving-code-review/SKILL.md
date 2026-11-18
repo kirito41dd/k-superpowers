@@ -36,18 +36,12 @@ required by the changed behavior, evidence, user, or approved plan.
 
 ## Existing Formal Review
 
-When feedback belongs to an existing Discovery/Closure lifecycle owned by
-`k-superpowers:requesting-code-review`, preserve its finding IDs and record.
-Critical and concrete Important findings may block. Minor is always a
-nonblocking follow-up. An unclear finding blocks only work that depends on its
-resolution; it does not stop unrelated clear work.
-
-Freeze the adjudication in the review record before edits. Apply accepted
-findings in coherent batches with focused verification.
-Send the frozen record, fix delta/report, and evidence to the same logical
-reviewer for Closure. Follow the owning skill's continuation and stopping rules:
-unresolved blockers prevent acceptance, not authorized fixes making progress.
-Keep the same record and do not restart Discovery.
+When a formal review has accepted blockers, preserve their IDs, the reviewed
+version and the disposition. Apply authorized fixes in coherent batches and
+return the delta and evidence to the same logical reviewer. Follow
+`k-superpowers:requesting-code-review` for closure. A clean verdict or minor
+follow-up can be reported directly. An unclear finding holds up only the
+work whose correctness depends on it.
 
 ## External Feedback
 

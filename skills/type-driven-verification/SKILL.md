@@ -66,12 +66,11 @@ responsibility when a focused module is a cleaner in-scope home.
 
 ## Test Selection
 
-Add a persistent test when it protects a stable, consequential contract that
-types, compiler checks, boundary validation, or existing evidence cannot
-establish. Business relevance, an acceptance example, or the existence of an
-implementation branch is not sufficient by itself. Test durable domain
-invariants and costly failure modes with the smallest set of cases at the
-narrowest stable caller-visible or domain boundary.
+Choose today's acceptance evidence and tomorrow's regression protection
+separately. A manual reproduction can verify a fix today. Keep a small
+repeatable test when a costly error could recur and types, enforced boundaries,
+or existing automated checks would allow it through. Exercise the narrowest
+stable caller-visible or domain boundary that captures that failure.
 
 Do not add persistent tests or reshape production abstractions, including
 enums, errors, or helpers, solely to test human-readable developer log copy.
@@ -83,12 +82,12 @@ that preserves diagnostic value. Avoid duplicating the same risk across helper,
 module, and end-to-end layers; enumerating permutations without distinct failure
 modes; or pinning private control flow, incidental ordering, exact text, or
 arbitrary limits unless they are genuine compatibility, safety, or protocol
-contracts. For a bug fix, prefer one focused regression or an existing reliable
-proxy when it proves the failure cannot recur.
+contracts. For a bug fix, prefer one focused check that exposes the original
+failure and verifies the corrected behavior through a stable boundary.
 
-Treat mocks, fixtures, and test-only infrastructure as maintained code. Omit,
-merge, or remove tests when their marginal confidence does not justify their
-coupling and maintenance cost.
+Treat mocks, fixtures, and test-only infrastructure as maintained code. Within
+the change's scope, consolidate redundant checks while preserving coverage
+of distinct contracts and failure modes.
 
 ## Core Explanations
 

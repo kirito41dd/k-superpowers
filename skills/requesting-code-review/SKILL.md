@@ -1,75 +1,69 @@
 ---
 name: requesting-code-review
-description: Use when completed work changes nontrivial runtime behavior, fixes a bug, changes core logic, public APIs, parsers, security or permission behavior, persisted state, migrations, destructive cleanup, concurrency, protocols, state machines, resources, or cross-module behavior, lacks strong verification evidence, or the user or approved plan requests independent review
+description: Use when the user or approved plan requests independent code review, or a change carries consequential permission, persistence, cross-module contract, or other costly failure risks
 ---
 
 # Requesting Code Review
 
-Independent review is the default when a completed change matches this skill's
-trigger. Simple, self-explanatory changes with strong controller evidence need
-no formal review; docs, comments, formatting, mechanical edits, human-readable
-developer logs, and simple glue are common examples. When classification is
-uncertain, review.
+Use an independent reviewer when requested by the user or approved plan.
+Also use one for changed permission decisions, persisted-data semantics,
+cross-module contracts, or comparably costly failures such as concurrency
+bugs that can lose work. Judge the changed behavior and its consequences.
 
-Judge changed behavior, not file location. Logging-only changes that preserve
-security decisions and caller-visible behavior need only same-controller review
-of intended branches and sensitive-data safety, even in auth, permission, or
-security code.
+A local, understood bug with a reliable reproduction and verified correction
+can finish with self-review. The same applies to routine documentation, glue
+and human-readable log changes with strong evidence. If material uncertainty
+remains, name the question a reviewer can resolve. Missing runtime evidence
+still needs an appropriate check or an explicit limitation.
 
-One logical reviewer evaluates two axes:
+Independent review requires a reviewer who did not implement the change or
+its fixes. The implementation owner's diff inspection is self-review. If a
+required independent reviewer is unavailable, report the outstanding review
+and the evidence already obtained. Keep acceptance pending.
+
+One reviewer evaluates both axes:
 
 - **Spec:** required, missing, wrong, extra, or incompatible behavior;
 - **Standards:** correctness, project conventions, boundaries, errors/resources,
   maintainability, core explanations, and verification quality.
-
-Changes outside the trigger finish with ordinary controller inspection and
-verification; do not invoke formal review solely to record a skip. An explicit
-user or approved-plan requirement, weak verification evidence, or concrete new
-risk evidence requires independent review. Resolved design decisions do not
-make implementation exempt.
 
 ## Evidence
 
 Every review receives the approved requirements/plan, change goal, intended
 scope, implementation diff or snapshot, and verification evidence.
 
-For same-controller Inline work, the reviewer may use the current requirements,
-diff, relevant repository context, and evidence directly. Use a frozen package
-when review crosses agent/context boundaries, the working tree may move, or a
-committed range needs durable handoff:
+A reviewer with direct access can inspect an identified commit range or a
+working diff that stays fixed during review. Use a frozen package when the
+reviewer needs the diff transferred, the tree may move, or the handoff must
+survive a context change.
 
 ```text
 scripts/review-package committed BASE HEAD SCOPE_FILE OUTFILE
 scripts/review-package working-tree BASE SCOPE_FILE OUTFILE
 ```
 
-Package requests bind source mode, concrete base/head commits, and an explicit
-sorted repo-relative scope path list. Do not add a scope hash handshake: it
-cannot detect a controller that selected the wrong paths.
+The packager pins both revisions to commit IDs at entry. Bind the verdict to
+the IDs in the package and its reviewed content. For working-tree mode, BASE must resolve to the current HEAD. In both modes
+SCOPE_FILE contains sorted, unique repo-relative paths, each terminated by a
+NUL byte. Check that the paths cover the intended change.
 
 Scope limits the change under review, not useful read-only context. A reviewer
 may inspect callers, nearby implementations, project instructions, and direct
 dependencies to answer a concrete review question. It must not modify files,
 expand the requested change, or turn unrelated observations into blockers.
 
-## Bounded Lifecycle
+## Discovery
 
-```text
-Discovery -> frozen finding ledger -> focused fixes <-> Closure
-          -> PASS | PASS_WITH_FOLLOWUPS | STOPPED_BLOCKED
-```
+One reviewer checks requirements and engineering standards against the agreed
+scope. A clean review ends with the verdict. Report optional observations as
+follow-ups. Give concrete blockers a stable ID, severity, axis, location,
+impact and required correction. Critical and concrete Important issues block.
+Minor observations can accompany acceptance.
 
-### Discovery
-
-Run once. Each finding has a stable ID, severity (`Critical | Important |
-Minor`), axis, location when applicable, issue, impact, and required fix.
-Critical and concrete Important findings block. Minor is a nonblocking
-follow-up and cannot fail an axis.
-
-The controller uses `k-superpowers:receiving-code-review` to adjudicate findings
-as accepted, rejected with evidence, follow-up, or requiring a user decision.
-Freeze the goal, evidence snapshot, findings, verdicts, adjudication, and
-deferred observations before editing.
+For a review-only request, return the verdict and findings. When an authorized
+fix needs rechecking, the controller uses `k-superpowers:receiving-code-review`
+to adjudicate the findings. Preserve the goal, reviewed version, accepted
+blockers and their disposition so the reviewer can verify the fix.
 
 ### Closure
 
@@ -108,7 +102,7 @@ obstacle; do not treat minor follow-ups as blockers.
 - `STOPPED_BLOCKED`: continuation meets a stopping condition above; name what
   must change before work can resume.
 
-A binding/evidence mistake may be corrected once before Discovery completes.
+Correct source or evidence mismatches before relying on a verdict.
 `FIX_REQUIRED` or `CANNOT_VERIFY` alone does not revoke implementation authority
 or permit claiming completion.
 

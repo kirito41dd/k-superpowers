@@ -1,41 +1,22 @@
 ---
 name: verification-before-completion
-description: Use when work is about to be claimed complete, fixed, passing, ready to commit, or ready for integration
+description: Use when assessing the evidence for a completion, fix, passing check, or integration claim
 ---
 
-# Verification Before Completion
+# Verification before completion
 
-Match each claim to fresh, relevant evidence. Evidence may be a command result,
-compiler/type guarantee, focused behavioral check, inspected diff, review
-record, or another reliable artifact; choose what actually proves the claim.
+Apply this principle as work progresses. Before reporting an outcome, match
+each material claim to evidence for the final relevant code, inputs and
+environment. Reuse current evidence. Repeat the affected check when those
+conditions or the claim change.
 
-Before claiming success:
+- A fix needs the symptom or a reliable proxy checked against the corrected behavior.
+- A build or test claim names the command and its actual result.
+- Check caller-visible outcomes against the agreed requirements and any owning
+  spec. Surface a material divergence before declaring the change complete.
+- An independent source trace can support a business case. Runtime claims
+  require runtime evidence.
 
-1. Name the claim and the evidence that can support it.
-2. Obtain or confirm that evidence against the final relevant state.
-3. Inspect complete results, failures, and meaningful warnings.
-4. Report only what the evidence proves and name any remaining gap.
-
-Use the smallest project-defined verification that covers the changed behavior.
-Do not broaden automatically to every workspace target or platform. Conversely,
-a partial check cannot support a broader claim.
-
-Do not rerun unchanged evidence merely because planning, bookkeeping, packaging,
-or review delegation occurred. Rerun when code/configuration, relevant inputs,
-environment, or the claim changed enough to make prior evidence stale.
-
-Examples:
-
-- “Tests pass” requires the named test command to pass.
-- “Code supports these cases” may use `k-superpowers:reasoning-based-testing`
-  with source identity, per-case traces, and explicit limits; it does not mean
-  the cases ran or runtime verification can be skipped.
-- “Build/lint succeeds” requires that command to complete successfully.
-- “Bug fixed” requires the symptom or a reliable proxy to stop reproducing.
-- “Requirements met” requires implementation/evidence covering each material
-  requirement.
-- “Ready for commit/PR/merge” requires relevant final evidence; Git authority is
-  still a separate decision.
-
-Subagent success text is not evidence by itself. When evidence is unavailable,
-noisy, stale, or failing, report that state rather than soften the claim.
+Inspect the results and meaningful warnings. State any gap precisely, including
+the limits of partial or delegated checks. Git actions require their usual
+authorization after verification.

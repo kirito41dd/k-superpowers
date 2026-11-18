@@ -10,8 +10,8 @@ verification that supports completion. Add signatures or data shapes where
 prose would leave a material choice. Tests are required only for named runtime
 or recurrence risks that static guarantees cannot prove.
 
-Checkpoint commits appear only when the execution route explicitly authorizes
-them. Routine code, mechanical steps, and low-value boilerplate do not need to
+Include checkpoint commits only when the user authorizes them.
+Routine code, mechanical steps, and low-value boilerplate do not need to
 be spelled out. Avoid placeholders and undefined APIs, but trust the executor to
 make local choices from project patterns.
 

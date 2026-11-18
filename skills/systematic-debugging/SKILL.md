@@ -8,6 +8,8 @@ description: Use when encountering a bug, failure, performance problem, or unexp
 Gather enough evidence to distinguish plausible causes before editing. Prefer a
 reproducible feedback loop, but do not pretend every production, external,
 intermittent, or environment-specific failure can be reproduced locally.
+For diagnosis alone, report the likely cause, supporting evidence, and any
+remaining uncertainty. Move into repair only within an implementation request.
 
 ## Observe
 
@@ -29,9 +31,10 @@ question. Do not broaden investigation without a reason.
 
 ## Explain And Distinguish
 
-Form one evidence-based, falsifiable hypothesis at a time. State why it explains
-the symptom and what observation would distinguish it. A working example or
-authoritative implementation is useful when available, not a mandatory phase.
+Keep the plausible explanations that fit the observations. Choose a check whose
+outcome distinguishes them. For example, trace one request across enqueue and
+dequeue to distinguish a lost event from a stalled consumer. Follow the result
+and drop explanations contradicted by evidence.
 
 Change one relevant variable or add one observation, then inspect the result.
 Do not stack speculative fixes. Update confidence when evidence contradicts the
@@ -49,8 +52,9 @@ focused evidence:
 - use a minimal reproducer/inspection for simple wiring or configuration.
 
 Verify the symptom or closest reliable proxy after the fix. Keep a persistent
-regression check only when it protects core recurring risk; remove temporary
-instrumentation and unstable/private harnesses.
+regression check when it protects core recurring risk. Remove temporary
+instrumentation introduced for the investigation and apply
+`k-superpowers:requesting-code-review`'s trigger to the final diff.
 
 ## Stop Conditions
 

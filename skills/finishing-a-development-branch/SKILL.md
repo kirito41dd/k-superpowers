@@ -1,21 +1,27 @@
 ---
 name: finishing-a-development-branch
-description: Use when verified work needs an authorized local commit or a branch/worktree merge, PR, retention, discard, or cleanup decision
+description: Use when the user requests a local commit, merge, PR, or a branch/worktree retention, discard, or cleanup decision
 ---
 
 # Finishing A Development Branch
 
 ## Entry Gate
 
-Use only when verified work has an explicitly authorized local commit or a real
-Git integration/cleanup decision. Skip current-main Inline work while neither
-exists. Identify branch/detached state and the selected action's relevant base,
-workspace, ownership, and change scope before acting.
+Start from the requested action. Identify the branch or detached HEAD and the
+base, workspace, ownership, and change scope relevant to that action.
 
-Before `COMMIT`, `MERGE`, or `PR`, apply
+Before `COMMIT`, `MERGE`, or `PR`, confirm the final diff has supporting
+verification. Reuse current evidence or obtain the missing checks. Apply
 `k-superpowers:requesting-code-review`'s independent-review trigger to the final
 relevant diff. Complete a required review when no valid result covers that diff;
 changes outside the trigger need no formal review.
+
+For `PR` or `MERGE`, bind that evidence to the actual base and feature commits.
+Check the whole outgoing change for extra commits or files and confirm it
+contains the verified implementation and any in-scope spec. If intended work
+is still staged, unstaged or untracked, use an already authorized commit or
+ask for the missing authority before publishing or integrating it. Unrelated
+local files can stay in place when the operation preserves them.
 
 ## Actions
 

@@ -3,90 +3,42 @@ name: using-superpowers
 description: Use when starting any conversation
 ---
 
-# Using Skills
+# Choosing a skill
 
 <SUBAGENT-STOP>
-Dispatched agents executing a focused brief skip this entry skill.
+A delegate with a focused brief can start from that brief.
 </SUBAGENT-STOP>
 
-Choose the smallest useful capability for the user's current intent. Skills
-guide an intelligent agent; they are not a mandatory ceremony or a substitute
-for judgment. User and project instructions override skills.
+Answer ordinary questions directly. For inspection, explain what you find.
+A clear, bounded implementation request authorizes local edits in the current
+workspace. Inspect existing changes, implement, and verify the result. Ask
+only about unresolved choices that materially affect the outcome. Git commits,
+publication and destructive actions require their own authority.
 
-`no task skill` is a valid route. Do not load a skill because it may become
-useful later, and do not load mutually exclusive execution paths together.
+SDD means spec-driven development. Use the agreed behavior to guide implementation
+and verification, whether one agent implements it or several share the work.
+Even on a direct edit, [record a changed contract or consequential design
+decision](../brainstorming/SKILL.md#maintaining-a-spec) where maintainers will
+look for it. A fix that restores documented behavior can use the existing spec
+as its acceptance criterion.
 
-## Intent
+Choose the skill that serves the requested outcome. Use an explicitly named
+skill where applicable. These distinctions matter in daily work:
 
-| Intent | Route |
-|---|---|
-| Ordinary question answerable from current knowledge | Answer directly |
-| Turn an existing technical direction, implementation context, or research into meeting-ready review and decision material | `k-superpowers:preparing-technical-review` |
-| Independently test expected business cases through source reasoning, including alongside runnable tests | `k-superpowers:reasoning-based-testing` |
-| Familiarize, inspect, explain, review, or report status | Perform only the requested non-mutating work, then stop |
-| Bug or unexpected behavior | `k-superpowers:systematic-debugging` |
-| Design request or behavior change with unresolved material decisions | `k-superpowers:brainstorming` |
-| Approved implementation needing a persistent plan for staged execution, continuity, or delegation | `k-superpowers:writing-plans` |
-| Clear, simple implementation with no useful persistent plan | Direct implementation in the current workspace, no commit |
-| Approved persistent plan without an execution choice | `k-superpowers:writing-plans` for handoff |
-| Approved plan with Inline selected | `k-superpowers:executing-plans` |
-| Approved plan with SDD selected and checkpoint commits authorized | `k-superpowers:subagent-driven-development` |
-| Verified work with an explicit local commit or integration/cleanup request | `k-superpowers:finishing-a-development-branch` |
-| Explicitly named skill | Use it unless it conflicts with a higher-priority instruction or is unavailable |
+- Explore an unsettled design with `k-superpowers:brainstorming`. Turn an
+  existing direction into meeting material with `k-superpowers:preparing-technical-review`.
+- Investigate a symptom with `k-superpowers:systematic-debugging`. To trace
+  expected business cases independently against source, use `k-superpowers:reasoning-based-testing`.
+- Use `k-superpowers:writing-plans` for a requested plan or useful handoff.
+  For an approved plan, use `k-superpowers:executing-plans` when working inline
+  or `k-superpowers:subagent-driven-development` when delegating implementation.
+- For consequential code, use `k-superpowers:type-driven-verification` before
+  editing. A developer-log wording change usually needs just diff inspection
+  and the relevant project check.
+- Use `k-superpowers:requesting-code-review` when the risk or request calls for
+  independent judgment, and `k-superpowers:receiving-code-review` for supplied
+  findings. Use `k-superpowers:writing-skills` for skill authoring or review.
 
-Preparation/read-only work may use any operation the agent can establish is
-non-mutating. It does not enter design or implementation merely because a
-related skill exists.
-
-## Direct Implementation
-
-Use Direct when the change is clear, reversible, confined to one
-problem domain, and has no unresolved architecture, scope, dependency, public
-contract, compatibility, security, migration, or permission decision.
-
-A user's implementation request that already specifies the intended behavior
-and scope supplies approval for that bounded change. Do not require a separate
-design approval or turn ordinary local implementation choices into an approval
-gate. A design-only request does not authorize implementation.
-
-Clear requirements still need an execution assessment. Before choosing Direct,
-consider complexity, dependencies, and whether staged execution, continuity,
-or bounded delegation makes a persistent plan useful. If so, use
-`k-superpowers:writing-plans` to plan and choose Inline or SDD.
-
-The safe default is:
-
-```text
-current workspace + Inline + no commit
-```
-
-Before editing, inspect relevant project instructions and detect overlap with
-pre-existing user changes. Stop only for a real conflict or material decision.
-Classify consequence from semantic delta, not file location. Human-readable
-logging-only edits that preserve control flow, caller-visible behavior,
-state or resource lifecycles, and sensitive-data safety need neither
-`k-superpowers:type-driven-verification` nor persistent tests; verify them
-through diff and relevant format/compile checks unless machine consumers or
-documented contracts depend on them.
-Before code edits, load `k-superpowers:type-driven-verification` when the change
-contains consequential domain behavior, public boundaries, parsers, protocols,
-state, resources, or introduces or modifies a non-self-explanatory core
-structure, function, or abstraction, or materially grows unusually large or
-multi-responsibility code. Implement and perform bounded verification.
-
-Before completion, inspect the actual diff once across Spec and Standards. When
-the completed change matches `k-superpowers:requesting-code-review`'s trigger,
-or the user or approved design requests independent judgment, use its bounded
-two-axis review lifecycle before handing the result back.
-
-An implementation request authorizes in-scope file edits, not commit, push,
-merge, PR, amend, force, destructive cleanup, or unrelated work. Ask only when
-an action needs additional authority or a choice would materially change the
-result.
-
-## Skill Use
-
-When a task skill is needed, use the current owner before actions governed by
-it. Communicate skill use concisely when the platform requires disclosure; do
-not impose a fixed announcement phrase or tool-call sequence. Preserve exact
-output formats only when the user or a real external protocol requires them.
+A request for diagnosis, review, design, or planning alone ends with that
+deliverable. Match completion claims to the final evidence. Use
+`k-superpowers:finishing-a-development-branch` for a requested Git action.

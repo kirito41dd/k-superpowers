@@ -1,136 +1,85 @@
 ---
 name: subagent-driven-development
-description: Use when executing an approved staged plan with clear task boundaries, useful delegation in the current session, and authorized local checkpoint commits
+description: Use when executing approved implementation work with bounded tasks that benefit from delegation, sequentially or concurrently
 ---
 
 # Subagent-Driven Development
 
-Advance an approved plan in stages, delegating bounded tasks when that reduces
-context load or execution cost. The controller owns decomposition, shared
-contracts, sequencing, and integration, and may implement tasks directly.
+Delegate a task when a clear interface and a focused brief let another agent
+make useful progress. The controller owns sequencing, integration, and final
+acceptance, and can implement tightly coupled work directly. A plan in the
+conversation is sufficient when it conveys the needed decisions.
 
-## Entry
+## Choose the workspace and order
 
-Use `k-superpowers:writing-plans` for the execution choice and any missing
-checkpoint authorization. Start SDD only with an approved plan, supported and
-useful delegation, and explicit authorization for this plan's local checkpoint
-commits.
+Start in the selected workspace. Assign each writer specific paths and name the
+contracts, generated outputs, and checks its work depends on. Apply the
+independence criteria in `k-superpowers:dispatching-parallel-agents`.
+Sequence dependent tasks or settle their shared contract first.
 
-Tasks are independently executable once their required contracts or upstream
-results are ready. For example, an agreed interface can let a module proceed
-with only its local context while another module supplies the implementation
-later. Sequence dependent tasks; parallelize only when inputs and write
-ownership allow it.
+In a shared checkout, delegates may edit disjoint paths concurrently. The
+controller owns staging, commits and shared verification. Use separate worktrees
+when tasks need independent builds, baselines, rollback, or delivery. Establish
+the integration path and authority before relying on isolated results.
 
-Checkpoint authorization covers approved implementation and review-fix commits
-only. It never includes push, merge, PR, amend, force, unrelated work, or
-separate spec/plan commits.
+## Accept uncommitted work
 
-Use the selected current workspace or worktree. Before dispatch, inspect project
-instructions, the plan, task dependencies, existing changes, and verification
-scope. Stop for actual overlap, incompatible decisions, missing authority, or a
-material plan gap; do not block merely because a template field or risk label is
-absent when the task is otherwise clear.
-
-Initialize `.superpowers/sdd/` artifacts when they improve task handoff or
-recovery. Preserve unmatched existing artifacts and ask before cleaning them.
-
-## Task Safety
-
-Before each task, capture its base and pre-existing state with
-`scripts/task-snapshot`. Define the task's intended paths and reject overlap
-with user-owned changes. After implementation, inspect the actual diff and
-verification, require the authorized checkpoint, and use `task-snapshot` to
-confirm that the checkpoint contains only authorized task work. Never stash,
-revert, absorb, or manufacture ownership of pre-existing changes.
-
-## Risk And Delegation
-
-Choose the executor by task boundaries and context benefit; use consequences
-to set review depth:
-
-- **Low:** docs, comments, formatting, or mechanical work. Controller implements,
-  verifies, inspects the diff across Spec and Standards, and checkpoints
-  directly.
-- **Medium:** bounded behavior with no material public, security, persistence,
-  concurrency, protocol, or integration risk. Controller inspects the actual
-  diff, evidence, and any delegate report and performs a
-  two-axis Spec/Standards self-review, then one independent reviewer uses the
-  bounded review lifecycle.
-- **High:** consequential public contract, security, persisted data, migration,
-  concurrency, protocol, state-machine, or similarly costly failure. One
-  independent reviewer uses the bounded review lifecycle after implementation.
-
-Runtime evidence may raise or lower the needed verification/review effort when
-the controller explains the concrete effect. A task that reveals an unapproved
-material decision stops for the user; local implementation choices do not.
-
-## Delegated Brief
-
-Give each delegate a focused, self-contained brief with task-relevant context:
+Before dispatch, inspect existing changes and agree on each task's writable
+files, including new and generated files. Preserve user-owned work. In a Git
+checkout the controller can check the combined scope with `scripts/task-snapshot`:
 
 ```text
-goal and approved task
-relevant inputs, dependencies, and project constraints
-authorized and forbidden actions
-material blocking conditions
-quality, core-explanation, and verification expectations
-result information needed by the controller
+task-snapshot capture-working BASELINE_FILE SCOPE
+    ... delegates edit their assigned files ...
+task-snapshot verify-working BASELINE_FILE SCOPE
 ```
 
-Use `implementer-prompt.md` and `task-reviewer-prompt.md` as adaptable guidance.
-Preserve their semantic contract, but adjust wording, context, read order, and
-tool usage to the platform and task. Do not require byte-for-byte prompt copies
-or fail work because a harmless output format differs.
+SCOPE lists the union of exact repo-relative file paths, sorted, unique and
+NUL-terminated. Keep the baseline and scope outside the checkout or in an
+ignored run directory. Capture while writers are idle and verify after they
+finish. Reuse the original baseline for in-scope review fixes. The check allows
+unstaged edits and new files in the assigned union and checks Git-visible state
+outside it, HEAD and the staged contents. The controller still inspects each
+task's actual diff, including new files, and runs checks on the integrated
+result. A passing union check alone cannot attribute changes to a particular
+delegate or validate ignored outputs. The baseline includes the contents of
+initialized submodules. Assign edits inside a submodule from that repository.
+Give writers ordinary file paths. If a path traverses a symlink, identify who
+owns its target before dispatch. An edit to the link itself, an existing ignored
+target, or a file hidden by index flags needs a separately inspected baseline.
 
-## Implementer Result
+If the scope includes existing changes, establish ownership before editing.
+For earlier authorized work, compare against its recorded starting content;
+for user changes, resolve any real overlap or choose an isolated baseline that
+includes the required inputs. Investigate a failed check before proceeding.
+Never stash, revert, or absorb another person's changes to make a check pass.
 
-The implementer reports implemented behavior, files changed, material
-assumptions, verification and warnings, checkpoint information, and one of:
+## Optional checkpoints
 
-- `DONE`: task and evidence are complete;
-- `DONE_WITH_CONCERNS`: task is complete with a concrete residual concern;
-- `NEEDS_CONTEXT`: a material decision or conflict is missing;
-- `BLOCKED`: requirements are clear but an external or technical blocker remains.
+The default result is verified, uncommitted work. Delegation needs no Git
+permission. If local checkpoints are explicitly authorized, the controller
+can checkpoint the accepted batch after the writers finish. For an isolated
+task or batch using checkpoint verification, run `task-snapshot capture` and
+`check-scope` before the work, then `verify` against the authorized commit
+range. This strict mode checks the whole checkout. A delegate may create a
+checkpoint only in an isolated checkout when the brief assigns that action
+and the user has authorized it. Push, merge, PR and cleanup retain their own
+authorization boundaries.
 
-Controller verifies these claims against the report, actual diff, project
-state, and command output. Resolve derivable context directly. Ask the user only
-for a material decision; do not turn local naming or implementation judgment
-into ceremony. Never skip a blocked task to continue dependent work.
+Keep task checkpoints within their assigned files. When a commit delivers
+the whole change, use the [implementation commit scope](../finishing-a-development-branch/git-actions.md#commit)
+for its accompanying spec and plan.
 
-## Review
+## Handoff and review
 
-For medium and high tasks, use `k-superpowers:requesting-code-review` once in
-Discovery mode. Freeze stable findings, adjudicate them through
-`k-superpowers:receiving-code-review`, apply focused fixes, and
-return to the same logical reviewer for Closure. Record nonblocking follow-ups.
-Follow the review owner's continuation and stopping rules; authorized repairs
-may continue within the same record while making progress, without restarting
-Discovery or requesting checkpoint permission again.
+Use `implementer-prompt.md` for a focused brief. Include the goal, writable
+paths, stable inputs, relevant project constraints, expected evidence and
+where to return the result. A delegate can report completion, a concrete
+concern, missing context, or a blocker. Resolve derivable context locally.
 
-Run a final whole-change review only when multiple tasks create a real
-shared-interface, shared-state, or unverified composition risk. A single medium
-or high task that already completed its task review does not receive a duplicate
-final review.
-
-## Completion
-
-Record completed tasks and unresolved follow-ups in the progress artifact when
-recovery needs it. After all tasks and any required integration review, invoke
-`k-superpowers:verification-before-completion` for bounded whole-change evidence.
-Only then report completion. Cleanup is optional: remove only artifacts known
-to belong to this run, and retain useful recovery material. A shared directory
-does not establish ownership of its contents.
-
-Authorized SDD checkpoint commits remain owned here. Use
-`finishing-a-development-branch` only for a separately requested post-execution
-integration/cleanup decision. Current-main execution without such a request
-reports verified changes in place.
-
-## Owners
-
-- `writing-plans` owns the approved plan and execution choice.
-- `requesting-code-review` owns Discovery/Closure and finding semantics.
-- `type-driven-verification` owns code design and core explanation guidance.
-- `verification-before-completion` owns claim/evidence alignment.
-- SDD scripts own mechanical workspace, snapshot, and cleanup operations.
+Inspect each delivery against its requirements and engineering standards.
+Apply `k-superpowers:requesting-code-review` to the actual risk and the
+user's request. Use `task-reviewer-prompt.md` when independent review is
+needed. Review the combined result when shared contracts or state create a
+risk that task-level reviews could not cover. Keep handoff or recovery
+artifacts only when useful, and clean up only owned artifacts within authority.

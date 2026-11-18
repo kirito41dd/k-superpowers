@@ -1,7 +1,7 @@
 #!/usr/bin/env bash
-# Resolve and ensure the working-tree directory SDD uses for short-lived
-# artifacts: task briefs, implementer reports, review packages, and the
-# progress ledger. Print the directory's absolute path.
+# Prepare the working-tree directory for delegated task artifacts and print
+# its absolute path. Keep the historical .superpowers/sdd location so that
+# existing briefs, reports, and progress ledgers can be resumed.
 #
 # The workspace lives in the working tree, not under .git, because some
 # harnesses protect .git from agent writes. A self-ignoring .gitignore keeps
@@ -18,7 +18,7 @@ if [ ! -e "$dir/.gitignore" ] && [ ! -L "$dir/.gitignore" ]; then
     if { exec 3> "$dir/.gitignore"; } 2>/dev/null; then
       printf '*\n' >&3
     elif [ ! -e "$dir/.gitignore" ] && [ ! -L "$dir/.gitignore" ]; then
-      echo "cannot create SDD ignore file: $dir/.gitignore" >&2
+      echo "cannot create task workspace ignore file: $dir/.gitignore" >&2
       exit 1
     fi
   )

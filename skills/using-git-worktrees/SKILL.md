@@ -7,6 +7,10 @@ description: Use when approved work materially benefits from workspace isolation
 
 ## Workspace Decision
 
+Use isolation when a task needs a separate build, reproducible baseline,
+independent delivery or rollback. A shared checkout supports parallel tasks
+whose edits and checks do not interfere.
+
 Detect before acting:
 
 ```bash

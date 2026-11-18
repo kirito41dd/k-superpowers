@@ -14,7 +14,7 @@ readlink_exact() { perl -e '$v = readlink($ARGV[0]); defined $v or exit 1; print
 mode=${1:-}
 case "$mode" in
   committed) [ "$#" -eq 5 ] || usage; base=$2; head=$3; scope_file=$4; out=$5 ;;
-  working-tree) [ "$#" -eq 4 ] || usage; base=$2; head=$(git rev-parse HEAD); scope_file=$3; out=$4 ;;
+  working-tree) [ "$#" -eq 4 ] || usage; base=$2; head=HEAD; scope_file=$3; out=$4 ;;
   *) usage ;;
 esac
 root=$(git rev-parse --show-toplevel) || exit 2
@@ -24,8 +24,9 @@ out_dir=$(cd "$(dirname "$out")" 2>/dev/null && pwd -P || true)
 out="$out_dir/$(basename "$out")"
 cd "$root"
 export GIT_LITERAL_PATHSPECS=1
-git rev-parse --verify --quiet "$base^{commit}" >/dev/null || { echo "bad BASE" >&2; exit 2; }
-git rev-parse --verify --quiet "$head^{commit}" >/dev/null || { echo "bad HEAD" >&2; exit 2; }
+# Pin moving references once so the label and every section describe the same commits.
+base=$(git rev-parse --verify --quiet --end-of-options "$base^{commit}") || { echo "bad BASE" >&2; exit 2; }
+head=$(git rev-parse --verify --quiet --end-of-options "$head^{commit}") || { echo "bad HEAD" >&2; exit 2; }
 [ -f "$scope_file" ] || { echo "missing scope" >&2; exit 2; }
 [ -s "$scope_file" ] || { echo "empty scope" >&2; exit 2; }
 last_byte=$(tail -c 1 "$scope_file" | od -An -t u1 | tr -d ' ')
@@ -44,6 +45,7 @@ done < "$scope_file"
 tmp="${out}.tmp.$$"; before="${tmp}.before"; after="${tmp}.after"
 trap 'rm -f "$tmp" "$before" "$after"' EXIT
 fingerprint() {
+  [ "$(git rev-parse HEAD)" = "$head" ] || { echo "HEAD changed while packaging" >&2; return 1; }
   {
     git rev-parse HEAD
     git diff --binary -- "${scope[@]}"
@@ -59,21 +61,23 @@ fingerprint() {
   } | hash_stream
 }
 if [ "$mode" = working-tree ]; then
-  [ "$(git rev-parse "$base")" = "$head" ] || { echo "working-tree BASE must equal HEAD" >&2; exit 2; }
+  [ "$base" = "$head" ] || { echo "working-tree BASE must equal HEAD" >&2; exit 2; }
   fingerprint > "$before" || exit 2
 fi
 
 {
   echo "# k-superpowers-review-package/v1"; echo
-  echo "source: $mode"; echo "base: $(git rev-parse "$base")"; echo "head: $(git rev-parse "$head")"
+  echo "source: $mode"; echo "base: $base"; echo "head: $head"
   echo; echo "## Scope"
   for path in "${scope[@]}"; do printf -- '- `%q`\n' "$path"; done
-  echo; echo "## Status"; git status --short -- "${scope[@]}"
+  echo; echo "## Status"
   if [ "$mode" = committed ]; then
+    git diff --name-status "$base" "$head" -- "${scope[@]}"
     echo; echo "## Commits"; git log --oneline "$base..$head" -- "${scope[@]}"
     echo; echo "## Stat"; git diff --stat "$base..$head" -- "${scope[@]}"
     echo; echo "## Diff"; git diff --binary -U10 "$base..$head" -- "${scope[@]}"
   else
+    git status --short -- "${scope[@]}"
     echo; echo "## Unstaged"; git diff --binary -U10 -- "${scope[@]}"
     echo; echo "## Staged"; git diff --cached --binary -U10 HEAD -- "${scope[@]}"
     echo; echo "## Untracked"

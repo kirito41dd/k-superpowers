@@ -12,12 +12,13 @@ materially depends on information the supplied sources cannot provide.
 
 ## Authorization
 
-You may edit only the approved task or review-fix scope, run focused
-verification, write the requested report, and create the explicitly authorized
-local checkpoint commit. Do not push, merge, create a PR, amend, force, change
-unrelated files, or absorb pre-existing user work.
+Edit only the assigned files and run checks whose inputs are stable. In a
+shared checkout leave changes unstaged and return results to the controller.
+Before editing a newly discovered shared input, coordinate with the controller.
+In an isolated checkout, create a local checkpoint only when the user authorized
+it and the brief assigned it to you. Protect pre-existing work.
 
-Write the checkpoint commit message in the repository's established language
+For an authorized checkpoint, write the message in the repository's established language
 and format, using project instructions and recent comparable commits as
 evidence. Preserve structural prefixes such as `feat:` while matching the
 human-readable summary and body to the repository's prose language.
@@ -26,26 +27,11 @@ human-readable summary and body to the repository's prose language.
 
 - Implement the approved behavior and no unrelated restructuring.
 - Use established project patterns for local naming and implementation choices.
-- Apply `type-driven-verification` guidance when the task contains consequential
-  domain logic, public interfaces, parsers, protocols, state, resources, or
-  significant error boundaries, or unusually large or multi-responsibility code.
-- For a non-self-explanatory core structure, function, or abstraction, explain
-  its purpose, caller use, important invariants, lifecycle/resource rules, and
-  protocol/state transitions as applicable. Judge clarity from names, types,
-  and nearby context together; a readable name alone does not explain the
-  contract. Keep needed business rationale, design choices, and maintenance
-  constraints at the relevant source declaration or decision point, without
-  turning these dimensions into required comment fields. Follow project and
-  nearby-file comment language/style; do not restate obvious code. Update or
-  remove related stale or misleading comments when changing behavior.
-- Add only the smallest set of persistent tests needed for stable, consequential
-  risks not proved by types, boundary validation, or existing evidence. Prefer a
-  narrow stable boundary, consolidate equivalent cases, and avoid duplicate
-  layers or incidental implementation details. Make retained core tests reveal
-  their semantic contract and regression risk through behavior-focused names and
-  clear structure. Add a nearby comment or assertion message only when a
-  non-obvious invariant, regression background, fixture/order, or failure
-  consequence needs explanation.
+- Use [Type-Driven Verification](../type-driven-verification/SKILL.md) for
+  consequential code, including a core abstraction whose contract needs
+  explanation. Keep its invariants clear in source and choose verification
+  for the remaining risk. A retained test should make the regression it
+  protects clear to the next maintainer.
 - Self-review the actual diff for correctness, scope, maintainability, and
   verification gaps before reporting.
 
@@ -60,15 +46,15 @@ tool, environment, external dependency, or in-scope technical path is
 unavailable. Report what was attempted and the concrete unblock condition.
 
 Use `DONE_WITH_CONCERNS` only when implementation is complete but a specific
-residual correctness concern remains. Otherwise use `DONE` after verification,
-self-review, report, and checkpoint are complete.
+residual correctness concern remains. Use `DONE` when your assigned changes,
+checks and handoff are complete. Identify checks left for combined verification.
 
 ## Evidence And Report
 
 Run verification proportionate to the approved task and remaining runtime risk.
 Record commands or other evidence, results, relevant warnings/noise, changed
-files, checkpoint SHA/subject, material assumptions, self-review fixes, and any
-concern or blocker. Review fixes receive a new checkpoint; never amend.
+files, material assumptions, self-review fixes, and any concern or blocker.
+Include the SHA/subject only if an authorized checkpoint was created.
 
 Return a concise result containing:
 

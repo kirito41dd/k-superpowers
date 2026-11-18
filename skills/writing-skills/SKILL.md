@@ -43,8 +43,10 @@ Use a user-observed failure, friction point, or requested behavior as input.
 Make the smallest coherent change, inspect its active references once, and
 return it to real use quickly.
 
-- Do not create persistent tests, fixtures, snapshots, eval matrices, ablation
-  records, or model-specific golden outputs for skill behavior.
+- Use real task feedback to evaluate prompt guidance. Avoid model-specific
+  golden responses and standing eval campaigns. For deterministic helpers that
+  protect Git scope, snapshots or cleanup, use repeatable checks in a disposable
+  repository. Retain a small regression check when it protects a costly failure.
 - Do not call another model for verification unless the user explicitly requests
   it and accepts the cost.
 - Do not freeze prose, tool-call order, or exact responses without a real user/
@@ -74,8 +76,10 @@ or use review activity as a proxy for quality.
 
 Read the edited skill and direct active references once. Check trigger accuracy,
 owner coherence, permissions, material failure paths, and requested behavior.
-Search for contradictory active text. Syntax or JSON parsing is sufficient for
-modified executable support unless the user asks for more.
+Check callers and delegate prompts for conflicting instructions. For a script
+interface, compare the documented inputs and guarantees with the script itself.
+Use syntax or JSON checks for structural edits. When behavior changes, exercise
+the affected path in a disposable workspace if that is what the claim requires.
 
 State uncertainty when real-use evidence is incomplete and hand the change back
 for use. Git, publishing, or external writes always need their normal authority.

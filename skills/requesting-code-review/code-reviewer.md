@@ -10,9 +10,10 @@ Consume the review mode, approved requirements/plan, change goal, intended
 scope, diff or frozen package, and verification evidence. Closure additionally
 requires the complete frozen review record and fix delta.
 
-When a package is supplied, confirm its source/base/head and explicit scope
-paths match the request, then treat its diff/status as the frozen snapshot. A
-same-controller live review may use the current bound diff instead.
+Check the supplied scope against the approved change. With a package, verify
+its source, base, and head and review the packaged diff. With direct repository
+access, inspect the specified commits or stable working diff. If relevant
+content moves, identify which evidence needs refreshing before giving a verdict.
 
 You may read project instructions, callers, nearby implementations, and direct
 dependencies when they answer a concrete question about the approved change.
@@ -59,7 +60,7 @@ migration/backfill behavior, or ownership/sharding boundaries, apply the
 [backend database guidance](../type-driven-verification/backend-database-schema-and-migrations.md)
 under the project's own database and deployment rules.
 
-Each finding reports:
+For each blocker, record the information needed for a targeted recheck:
 
 ```text
 stable ID
@@ -89,7 +90,7 @@ observations.
 
 ## Result
 
-Report independent Spec and Standards verdicts plus one lifecycle result:
+A clean review can report its Spec and Standards verdicts directly. Use the applicable result:
 `PASS`, `PASS_WITH_FOLLOWUPS`, `FIX_REQUIRED`, `CANNOT_VERIFY`, or
 `STOPPED_BLOCKED`. In either phase, use `FIX_REQUIRED` for repairable blockers
 and `CANNOT_VERIFY` for missing evidence. An open finding alone does not require
