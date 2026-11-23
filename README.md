@@ -7,7 +7,7 @@
 ## 快速了解
 
 想先知道这套 Skills 实际会怎样帮你分析、设计、写代码、调试、Review 和交付，参见
-[从用户角度看 K Superpowers：完整 16 个 Skill 总览](docs/skills-overview.zh.md)。
+[从用户角度看 K Superpowers：完整 Skill 总览](docs/skills-overview.zh.md)。
 
 ## 定制哲学
 
@@ -33,6 +33,8 @@ Skill 文本是给持续进化的智能体使用的行为指导，不以固定�
 
 ## 当前定制重点
 
+- `idiomatic-rust` 是本仓库独立维护的 Rust skill，用于日常实现、审查和语言相关诊断。规则可来自 Rust 官方文档、社区项目和实际工程经验。BeautifulRust 是首个持续跟踪的来源。[Rust skill](skills/idiomatic-rust/SKILL.md) · [实践来源与取舍](docs/upstreams/idiomatic-rust.md)
+
 - `using-superpowers` 负责区分问答、设计和实现。需要计划时，可由主 Agent 分阶段执行，也可委派边界清晰的任务。默认在当前工作区交付未提交的改动。
 - `brainstorming` 解决未定设计，`preparing-technical-review` 帮团队理解并决定已有方向。需要分阶段交付时再写清依赖和验收条件。计划可直接在对话中使用，需要交接或用户要求时再落盘。
 - 人通过 spec 评审和维护行为约定，已有文档优先更新，默认随获准提交的实现交付。Agent 通过 plan 接手依赖、步骤和验证。可参见 [5.5.0 研发工作流设计](docs/superpowers/specs/2026-11-18-development-workflow-design.md)。
@@ -45,7 +47,7 @@ Skill 文本是给持续进化的智能体使用的行为指导，不以固定�
 - `writing-skills` 按真实使用反馈迭代提示词。Git 范围、快照和清理等确定性脚本用可重复的行为检查验证。
 - `CLAUDE.md`：保留项目核心原则和托管记忆入口；记忆操作规则统一维护在 `.ai/memory/policy.md`。
 - `.ai/memory/`：记录本 fork 的长期决策、约定、坑点和术语。
-- `docs/skills-overview.zh.md`：从用户角度介绍整套工作方式、16 个 Skill 分工和权限边界。
+- `docs/skills-overview.zh.md`：从用户角度介绍整套工作方式、各 Skill 分工和权限边界。
 
 ## OpenCode 安装
 
@@ -132,7 +134,7 @@ codex plugin list | grep k-superpowers
 预期能看到：
 
 ```text
-k-superpowers@k-superpowers-dev  installed, enabled  5.5.0
+k-superpowers@k-superpowers-dev  installed, enabled  5.6.0
 ```
 
 本地 marketplace 的结构是：

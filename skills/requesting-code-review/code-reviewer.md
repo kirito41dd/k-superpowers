@@ -27,6 +27,9 @@ change. For Standards, examine correctness, invalid states, untrusted inputs,
 error/resource ownership, compatibility, maintainability, project conventions,
 core-code explanations, and runtime risks not proved by evidence.
 
+For substantive Rust changes, use the [Rust review guide](../idiomatic-rust/review.md)
+to trace language-specific risks through affected callers.
+
 Do not request tests merely because none were added or reward test volume.
 Identify the exact unproved behavior and its impact. Report excessive-test
 findings only for concrete redundancy, incidental implementation coupling, or

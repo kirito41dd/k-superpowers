@@ -39,7 +39,8 @@ migration/backfill behavior, or ownership/sharding boundaries, read
 
 - **Rust:** enums/newtypes, private validated construction, ownership/lifetimes,
   narrow traits/visibility, and exhaustive matching. Use typestate only when its
-  safety benefit justifies complexity.
+  safety benefit justifies complexity. Consult [Idiomatic Rust](../idiomatic-rust/SKILL.md)
+  for the language-specific contracts relevant to the change.
 - **TypeScript:** discriminated unions, strict null handling, narrow APIs, and
   runtime schema validation for JSON/network/storage input.
 - **Go:** explicit structs/constructors, small interfaces, validated boundaries,

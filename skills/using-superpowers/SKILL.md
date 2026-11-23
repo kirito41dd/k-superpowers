@@ -35,6 +35,8 @@ skill where applicable. These distinctions matter in daily work:
 - For consequential code, use `k-superpowers:type-driven-verification` before
   editing. A developer-log wording change usually needs just diff inspection
   and the relevant project check.
+- For substantive Rust edits and reviews, or Rust-specific diagnosis, use
+  `k-superpowers:idiomatic-rust`.
 - Use `k-superpowers:requesting-code-review` when the risk or request calls for
   independent judgment, and `k-superpowers:receiving-code-review` for supplied
   findings. Use `k-superpowers:writing-skills` for skill authoring or review.

@@ -27,6 +27,7 @@ human-readable summary and body to the repository's prose language.
 
 - Implement the approved behavior and no unrelated restructuring.
 - Use established project patterns for local naming and implementation choices.
+- Apply [Idiomatic Rust](../idiomatic-rust/SKILL.md) to substantive Rust edits.
 - Use [Type-Driven Verification](../type-driven-verification/SKILL.md) for
   consequential code, including a core abstraction whose contract needs
   explanation. Keep its invariants clear in source and choose verification
