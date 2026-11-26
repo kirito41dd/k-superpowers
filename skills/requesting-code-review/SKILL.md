@@ -29,13 +29,12 @@ One reviewer evaluates both axes:
 
 ## Evidence
 
-Every review receives the approved requirements/plan, change goal, intended
-scope, implementation diff or snapshot, and verification evidence.
+Give the reviewer the question, scope, applicable requirements or plan, code
+snapshot or diff, and available verification evidence.
 
-A reviewer with direct access can inspect an identified commit range or a
-working diff that stays fixed during review. Use a frozen package when the
-reviewer needs the diff transferred, the tree may move, or the handoff must
-survive a context change.
+A reviewer with direct access can inspect the specified version, commit range
+or stable working diff. Use a frozen package when the reviewer needs the diff
+transferred, the tree may move, or the handoff must survive a context change.
 
 ```text
 scripts/review-package committed BASE HEAD SCOPE_FILE OUTFILE
@@ -47,10 +46,12 @@ the IDs in the package and its reviewed content. For working-tree mode, BASE mus
 SCOPE_FILE contains sorted, unique repo-relative paths, each terminated by a
 NUL byte. Check that the paths cover the intended change.
 
-Scope limits the change under review, not useful read-only context. A reviewer
+A bug can surface in unchanged code, so it's easy to miss if you only look at the diff.
+
+The agreed scope determines which findings belong in the report. A reviewer
 may inspect callers, nearby implementations, project instructions, and direct
 dependencies to answer a concrete review question. It must not modify files,
-expand the requested change, or turn unrelated observations into blockers.
+expand the requested scope, or turn unrelated observations into blockers.
 
 ## Discovery
 

@@ -1,31 +1,28 @@
 # Code Reviewer Guidance
 
-Provide an independent judgment of the approved change. Do not modify the
+Provide an independent judgment of the code in scope. Do not modify the
 repository. A clean, well-supported result is successful review; finding more
 issues is not a success metric.
 
 ## Inputs And Context
 
-Consume the review mode, approved requirements/plan, change goal, intended
-scope, diff or frozen package, and verification evidence. Closure additionally
-requires the complete frozen review record and fix delta.
+Check the requested behavior at the specified snapshot or diff against its
+requirements and available evidence. With a frozen package, verify its source,
+base, head and scope and review the packaged diff. If relevant content moves,
+refresh the affected evidence. Closure also needs the frozen review record
+and fix delta.
 
-Check the supplied scope against the approved change. With a package, verify
-its source, base, and head and review the packaged diff. With direct repository
-access, inspect the specified commits or stable working diff. If relevant
-content moves, identify which evidence needs refreshing before giving a verdict.
+A bug can surface in unchanged code, so it's easy to miss if you only look at the diff.
 
-You may read project instructions, callers, nearby implementations, and direct
-dependencies when they answer a concrete question about the approved change.
 Do not browse for unrelated improvement opportunities, inspect a newer mutable
 snapshot in place of the bound one, mutate files, or rerun broad commands.
 
 ## Discovery
 
-Review Spec first, then Standards. Check every approved requirement against the
-change. For Standards, examine correctness, invalid states, untrusted inputs,
-error/resource ownership, compatibility, maintainability, project conventions,
-core-code explanations, and runtime risks not proved by evidence.
+Review Spec first, then Standards. Check the code in scope against each
+applicable requirement. For Standards, examine correctness, invalid states,
+untrusted inputs, error/resource ownership, compatibility, maintainability,
+project conventions, core-code explanations, and runtime risks not proved by evidence.
 
 For substantive Rust changes, use the [Rust review guide](../idiomatic-rust/review.md)
 to trace language-specific risks through affected callers.
@@ -73,10 +70,10 @@ file:line when applicable
 issue, impact, required fix
 ```
 
-Critical means accepting the change risks severe harm. Important requires a
-concrete reason the approved change cannot be trusted. Minor is optional polish or follow-up and
-never fails an axis. Derive locations from source files or diff coordinates,
-not artifact-reader line numbers.
+Critical means the behavior in scope risks severe harm. Important requires a
+concrete reason that behavior cannot be relied on. Minor is optional polish
+or follow-up and never fails an axis. Derive locations from source files or
+diff coordinates, not artifact-reader line numbers.
 
 ## Closure
 
